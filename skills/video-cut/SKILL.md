@@ -664,8 +664,10 @@ Y en la skill:
 - **Render medido**: 84 s de secuencia con 25 clips, 6 zooms, 8 transiciones,
   37 textos y música con ducking → 8 s en borrador 720p, ~2 min en final 1080p
   desde originales 4K.
-- **Tipografías**: las de `~/MoneyPrinterTurbo/resource/fonts` (Inter Black,
-  Anton, Bebas Neue, Dancing Script…) ya salen en el selector.
+- **Tipografías**: las tres de los estilos por defecto (Inter Black, Anton,
+  Bebas Neue) viajan en `assets/fonts/`. Se buscan antes en `<proyecto>/fonts/`,
+  en `VCUT_FONTS` y en las del sistema, así que para usar otra basta con
+  dejarla ahí.
 - **Atajo**: `videria2.0/nuevo-video.ps1 "C:/ruta/videos"` corre la cadena
   entera (run → qa → decide → plantilla → studio). Acepta `-Plantilla limpio`,
   `-Modelo small`, `-SoloCortes` y `-NoAbrir`. Medido: 3 clips y 20 s de
