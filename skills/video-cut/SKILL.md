@@ -285,6 +285,11 @@ python $VCUT template list
 python $VCUT template apply --project "proj" --name tiktok
 python $VCUT template save  --project "proj" --name mi-estilo --label "Mi estilo"
 
+# REPO — compartir el proyecto por git (init deja todo listo y lo sube)
+python $VCUT repo init   --project "proj" --usuario TU-USUARIO-GITHUB
+                         [--nombre mi-video] [--publico] [--sin-remoto]
+python $VCUT repo estado --project "proj"
+
 # MERGE — traer la edicion que hizo otra maquina (sin perder tus originales)
 python $VCUT merge "revisado.vcutpack" --project "proj" [--no-cortes]
 
@@ -457,7 +462,50 @@ comando explica dónde ponerla y no hace nada más.
 **Créditos.** Pexels no exige atribución pero la pide. Cada pasada deja
 `broll/CREDITOS.md` con el autor y el enlace de cada clip.
 
-## Editar entre dos máquinas
+## Editar entre dos máquinas, por git
+
+Es el mismo reparto que con paquetes, pero sin mandarse archivos. `timeline.json`
+es texto, así que cada push se lee como un diff de verdad: qué zoom cambió, qué
+texto se movió.
+
+```bash
+# una vez, en la máquina que tiene el material
+python $VCUT media --project "C:/proyecto" --proxy-all
+python $VCUT repo init --project "C:/proyecto" --usuario TU-USUARIO
+
+# el otro, cada vez que trabaja
+git clone <url> mi-revision && python $VCUT studio --project mi-revision
+git add -A && git commit -m "ajusté los zooms" && git push
+
+# vos, cuando te llega el aviso
+git -C "C:/proyecto" pull
+python $VCUT render --project "C:/proyecto"
+```
+
+`repo init` hace cuatro cosas: mueve los proxies, las ondas y las miniaturas a
+`preview/` (que es lo que se commitea); separa las rutas; escribe `.gitignore`,
+`LEEME.md` y el workflow del aviso; y crea el repo **privado** en GitHub con
+`gh` si está disponible.
+
+**Las rutas son el problema real, y se resuelve con dos archivos.**
+`project.json` se commitea con rutas **relativas** al proyecto, así que el mismo
+archivo abre bien en las dos máquinas. Dónde tiene cada una sus originales vive
+en **`local.json`**, que está en el `.gitignore`: nunca viaja y nunca choca.
+Quien clona sin `local.json` abre igual, reproduciendo los proxies.
+
+**El render final está protegido.** Si a esta máquina le falta el material
+original, `render` se niega y lo dice; `--draft` sigue funcionando. Sin esa
+guarda, quien solo revisa sacaría un MP4 de 540p estirado y solo se notaría al
+abrirlo.
+
+**El aviso.** GitHub no notifica los push a secas, así que
+`.github/workflows/aviso.yml` abre un issue mencionando a `--usuario` cuando
+empuja alguien que no sea él. Llega por correo y al móvil.
+
+**Una regla de convivencia**: uno a la vez. `git` no sabe fusionar dos
+`timeline.json` y no lo intenta. `pull` antes de empezar, `push` al terminar.
+
+## Editar entre dos máquinas, con paquetes
 
 Lo caro de este flujo es transcribir (minutos de CPU), generar los proxies y
 renderizar. Ajustar cortes, zooms y textos no cuesta nada: es un navegador

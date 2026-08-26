@@ -87,6 +87,7 @@ def pack_project(project_dir, out_path, with_media=False, preview=False,
     project = util.read_json(pdir / "project.json")
     if project is None:
         raise RuntimeError("no hay project.json en %s" % pdir)
+    studio.resolve_paths(project, pdir)
     tl = util.read_json(studio.path_of(pdir)) or {}
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -389,7 +390,7 @@ def unpack_project(zip_path, project_dir, media_dir=None, on_step=None):
         s["waveform"] = None
         s["filmstrip"] = None
 
-    util.write_json(pdir / "project.json", project)
+    studio.save_project(pdir, project)
 
     # ------- rutas del timeline
     if tl:

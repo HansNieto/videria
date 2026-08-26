@@ -15,6 +15,7 @@ usuario coloca a mano puede estar suelto.
 """
 from __future__ import annotations
 
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -350,6 +351,103 @@ def find_item(tl, iid):
         if it.get("id") == iid:
             return t, it
     return None, None
+
+
+# ------------------------------------------------- rutas y maquina local
+
+# Lo que es de esta maquina y no del proyecto: donde viven los originales.
+# Va en .gitignore, asi que cada uno tiene el suyo y nunca chocan.
+LOCAL_FILE = "local.json"
+
+
+def _abs(v, pdir):
+    if not v:
+        return v
+    p = Path(v)
+    return str(v) if p.is_absolute() else str((Path(pdir) / p).resolve())
+
+
+def _rel(v, pdir):
+    """Relativa si el archivo vive dentro del proyecto; si no, tal cual."""
+    if not v:
+        return v
+    p = Path(v)
+    if not p.is_absolute():
+        return str(v).replace("\\", "/")
+    try:
+        return str(p.relative_to(Path(pdir).resolve())).replace("\\", "/")
+    except ValueError:
+        return str(p)
+
+
+def resolve_paths(project, pdir):
+    """Deja el proyecto con rutas absolutas de ESTA maquina. Muta y devuelve.
+
+    Dos capas: lo que esta commiteado trae rutas relativas al proyecto (los
+    proxies, las ondas, las miniaturas), y `local.json` dice donde tiene cada
+    maquina el material original. Sin local.json el proyecto abre igual,
+    reproduciendo los proxies: es lo que le pasa a quien solo revisa.
+    """
+    pdir = Path(pdir)
+    local = util.read_json(pdir / LOCAL_FILE, {}) or {}
+    mios = local.get("sources") or {}
+    for s in project.get("sources", []):
+        mio = mios.get(s.get("id")) or {}
+        original = mio.get("path")
+        if original and Path(original).exists():
+            s["path"] = original
+            s["tiene_original"] = True
+        else:
+            s["path"] = _abs(s.get("path"), pdir)
+            s["tiene_original"] = False
+        s["proxy"] = _abs(s.get("proxy"), pdir)
+        s["waveform"] = _abs(s.get("waveform"), pdir)
+        fs = s.get("filmstrip")
+        if isinstance(fs, dict) and fs.get("url"):
+            s["filmstrip"] = dict(fs, url=_abs(fs["url"], pdir))
+        elif isinstance(fs, str):
+            s["filmstrip"] = _abs(fs, pdir)
+    return project
+
+
+def save_project(pdir, project, backup=False):
+    """Escribe project.json con las rutas de dentro del proyecto en relativo.
+
+    Lo que quede absoluto es material que vive fuera: eso no se commitea, se
+    guarda en `local.json`. Asi el mismo archivo sirve en las dos maquinas.
+    """
+    pdir = Path(pdir)
+    fuera = {}
+    salida = dict(project)
+    fuentes = []
+    for s in project.get("sources", []):
+        c = dict(s)
+        c.pop("tiene_original", None)
+        p = c.get("path")
+        if p and Path(p).is_absolute() and Path(pdir).resolve() not in Path(p).parents:
+            # El original vive fuera del proyecto: es de esta maquina.
+            fuera[c["id"]] = {"path": str(p)}
+            c["path"] = _rel(c.get("proxy") or p, pdir)
+        else:
+            c["path"] = _rel(p, pdir)
+        c["proxy"] = _rel(c.get("proxy"), pdir)
+        c["waveform"] = _rel(c.get("waveform"), pdir)
+        fs = c.get("filmstrip")
+        if isinstance(fs, dict) and fs.get("url"):
+            c["filmstrip"] = dict(fs, url=_rel(fs["url"], pdir))
+        elif isinstance(fs, str):
+            c["filmstrip"] = _rel(fs, pdir)
+        fuentes.append(c)
+    salida["sources"] = fuentes
+
+    if fuera:
+        local = util.read_json(pdir / LOCAL_FILE, {}) or {}
+        local.setdefault("sources", {}).update(fuera)
+        local["maquina"] = local.get("maquina") or os.environ.get("COMPUTERNAME")             or os.environ.get("HOSTNAME") or "?"
+        util.write_json(pdir / LOCAL_FILE, local)
+
+    util.write_json(pdir / "project.json", salida, backup=backup)
+    return salida
 
 
 # --------------------------------------------------------------- clips

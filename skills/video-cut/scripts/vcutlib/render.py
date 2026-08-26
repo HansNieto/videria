@@ -743,6 +743,26 @@ def run(cmd, total, on_progress=None, log_path=None, on_start=None):
     return err
 
 
+def _exigir_originales(project, draft):
+    """El final no puede salir de los proxies sin que nadie lo note.
+
+    En un proyecto compartido por git, quien solo revisa tiene los proxies y
+    no el material. Su render de borrador es legitimo; el final, no: saldria a
+    540p estirado y solo se veria al abrir el MP4.
+    """
+    if draft:
+        return
+    sin = [s.get("name") or s.get("id") for s in project.get("sources", [])
+           if s.get("tiene_original") is False]
+    if sin:
+        raise RuntimeError(
+            "esta máquina no tiene el material original de %d clips (%s%s). "
+            "El render final saldría de los proxies, a menor calidad. Usá "
+            "--draft para un borrador, o hacé el final donde estén los vídeos."
+            % (len(sin), ", ".join(str(x) for x in sin[:3]),
+               "…" if len(sin) > 3 else ""))
+
+
 def render(project, tl, project_dir, out_path, draft=False, range_=None,
            on_progress=None, on_stage=None, on_start=None):
     """Render completo. Devuelve un dict con lo que se hizo."""
@@ -752,6 +772,7 @@ def render(project, tl, project_dir, out_path, draft=False, range_=None,
         on_stage("texto")
     ass = pdir / "cache" / "burn.ass"
     res = dict(job.res)
+    _exigir_originales(project, draft)
     res["canvas"] = job.canvas
     if range_:
         # El ASS se genera con los tiempos del tramo, no de la secuencia entera.

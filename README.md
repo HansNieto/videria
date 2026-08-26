@@ -215,6 +215,33 @@ Lo caro es transcribir, generar los proxies y renderizar. Ajustar cortes, zooms
 y textos es un navegador reproduciendo vídeo de 540p: eso corre en cualquier
 portátil. Si uno de los dos tiene la máquina buena, el reparto sale solo.
 
+**Por git**, que es lo cómodo si van a trabajar seguido:
+
+```bash
+# en la máquina que tiene el material, una sola vez
+python $VCUT media --project "C:/proyecto" --proxy-all
+python $VCUT repo init --project "C:/proyecto" --usuario TU-USUARIO-GITHUB
+
+# el otro
+git clone <url> mi-revision
+python $VCUT studio --project mi-revision
+git add -A && git commit -m "ajusté los zooms" && git push
+
+# vos, cuando llega el aviso
+git -C "C:/proyecto" pull && python $VCUT render --project "C:/proyecto"
+```
+
+El repo lleva los proxies y los JSON, no el material original. `project.json` se
+commitea con rutas relativas y cada máquina guarda las suyas en `local.json`,
+que está ignorado — así el mismo archivo abre en las dos y nunca chocan. Al
+hacer push, un workflow abre un issue avisando a quien renderiza. Y si a una
+máquina le faltan los originales, el render final se niega en vez de sacar un
+MP4 de 540p estirado.
+
+## Editar entre dos máquinas, con paquetes
+
+Lo mismo sin GitHub de por medio: se mandan un archivo por donde quieran.
+
 ```bash
 # en la máquina fuerte
 python $VCUT run   "C:/videos"    --project "C:/proyecto"

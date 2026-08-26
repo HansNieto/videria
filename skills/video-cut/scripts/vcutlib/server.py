@@ -42,7 +42,7 @@ def create_app(project_dir):
         data = util.read_json(project_file)
         if data is None:
             abort(404, "No hay project.json en %s" % project_dir)
-        return data
+        return studio.resolve_paths(data, project_dir)
 
     def load_tl(project=None):
         return studio.load(project_dir, project or load())
@@ -100,7 +100,7 @@ def create_app(project_dir):
             if "name" in incoming:
                 current["name"] = incoming["name"]
             plan.rebuild(current)
-            util.write_json(project_file, current, backup=True)
+            studio.save_project(project_dir, current, backup=True)
         return jsonify({"ok": True, "stats": current["stats"]})
 
     # ---------------------------------------------------------- timeline
@@ -128,7 +128,7 @@ def create_app(project_dir):
                 if isinstance(incoming.get("groups"), list):
                     project["groups"] = incoming["groups"]
                 plan.rebuild(project)
-                util.write_json(project_file, project, backup=True)
+                studio.save_project(project_dir, project, backup=True)
             studio.migrate(tl, project)
             studio.save(project_dir, tl)
         return jsonify({"ok": True, "stats": project.get("stats"),

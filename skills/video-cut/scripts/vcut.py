@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from vcutlib import (disfluencias, analyze, exporters, ingest, media,  # noqa: E402
                      merge as mergemod, overlays,
-                     pack as packmod, plan, qa, render as rendermod,
+                     pack as packmod, plan, qa, render as rendermod, repo as repomod,
                      stickers as stickermod, stock, studio, subs as submod,
                      templates, transcribe, util)
 
@@ -40,6 +40,9 @@ def load_project(args):
     data = util.read_json(pfile)
     if data is None:
         raise SystemExit("No encuentro %s. Corre primero: vcut.py new / run" % pfile)
+    # Lo que esta en disco puede traer rutas relativas (proyecto compartido por
+    # git); aca dentro siempre se trabaja con las absolutas de esta maquina.
+    studio.resolve_paths(data, pdir)
     return pdir, pfile, data
 
 
@@ -392,6 +395,21 @@ def cmd_pack(args):
         on_step=lambda s: util.eprint("  %s" % s))})
 
 
+def cmd_repo(args):
+    """Compartir el proyecto por git en vez de mandarse paquetes."""
+    pdir = Path(args.project).expanduser().resolve()
+    if args.action == "estado":
+        out({"ok": True, **repomod.estado(pdir)})
+        return
+    if not args.usuario:
+        raise SystemExit("Falta --usuario: tu nombre de usuario de GitHub, "
+                         "que es a quien se avisa cuando llega una revisión.")
+    util.eprint("Preparando %s para git..." % pdir)
+    hechos = repomod.init(pdir, args.usuario, privado=not args.publico,
+                          crear=not args.sin_remoto, nombre=args.nombre)
+    out({"ok": True, **hechos})
+
+
 def cmd_merge(args):
     pdir = Path(args.project).expanduser().resolve()
     util.eprint("Trayendo la edición a %s..." % pdir)
@@ -682,6 +700,20 @@ def build_parser():
     sp.add_argument("--media", default=None,
                     help="Carpeta donde estan los videos, para reenlazarlos")
     sp.set_defaults(func=cmd_unpack)
+
+    sp = sub.add_parser("repo", help="Compartir el proyecto por git: uno monta, "
+                                    "el otro ajusta, el primero renderiza")
+    sp.add_argument("action", choices=["init", "estado"])
+    add_project(sp)
+    sp.add_argument("--usuario", default=None,
+                    help="Tu usuario de GitHub: a quien se avisa cuando "
+                         "llega una revision")
+    sp.add_argument("--nombre", default=None, help="Nombre del repo")
+    sp.add_argument("--publico", action="store_true",
+                    help="Repo publico (por defecto privado: son tus grabaciones)")
+    sp.add_argument("--sin-remoto", dest="sin_remoto", action="store_true",
+                    help="Solo preparar y commitear en local")
+    sp.set_defaults(func=cmd_repo)
 
     sp = sub.add_parser("merge", help="Trae la edicion que hizo otra maquina "
                                       "sin perder tus originales")

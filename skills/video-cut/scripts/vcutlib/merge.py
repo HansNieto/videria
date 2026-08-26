@@ -152,6 +152,7 @@ def merge_back(origen, project_dir, con_cortes=True, on_step=None):
     destino = util.read_json(pdir / "project.json")
     if destino is None:
         raise RuntimeError("no hay project.json en %s" % pdir)
+    studio.resolve_paths(destino, pdir)
 
     carpeta, temporal = _abrir(origen)
     try:
@@ -175,7 +176,7 @@ def merge_back(origen, project_dir, con_cortes=True, on_step=None):
             dec = carpeta / "decisions.json"
             if dec.exists():
                 shutil.copy2(dec, pdir / "decisions.json")
-        util.write_json(pdir / "project.json", destino, backup=True)
+        studio.save_project(pdir, destino, backup=True)
 
         # La capa creativa vuelve entera.
         rep["items"] = sum(len(t.get("items") or []) for t in tl_nuevo.get("tracks", []))
