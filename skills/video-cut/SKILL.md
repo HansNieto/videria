@@ -285,6 +285,9 @@ python $VCUT template list
 python $VCUT template apply --project "proj" --name tiktok
 python $VCUT template save  --project "proj" --name mi-estilo --label "Mi estilo"
 
+# MERGE — traer la edicion que hizo otra maquina (sin perder tus originales)
+python $VCUT merge "revisado.vcutpack" --project "proj" [--no-cortes]
+
 # PACK / UNPACK — pasarle el proyecto (o la herramienta) a otra persona
 python $VCUT pack   --project "proj" [--media] [--out algo.vcutpack]
 python $VCUT pack   --skill --out video-cut-studio.zip
@@ -453,6 +456,49 @@ comando explica dónde ponerla y no hace nada más.
 
 **Créditos.** Pexels no exige atribución pero la pide. Cada pasada deja
 `broll/CREDITOS.md` con el autor y el enlace de cada clip.
+
+## Editar entre dos máquinas
+
+Lo caro de este flujo es transcribir (minutos de CPU), generar los proxies y
+renderizar. Ajustar cortes, zooms y textos no cuesta nada: es un navegador
+reproduciendo vídeo de 540p. Así que se pueden repartir.
+
+```bash
+# 1. la máquina fuerte hace lo caro
+python $VCUT run   "C:/videos" --project "C:/proyecto"
+python $VCUT media --project "C:/proyecto" --proxy-all      # proxy para todos
+
+# 2. y arma el paquete de revisión: proxies, sin material original
+python $VCUT pack  --project "C:/proyecto" --preview --out "revisar.vcutpack"
+
+# 3. la otra máquina abre, ajusta y devuelve
+python $VCUT unpack "revisar.vcutpack" --project "C:/mi-revision"
+python $VCUT studio --project "C:/mi-revision"
+python $VCUT pack   --project "C:/mi-revision" --out "revisado.vcutpack"
+
+# 4. la primera máquina trae los cambios y renderiza en calidad real
+python $VCUT merge  "revisado.vcutpack" --project "C:/proyecto"
+python $VCUT render --project "C:/proyecto"
+```
+
+Medido en un proyecto de 2:43 con 14 tomas: **743 MB de originales → 23 MB de
+paquete**, y de vuelta 15 MB.
+
+**Por qué `merge` y no reemplazar el proyecto.** El que vuelve apunta a los
+proxies. Copiarlo entero encima dejaría el render final saliendo de vídeo de
+540p sin que nadie lo notara hasta ver el MP4. Así que del paquete solo entran
+las decisiones —los `segments` y el `timeline.json` completo—; las `sources`
+son siempre las de esta máquina. Con `--no-cortes` vuelve solo la capa
+creativa y tus cortes se quedan como estaban.
+
+Los archivos que la otra persona haya sumado (un sonido, un b-roll) se copian a
+`assets/recibidos/`, y los que ya tenías se reconocen por nombre y no se
+duplican. Antes de escribir nada, `project.json` y `timeline.json` quedan con
+su `.bak`.
+
+**Lo que la otra máquina no puede hacer**: el render final en calidad real, ni
+`broll` sin su propia clave de Pexels. El botón *Renderizar* del studio le
+sacaría el MP4 desde los proxies — sirve para mirarlo, no para publicar.
 
 ## Recursos gráficos y stickers
 

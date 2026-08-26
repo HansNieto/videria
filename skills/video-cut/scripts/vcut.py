@@ -17,7 +17,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from vcutlib import (disfluencias, analyze, exporters, ingest, media, overlays,  # noqa: E402
+from vcutlib import (disfluencias, analyze, exporters, ingest, media,  # noqa: E402
+                     merge as mergemod, overlays,
                      pack as packmod, plan, qa, render as rendermod,
                      stickers as stickermod, stock, studio, subs as submod,
                      templates, transcribe, util)
@@ -383,11 +384,20 @@ def cmd_pack(args):
     pdir, pfile, project = load_project(args)
     target = Path(args.out).expanduser() if args.out else \
         (pdir / "exports" / ("%s.vcutpack" % (project.get("name") or pdir.name)))
-    util.eprint("Empaquetando el proyecto%s..."
-                % (" con los videos" if args.media else ""))
+    que = " con los videos" if args.media else (
+        " para revisar (proxies, sin material)" if args.preview else "")
+    util.eprint("Empaquetando el proyecto%s..." % que)
     out({"ok": True, **packmod.pack_project(
-        pdir, target, with_media=args.media,
+        pdir, target, with_media=args.media, preview=args.preview,
         on_step=lambda s: util.eprint("  %s" % s))})
+
+
+def cmd_merge(args):
+    pdir = Path(args.project).expanduser().resolve()
+    util.eprint("Trayendo la edición a %s..." % pdir)
+    rep = mergemod.merge_back(args.origen, pdir, con_cortes=not args.no_cortes,
+                              on_step=lambda s: util.eprint("  %s" % s))
+    out({"ok": True, **rep})
 
 
 def cmd_unpack(args):
@@ -659,6 +669,9 @@ def build_parser():
     sp.add_argument("--media", action="store_true",
                     help="Incluir los videos originales (el paquete pesara igual "
                          "que el material)")
+    sp.add_argument("--preview", action="store_true",
+                    help="Paquete de revision: proxies en vez de originales, "
+                         "para que otra maquina ajuste sin el material")
     sp.add_argument("--skill", action="store_true",
                     help="Empaquetar la herramienta en vez de un proyecto")
     sp.set_defaults(func=cmd_pack)
@@ -669,6 +682,14 @@ def build_parser():
     sp.add_argument("--media", default=None,
                     help="Carpeta donde estan los videos, para reenlazarlos")
     sp.set_defaults(func=cmd_unpack)
+
+    sp = sub.add_parser("merge", help="Trae la edicion que hizo otra maquina "
+                                      "sin perder tus originales")
+    sp.add_argument("origen", help="El .vcutpack que vuelve, o su carpeta")
+    add_project(sp)
+    sp.add_argument("--no-cortes", action="store_true",
+                    help="Traer solo la capa creativa y dejar tus cortes")
+    sp.set_defaults(func=cmd_merge)
 
     sp = sub.add_parser("render", help="Quema todo a un MP4 listo para subir")
     add_project(sp)

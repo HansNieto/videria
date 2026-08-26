@@ -34,6 +34,11 @@ PROJECT_FILES = ["project.json", "timeline.json", "decisions.json",
                  "review.md", "qa.md", "disfluencias.md"]
 PROJECT_DIRS = ["transcripts", "fonts"]
 
+# Lo que hace falta para que el studio se vea bien sin el material original:
+# el video de preview y los dibujos de la pista. Pesan ~1% de los originales.
+PREVIEW_DIRS = [("cache/proxy", "proxy"), ("cache/waveform", "waveform"),
+                ("cache/filmstrip", "filmstrip")]
+
 VIDEO_EXT = {".mp4", ".mov", ".mkv", ".avi", ".m4v", ".mts", ".m2ts", ".webm",
              ".wmv", ".mpg", ".mpeg", ".3gp", ".flv", ".ts"}
 
@@ -75,7 +80,8 @@ def _seq_files(seq):
     return files
 
 
-def pack_project(project_dir, out_path, with_media=False, on_step=None):
+def pack_project(project_dir, out_path, with_media=False, preview=False,
+                 on_step=None):
     """Escribe el .zip del proyecto y devuelve el informe."""
     pdir = Path(project_dir).resolve()
     project = util.read_json(pdir / "project.json")
@@ -91,6 +97,10 @@ def pack_project(project_dir, out_path, with_media=False, on_step=None):
         "name": project.get("name") or pdir.name,
         "origin": str(pdir),
         "has_media": bool(with_media),
+        # Un paquete de revision: sin material original, pero con todo lo que
+        # el studio necesita para verse. Quien lo abre ajusta y devuelve; el
+        # render final se hace en la maquina que tiene los originales.
+        "preview": bool(preview),
         "sequence": project.get("sequence"),
         "stats": project.get("stats"),
         "media": [],
@@ -186,6 +196,28 @@ def pack_project(project_dir, out_path, with_media=False, on_step=None):
                 entry["packed"] = rel
             manifest["media"].append(entry)
 
+        # ------- preview: proxies, ondas y miniaturas
+        if preview:
+            faltan = [s["name"] for s in project.get("sources", [])
+                      if not (s.get("proxy") and Path(s["proxy"]).exists())]
+            if faltan:
+                manifest["warnings"].append(
+                    "sin proxy: %s. Genéralos con `vcut media --proxy-all` "
+                    "o esos clips se verán en negro." % ", ".join(faltan[:6]))
+            for origen, destino in PREVIEW_DIRS:
+                base = pdir / origen
+                if not base.is_dir():
+                    continue
+                n = 0
+                for f in sorted(base.rglob("*")):
+                    if f.is_file():
+                        z.write(f, "preview/%s/%s" % (destino, f.name))
+                        n += 1
+                if n and on_step:
+                    on_step("%s (%d archivos)" % (destino, n))
+                manifest["assets"]["preview/%s" % destino] = {"kind": "preview",
+                                                              "files": n}
+
         z.writestr("timeline.json", util.json_dumps(tl_out))
         z.writestr(MANIFEST, util.json_dumps(manifest))
         z.writestr("LEEME.md", _readme(manifest))
@@ -196,6 +228,8 @@ def pack_project(project_dir, out_path, with_media=False, on_step=None):
 
 
 def _readme(m):
+    if m.get("preview"):
+        return _readme_preview(m)
     return """# %s
 
 Paquete de vcut studio (v%d), creado el %s.
@@ -231,6 +265,52 @@ se veran en negro hasta que aparezcan los archivos.
        "" if m["has_media"] else '--media "C:/ruta/a/los/videos"')
 
 
+def _readme_preview(m):
+    return """# %s — paquete de revision
+
+Creado el %s. **No trae los videos originales**: trae los proxies, que es el
+mismo material a menor resolucion. Pesa unas 50 veces menos y el editor se ve
+igual.
+
+Con esto podes ajustar todo —cortes, zooms, textos, subtitulos, transiciones,
+sonidos— sin necesitar una maquina potente: aca no se transcribe ni se
+generan proxies, que es lo que cuesta. El render final lo hace quien tiene los
+originales.
+
+## Abrirlo
+
+```bash
+python vcut.py unpack "este-archivo.vcutpack" --project "C:/ruta/mi-revision"
+python vcut.py studio --project "C:/ruta/mi-revision"
+```
+
+No hace falta `--media`: los proxies ya vienen dentro y se enlazan solos.
+
+## Devolverlo
+
+Cuando termines, `Ctrl+S` en el studio y:
+
+```bash
+python vcut.py pack --project "C:/ruta/mi-revision" --out "revisado.vcutpack"
+```
+
+Eso deja un paquete liviano con tus cambios. Quien te lo mando lo mete en su
+proyecto con:
+
+```bash
+python vcut.py merge "revisado.vcutpack" --project "C:/su/proyecto"
+```
+
+Sus originales no se tocan: del paquete solo entran las decisiones (los cortes
+y la capa creativa), nunca las rutas del material.
+
+## Un aviso
+
+El boton **Renderizar** aca sacaria un MP4 desde los proxies, o sea a menor
+calidad. Sirve para verlo, no para publicar. El bueno lo saca la otra maquina.
+""" % (m["name"], m["created_at"][:10])
+
+
 # ------------------------------------------------------------ abrir
 
 def unpack_project(zip_path, project_dir, media_dir=None, on_step=None):
@@ -256,8 +336,39 @@ def unpack_project(zip_path, project_dir, media_dir=None, on_step=None):
            "assets": 0, "avisos": list(manifest.get("warnings") or [])}
 
     # ------- originales
+    es_preview = bool(manifest.get("preview"))
+    project["preview_only"] = es_preview
     index = _media_index(media_dir) if media_dir else {}
     for s in project.get("sources", []):
+        # En un paquete de revision el proxy hace de material: el studio
+        # reproduce `proxy or path`, asi que enganchando los dos al mismo
+        # archivo todo funciona sin tener los originales delante.
+        if es_preview:
+            prox = pdir / "preview" / "proxy" / ("%s.mp4" % s["id"])
+            if prox.exists():
+                s["origen"] = s.get("path")
+                s["path"] = str(prox.resolve())
+                s["proxy"] = str(prox.resolve())
+                onda = pdir / "preview" / "waveform" / ("%s.bin" % s["id"])
+                if onda.exists():
+                    s["waveform"] = str(onda.resolve())
+                tira = pdir / "preview" / "filmstrip" / ("%s.jpg" % s["id"])
+                if tira.exists():
+                    # `filmstrip` es un dict con la geometria de la tira (cols,
+                    # tw, interval...). Solo cambia donde vive el JPG: si se
+                    # reemplaza entero, la timeline no sabe como recortarlo.
+                    meta = s.get("filmstrip")
+                    if isinstance(meta, dict):
+                        s["filmstrip"] = dict(meta, url=str(tira.resolve()))
+                    else:
+                        s["filmstrip"] = str(tira.resolve())
+                rep["enlazados"].append({"id": s["id"], "name": s["name"],
+                                         "desde": "el proxy del paquete"})
+                continue
+            rep["sin_enlazar"].append({"id": s["id"], "name": s["name"],
+                                       "motivo": "el paquete no trae su proxy"})
+            continue
+
         packed = next((m.get("packed") for m in manifest.get("media", [])
                        if m["id"] == s["id"]), None)
         if packed and (pdir / packed).exists():

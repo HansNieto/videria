@@ -209,13 +209,41 @@ La documentación de verdad está adentro de cada skill:
 
 ---
 
-## Compartir un proyecto
+## Editar entre dos máquinas
+
+Lo caro es transcribir, generar los proxies y renderizar. Ajustar cortes, zooms
+y textos es un navegador reproduciendo vídeo de 540p: eso corre en cualquier
+portátil. Si uno de los dos tiene la máquina buena, el reparto sale solo.
+
+```bash
+# en la máquina fuerte
+python $VCUT run   "C:/videos"    --project "C:/proyecto"
+python $VCUT media --project "C:/proyecto" --proxy-all
+python $VCUT pack  --project "C:/proyecto" --preview --out revisar.vcutpack
+
+# en la otra: abre, ajusta todo, y devuelve
+python $VCUT unpack revisar.vcutpack --project "C:/mi-revision"
+python $VCUT studio --project "C:/mi-revision"
+python $VCUT pack   --project "C:/mi-revision" --out revisado.vcutpack
+
+# de vuelta en la fuerte: trae los cambios y renderiza en calidad real
+python $VCUT merge  revisado.vcutpack --project "C:/proyecto"
+python $VCUT render --project "C:/proyecto"
+```
+
+En un proyecto de 2:43 con 14 tomas eso son **743 MB de material contra 23 MB
+de paquete**. `merge` trae solo las decisiones —los cortes y la capa creativa—,
+nunca las rutas: tus originales siguen siendo los originales, y el render final
+no sale de los proxies por accidente.
+
+## Compartir un proyecto entero
 
 ```bash
 python $VCUT pack --project "C:/ruta/proyecto" --out proyecto.vcutpack
 python $VCUT unpack proyecto.vcutpack --project "C:/nuevo/proyecto" --media "C:/donde/estan/los/videos"
 ```
 
-El paquete lleva el timeline, la transcripción, las fuentes y los overlays, pero
-no los vídeos: al abrirlo se vuelven a enlazar buscándolos por nombre en la
-carpeta que le indiques. Lo que no encuentra lo reporta; no se lo inventa.
+Sin `--preview`, el paquete lleva el timeline, la transcripción, las fuentes y
+los overlays, pero no los vídeos: al abrirlo se vuelven a enlazar buscándolos
+por nombre en la carpeta que le indiques. Lo que no encuentra lo reporta; no se
+lo inventa.
