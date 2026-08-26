@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>vcut — editor de cortes</title>
+<link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+
+<div class="loading" id="loading">
+  <div class="spin"></div>
+  <div>Cargando proyecto…</div>
+</div>
+
+<div id="app" class="hidden">
+
+  <header class="topbar">
+    <div class="brand">✂ vcut</div>
+    <div class="proj">
+      <b id="projName">—</b>
+      <span id="projStats"></span>
+    </div>
+    <div class="spacer"></div>
+    <div class="actions">
+      <button class="icon ghost" id="btnUndo" title="Deshacer (Ctrl+Z)">↶</button>
+      <button class="icon ghost" id="btnRedo" title="Rehacer (Ctrl+Shift+Z)">↷</button>
+      <select id="exportFmt" title="Formato de exportación">
+        <option value="fcpxml">FCPXML (Resolve / FCP / Premiere)</option>
+        <option value="edl">EDL (CMX3600)</option>
+        <option value="srt">SRT (subtítulos conformados)</option>
+        <option value="csv">CSV (lista de cortes)</option>
+        <option value="cutlist">JSON (lista de cortes)</option>
+        <option value="ffmpeg">Script ffmpeg (-c copy)</option>
+      </select>
+      <button id="btnExport">Exportar</button>
+      <button class="primary" id="btnSave"><span class="dot" id="saveDot"></span>Guardar</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="stage">
+      <div class="video-wrap" id="videoWrap">
+        <div class="stage-empty" id="stageEmpty">Sin clips activos</div>
+        <div class="badge-src" id="badgeSrc"></div>
+        <div class="badge-live hidden" id="badgeLive">escuchando toma</div>
+      </div>
+      <div class="transport">
+        <button class="icon" id="btnStart" title="Inicio (Home)">⏮</button>
+        <button class="icon" id="btnPrevClip" title="Clip anterior (←←)">◀◀</button>
+        <button class="icon primary" id="btnPlay" title="Reproducir / pausar (Espacio)">▶</button>
+        <button class="icon" id="btnNextClip" title="Clip siguiente (→→)">▶▶</button>
+        <button class="icon" id="btnEnd" title="Final (End)">⏭</button>
+        <span class="tc"><b id="tCur">00:00:00.00</b> <span class="muted">/</span> <span id="tTotal" class="muted">00:00:00.00</span></span>
+        <div class="spacer"></div>
+        <label class="chk"><input type="checkbox" id="showOff"> ver descartes</label>
+        <label class="zoom">zoom <input type="range" id="zoom" min="4" max="400" step="1" value="60"></label>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-head">
+        <div class="tabs">
+          <button class="tab active" data-tab="transcript">Transcripción</button>
+          <button class="tab" data-tab="takes">Tomas <span id="nGroups" class="muted"></span></button>
+          <button class="tab" data-tab="clip">Clip</button>
+          <button class="tab" data-tab="help">?</button>
+        </div>
+        <input type="search" id="search" placeholder="Buscar en la transcripción…">
+      </div>
+      <div class="panel-body" id="tab-transcript"></div>
+      <div class="panel-body hidden" id="tab-takes"></div>
+      <div class="panel-body hidden" id="tab-clip"></div>
+      <div class="panel-body hidden" id="tab-help">
+        <div class="hint">
+          <p><b>Idea</b>: acá no se renderiza nada. Ajustás los cortes y el proyecto
+          exporta un timeline que apunta a los archivos originales, así no perdés
+          calidad ni tenés que re-exportar.</p>
+          <p><b>Timeline</b><br>
+          Arrastrá el <i>borde</i> de un clip para recortar · arrastrá el <i>cuerpo</i>
+          para reordenar · doble clic para apagar/encender.</p>
+          <p><b>Transcripción</b><br>
+          Clic en una palabra salta ahí. Clic derecho en una palabra:
+          empezar / terminar / dividir en ese punto.</p>
+          <p><b>Atajos</b><br>
+          <kbd>Espacio</kbd> play · <kbd>←</kbd><kbd>→</kbd> un frame ·
+          <kbd>Shift</kbd>+<kbd>←</kbd><kbd>→</kbd> 1 s ·
+          <kbd>,</kbd><kbd>.</kbd> clip anterior/siguiente<br>
+          <kbd>S</kbd> dividir en el cursor · <kbd>D</kbd> apagar/encender ·
+          <kbd>[</kbd> entrada aquí · <kbd>]</kbd> salida aquí<br>
+          <kbd>Ctrl</kbd>+<kbd>Z</kbd> deshacer · <kbd>Ctrl</kbd>+<kbd>S</kbd> guardar ·
+          <kbd>+</kbd><kbd>−</kbd> zoom</p>
+          <p><b>Tomas repetidas</b><br>
+          En la pestaña <i>Tomas</i> están los grupos que el análisis detectó.
+          El radio elige cuál queda; ▶ escucha esa toma sin tocar el timeline.</p>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="timeline-wrap">
+    <div class="tl-bar">
+      <span id="tlInfo">—</span>
+      <div class="spacer"></div>
+      <span class="muted" id="tlHint">arrastrá bordes para recortar · cuerpo para reordenar</span>
+    </div>
+    <div class="tl-scroll" id="tlScroll">
+      <div class="tl-inner" id="tlInner">
+        <canvas id="ruler"></canvas>
+        <div class="track" id="track"></div>
+        <div class="playhead" id="playhead"></div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<div id="toast"></div>
+<script src="/assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>01 — Una semana sin ti</title>
+<link rel="stylesheet" href="./lib/overlay.css">
+</head>
+<body>
+<!-- Frase 1: "¿Qué pasaría con tu negocio si mañana no pudieras trabajar durante una semana?"
+     Estilo 3D suave: masa con volumen, sin contornos. -->
+<div id="stage" class="s-soft3d">
+  <svg class="canvas" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <g class="frame pos-center">
+      <g class="module" transform="translate(960,644) scale(2.3)">
+
+        <!-- dueño detrás del mostrador -->
+        <g class="at" transform="translate(0,-131) scale(1.3)">
+          <g class="o owner">
+            <circle class="solid" cx="0" cy="-36" r="19"/>
+            <ellipse class="spec" cx="-7" cy="-43" rx="9" ry="6"/>
+            <path class="solid accent" d="M-30,34 V23 A30,30 0 0 1 30,23 V34 Z"/>
+          </g>
+        </g>
+
+        <!-- mostrador (después del dueño: lo tapa por delante) -->
+        <g class="at" transform="translate(0,-120) scale(1.6)">
+          <g class="o counter">
+            <rect class="solid glass" x="-88" y="24" width="176" height="32" rx="9"/>
+            <rect class="solid" x="-96" y="14" width="192" height="14" rx="7"/>
+            <ellipse class="spec" cx="-42" cy="18" rx="38" ry="5"/>
+          </g>
+        </g>
+
+        <!-- interrogante: el sistema se queda sin respuesta -->
+        <g class="at" transform="translate(0,-176)">
+          <g class="o ask">
+            <circle class="solid warn" r="36"/>
+            <ellipse class="spec" cx="-11" cy="-14" rx="16" ry="10"/>
+            <text class="num t-ink" y="15" text-anchor="middle"
+                  style="font-size:46px">?</text>
+          </g>
+        </g>
+
+        <!-- 7 días -->
+        <g class="at" transform="translate(-228,28)"><g class="o day">
+          <rect class="solid glass dayblock" x="-32" y="-32" width="64" height="64" rx="15"/>
+          <ellipse class="spec" cx="-9" cy="-16" rx="15" ry="9"/>
+          <rect class="solid ok bar" x="-16" y="7" width="32" height="10" rx="5"/>
+        </g></g>
+        <g class="at" transform="translate(-152,28)"><g class="o day">
+          <rect class="solid glass dayblock" x="-32" y="-32" width="64" height="64" rx="15"/>
+          <ellipse class="spec" cx="-9" cy="-16" rx="15" ry="9"/>
+          <rect class="solid ok bar" x="-16" y="7" width="32" height="10" rx="5"/>
+        </g></g>
+        <g class="at" transform="translate(-76,28)"><g class="o day">
+          <rect class="solid glass dayblock" x="-32" y="-32" width="64" height="64" rx="15"/>
+          <ellipse class="spec" cx="-9" cy="-16" rx="15" ry="9"/>
+          <rect class="solid ok bar" x="-16" y="7" width="32" height="10" rx="5"/>
+        </g></g>
+        <g class="at" transform="translate(0,28)"><g class="o day">
+          <rect class="solid glass dayblock" x="-32" y="-32" width="64" height="64" rx="15"/>
+          <ellipse class="spec" cx="-9" cy="-16" rx="15" ry="9"/>
+          <rect class="solid ok bar" x="-16" y="7" width="32" height="10" rx="5"/>
+        </g></g>
+        <g class="at" transform="translate(76,28)"><g class="o day">
+          <rect class="solid glass dayblock" x="-32" y="-32" width="64" height="64" rx="15"/>
+          <ellipse class="spec" cx="-9" cy="-16" rx="15" ry="9"/>
+          <rect class="solid ok bar" x="-16" y="7" width="32" height="10" rx="5"/>
+        </g></g>
+        <g class="at" transform="translate(152,28)"><g class="o day">
+          <rect class="solid glass dayblock" x="-32" y="-32" width="64" height="64" rx="15"/>
+          <ellipse class="spec" cx="-9" cy="-16" rx="15" ry="9"/>
+          <rect class="solid ok bar" x="-16" y="7" width="32" height="10" rx="5"/>
+        </g></g>
+        <g class="at" transform="translate(228,28)"><g class="o day">
+          <rect class="solid glass dayblock" x="-32" y="-32" width="64" height="64" rx="15"/>
+          <ellipse class="spec" cx="-9" cy="-16" rx="15" ry="9"/>
+          <rect class="solid ok bar" x="-16" y="7" width="32" height="10" rx="5"/>
+        </g></g>
+
+        <g class="at" transform="translate(0,112)">
+          <g class="o label7">
+            <text class="tag" text-anchor="middle">7 DÍAS</text>
+          </g>
+        </g>
+
+      </g>
+    </g>
+  </svg>
+</div>
+
+<script src="./lib/gsap.min.js"></script>
+<script src="./lib/CustomEase.min.js"></script>
+<script src="./lib/overlay.js"></script>
+<script>
+/* Entra en "pasaría" · sale tras "semana" */
+const BEATS = {
+  in:    0.00,   // "pasaría con tu negocio"
+  days:  1.10,   // "negocio si"
+  label: 1.42,
+  gone:  2.00,   // "mañana no pudieras trabajar"
+  dark:  3.10,   // "durante una semana"  ← cascada de apagado
+  peak:  4.15,   // nadie responde
+  exit:  4.85
+};
+
+Overlay.scene({
+  id: '01_semana_sin_ti',
+  build(tl) {
+    gsap.set('.o', { autoAlpha: 0 });
+
+    /* ENTRADA — el negocio funcionando */
+    tl.fromTo('.counter', { autoAlpha: 0, yPercent: 14, scale: .97 },
+                          { autoAlpha: 1, yPercent: 0, scale: 1, duration: .6 }, BEATS.in)
+      .fromTo('.owner',   { autoAlpha: 0, yPercent: 22, scale: .94 },
+                          { autoAlpha: 1, yPercent: 0, scale: 1, duration: .55 }, BEATS.in + .14)
+      .fromTo('.day',     { autoAlpha: 0, scale: .72, y: 14 },
+                          { autoAlpha: 1, scale: 1, y: 0, duration: .42,
+                            stagger: { each: .065, from: 'start' } }, BEATS.days)
+      .fromTo('.label7',  { autoAlpha: 0, y: 12 },
+                          { autoAlpha: 1, y: 0, duration: .4 }, BEATS.label);
+
+    /* DESARROLLO — el dueño desaparece; el mostrador acusa el vacío */
+    tl.to('.owner', { autoAlpha: 0, yPercent: 10, scale: .93,
+                      duration: .5, ease: 'power2.in' }, BEATS.gone)
+      .to('.counter', { scale: .985, duration: .22, yoyo: true, repeat: 1,
+                        ease: 'power2.out' }, BEATS.gone + .3);
+
+    /* CASCADA — los días dejan de funcionar uno tras otro */
+    tl.to('.bar', { scaleX: 0, transformOrigin: '50% 50%', duration: .3,
+                    ease: 'power2.in', stagger: .11 }, BEATS.dark)
+      .to('.dayblock', { opacity: .3, duration: .35, stagger: .11 }, BEATS.dark + .04)
+      .to('.spec', { opacity: .25, duration: .35, stagger: .11 }, BEATS.dark + .04)
+      .to('.day', { y: 5, duration: .28, ease: 'power2.in', stagger: .11 }, BEATS.dark + .06);
+
+    /* CLÍMAX — la pregunta queda en el aire */
+    tl.fromTo('.ask', { autoAlpha: 0, scale: .5, y: 10 },
+                      { autoAlpha: 1, scale: 1, y: 0, duration: .5, ease: 'settle' }, BEATS.peak)
+      .to('.label7 text', { fill: '#FFB020', duration: .3 }, BEATS.peak + .06)
+      .to('.counter', { x: 3, duration: .07, yoyo: true, repeat: 3,
+                        ease: 'none' }, BEATS.peak + .1);
+
+    /* SALIDA — se contrae hacia el centro */
+    tl.to('.ask',    { autoAlpha: 0, scale: .82, duration: .26, ease: 'swift' }, BEATS.exit)
+      .to('.day',    { autoAlpha: 0, scale: .86, duration: .3, ease: 'swift',
+                       stagger: { each: .035, from: 'edges' } }, BEATS.exit + .04)
+      .to('.label7', { autoAlpha: 0, y: -8, duration: .28, ease: 'swift' }, BEATS.exit + .08)
+      .to('.counter',{ autoAlpha: 0, scale: .96, yPercent: -6,
+                       duration: .34, ease: 'swift' }, BEATS.exit + .12);
+  }
+});
+</script>
+</body>
+</html>

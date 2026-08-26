@@ -1,0 +1,53 @@
+{
+  "vcut_template": 1,
+  "name": "tiktok",
+  "label": "TikTok vertical",
+  "hint": "9:16, subtitulos apilados con palabra resaltada, zoom en cada clip y un golpe cada tres cortes.",
+  "canvas": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "bg": "#000000"
+  },
+  "render": {
+    "encoder": "auto",
+    "quality": 20,
+    "loudnorm": true,
+    "loudnorm_i": -14.0,
+    "fit": "cover",
+    "draft_height": 720,
+    "audio_bitrate": "192k"
+  },
+  "styles": null,
+  "recipe": {
+    "subs": {
+      "style": "capcut",
+      "track": "t_sub"
+    },
+    "zooms": {
+      "pattern": [
+        "push_lento",
+        "punch_in",
+        "ken_burns",
+        "reencuadre",
+        "pull_out",
+        "latido"
+      ],
+      "min_dur": 1.0
+    },
+    "transitions": {
+      "every": 3,
+      "types": [
+        "punch_zoom",
+        "whip",
+        "flash"
+      ],
+      "dur": 0.28,
+      "sfx": true
+    },
+    "overlays": {
+      "place": true,
+      "y": 0.3
+    }
+  }
+}

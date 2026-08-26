@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="360"
+     viewBox="0 0 360 360">
+<g style="filter: drop-shadow(0 6px 10px rgba(11,18,32,0.55));">
+  <path d="M46 268 L138 176 L196 234 L316 114" stroke="#2FD08A"
+     stroke-width="26" fill="none" stroke-linecap="round"
+     stroke-linejoin="round"/>
+  <path d="M244 108 L322 108 L322 186" stroke="#2FD08A" stroke-width="26"
+     fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

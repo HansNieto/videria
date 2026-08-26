@@ -1,0 +1,45 @@
+{
+  "vcut_template": 1,
+  "name": "limpio",
+  "label": "Limpio",
+  "hint": "Solo subtitulos y un empuje lento. Sin transiciones ni golpes: para hablar a camara sin adornos.",
+  "canvas": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "bg": "#000000"
+  },
+  "render": {
+    "encoder": "auto",
+    "quality": 19,
+    "loudnorm": true,
+    "loudnorm_i": -14.0,
+    "fit": "cover",
+    "draft_height": 720,
+    "audio_bitrate": "192k"
+  },
+  "styles": null,
+  "recipe": {
+    "subs": {
+      "style": "capcut",
+      "track": "t_sub"
+    },
+    "zooms": {
+      "pattern": [
+        "push_lento",
+        "reencuadre"
+      ],
+      "min_dur": 1.5
+    },
+    "transitions": {
+      "every": 0,
+      "types": [],
+      "dur": 0.28,
+      "sfx": false
+    },
+    "overlays": {
+      "place": false,
+      "y": 0.3
+    }
+  }
+}

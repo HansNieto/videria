@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="360"
+     viewBox="0 0 360 360">
+<g style="filter: drop-shadow(0 6px 10px rgba(11,18,32,0.55));">
+  <rect x="68" y="132" width="224" height="96" rx="48"
+        fill="#5B8CFF"/>
+  <text x="180" y="196" text-anchor="middle" fill="#0B1220"
+        font-family="Inter Black, Arial Black, Arial, sans-serif"
+        font-size="52" font-weight="900" letter-spacing="1.5">NUEVO</text>
+</g>
+</svg>

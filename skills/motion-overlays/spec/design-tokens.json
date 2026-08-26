@@ -1,0 +1,289 @@
+{
+  "$comment": "Tokens del sistema visual de motion-overlays. Espejo legible por máquina de assets/overlay.css y references/design-system.md. Fuente de verdad para agentes que generen o validen escenas.",
+  "version": "1.3.0",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "safeMargin": 96,
+    "background": "transparent",
+    "module": {
+      "widthRange": [
+        1150,
+        1350
+      ],
+      "heightRange": [
+        650,
+        850
+      ],
+      "maxWidth": 1450,
+      "anchor": "translate(960,540)",
+      "note": "El contenido vive en un grupo único para poder escalarlo y reposicionarlo como una pieza en el editor."
+    },
+    "positions": {
+      "pos-center": [
+        0,
+        0
+      ],
+      "pos-left": [
+        -330,
+        0
+      ],
+      "pos-right": [
+        330,
+        0
+      ],
+      "pos-top": [
+        0,
+        -170
+      ],
+      "pos-bottom": [
+        0,
+        170
+      ],
+      "pos-left-top": [
+        -330,
+        -150
+      ]
+    }
+  },
+  "density": {
+    "$comment": "Lo que más se corrige en revisión. El overlay se ve suelto o compacto según la relación hueco/objeto, no según el tamaño del lienzo.",
+    "maxGapToObjectRatio": 0.6,
+    "heroObjectDiameter": [
+      200,
+      260
+    ],
+    "secondaryObjectDiameter": [
+      120,
+      180
+    ],
+    "siblingSpacingRatio": [
+      0.1,
+      0.2
+    ],
+    "exception": "Un hueco grande solo se justifica si algo lo recorre (una moneda, un pulso). Si nada lo cruza, sobra."
+  },
+  "color": {
+    "line": "rgba(255,255,255,.94)",
+    "line2": "rgba(255,255,255,.55)",
+    "line3": "rgba(255,255,255,.30)",
+    "muted": "rgba(255,255,255,.58)",
+    "ink": "#0B1220",
+    "accent": "#5B8CFF",
+    "accent2": "#8B7CFF",
+    "ok": "#2FD08A",
+    "warn": "#FFB020",
+    "bad": "#FF5D5D",
+    "gold": "#F2C14E",
+    "fills": {
+      "panel": "rgba(10,14,24,.55)",
+      "soft": "rgba(255,255,255,.06)",
+      "accent": "rgba(91,140,255,.16)",
+      "ok": "rgba(47,208,138,.16)",
+      "bad": "rgba(255,93,93,.16)",
+      "warn": "rgba(255,176,32,.16)",
+      "gold": "rgba(242,193,78,.16)"
+    },
+    "semantics": {
+      "accent": "el actor central o el flujo normal",
+      "ok": "resuelto, funcionando",
+      "warn": "bloqueado, identificado, en duda",
+      "bad": "fallo",
+      "gold": "dinero, exclusivamente"
+    },
+    "rule": "Base blanca + un acento por escena. Los semánticos solo cuando el guion habla de estado. Máximo 2 colores además del base."
+  },
+  "stroke": {
+    "$comment": "Grosores en px del LIENZO 1920, no en unidades locales del SVG. overlay.js mide la escala real del grupo .module con getCTM() y la publica en --mscale; las reglas .st dividen por ella. Así el valor declarado es el renderizado aunque el modulo lleve scale().",
+    "unit": "px de lienzo 1920",
+    "thin": 4,
+    "base": 6,
+    "hero": 8,
+    "rail": 14,
+    "perStyle": {
+      "s-line": {
+        "thin": 4,
+        "base": 6,
+        "hero": 8
+      },
+      "s-tech": {
+        "thin": 3.5,
+        "base": 5,
+        "hero": 7
+      },
+      "s-bold": {
+        "thin": 7,
+        "base": 11,
+        "hero": 15,
+        "rail": 18
+      },
+      "s-hand": {
+        "thin": 5,
+        "base": 7,
+        "hero": 10
+      },
+      "s-iso": {
+        "thin": 4,
+        "base": 5.5,
+        "hero": 7
+      },
+      "s-soft3d": {
+        "thin": 4,
+        "base": 5,
+        "hero": 6.5,
+        "rail": 16
+      },
+      "s-flat": {
+        "thin": 6,
+        "base": 9,
+        "hero": 12
+      }
+    },
+    "minimums": {
+      "$comment": "Medido renderizando el frame a la escala de cada soporte sobre un fondo con zona clara, zona oscura y textura fina.",
+      "landscape1080p": 6,
+      "mobileOrVertical": 9,
+      "minOpacityForReadableElements": 0.55
+    },
+    "linecap": "round",
+    "linejoin": "round",
+    "rules": [
+      "En un elemento con .st el color y el grosor van por clase, nunca por atributo (el CSS gana).",
+      "Nunca escribas stroke-width literal: usa .st / .st.thin / .st.hero, o calc(N / var(--mscale)) si necesitas uno propio.",
+      "No uses vector-effect:non-scaling-stroke: rompe drawSVG (ver references/pitfalls.md §10)."
+    ]
+  },
+  "radius": {
+    "s": 8,
+    "m": 14,
+    "l": 22
+  },
+  "typography": {
+    "family": "system-ui, 'Segoe UI Variable Display', 'Segoe UI', Inter, Roboto, Arial, sans-serif",
+    "mono": "ui-monospace, 'Cascadia Mono', Consolas, 'SF Mono', monospace",
+    "roles": {
+      "num": {
+        "size": 96,
+        "weight": 700,
+        "tracking": "-0.02em",
+        "tabular": true
+      },
+      "num.sm": {
+        "size": 56,
+        "weight": 600
+      },
+      "num.xs": {
+        "size": 38,
+        "weight": 600
+      },
+      "tag": {
+        "size": 24,
+        "weight": 600,
+        "tracking": "0.14em",
+        "uppercase": true
+      },
+      "micro": {
+        "size": 17,
+        "weight": 500,
+        "tracking": "0.10em",
+        "uppercase": true
+      }
+    },
+    "rule": "El texto es interfaz, no discurso: S/500, 7 DÍAS, LÍMITE, OK, ?, %. Nunca frases del guion — el video ya lleva subtítulos.",
+    "maxWordsPerLabel": 3
+  },
+  "motion": {
+    "durations": {
+      "xs": 0.18,
+      "s": 0.32,
+      "m": 0.5,
+      "l": 0.8,
+      "xl": 1.1
+    },
+    "eases": {
+      "brand": "M0,0 C0.16,1 0.3,1 1,1",
+      "swift": "M0,0 C0.55,0 0.68,0.2 1,1",
+      "settle": "M0,0 C0.14,0 0.2,1.06 0.5,1.03 C0.7,1.008 0.84,1 1,1",
+      "fallbacks": {
+        "brand": "power3.out",
+        "swift": "power2.in",
+        "settle": "back.out(1.3)"
+      }
+    },
+    "usage": {
+      "entrada": "brand",
+      "salida": "swift",
+      "traslado": "power2.inOut",
+      "aterrizaje": "settle",
+      "contador": "power1.out",
+      "colapso": "power2.in"
+    },
+    "stagger": [
+      0.06,
+      0.1
+    ],
+    "anticipation": {
+      "px": [
+        4,
+        8
+      ],
+      "duration": 0.12
+    },
+    "exitFasterThanEntrance": 0.65,
+    "forbidden": [
+      "elastic",
+      "bounce",
+      "back > 1.6",
+      "rotaciones de 360°"
+    ],
+    "structure": [
+      "entrada 0.4-0.8s",
+      "desarrollo 1.5-4s",
+      "salida 0.3-0.6s"
+    ],
+    "climaxWindow": [
+      0.55,
+      0.75
+    ],
+    "animatableProperties": [
+      "transform",
+      "opacity",
+      "drawSVG",
+      "morphSVG",
+      "stroke",
+      "fill",
+      "strokeDasharray"
+    ],
+    "forbiddenProperties": [
+      "top",
+      "left",
+      "width",
+      "height",
+      "margin",
+      "padding"
+    ]
+  },
+  "narration": {
+    "wordsPerSecondES": 2.6,
+    "range": [
+      2.2,
+      2.9
+    ],
+    "formula": "segundos = palabras_entre_anclas / wordsPerSecond",
+    "leadIn": "el overlay entra 1-2 palabras antes de la palabra clave",
+    "maxTailSeconds": 0.6,
+    "rule": "Las pausas semánticas no se rellenan: si el narrador tarda, el timeline espera."
+  },
+  "delivery": {
+    "durationRange": [
+      2,
+      6
+    ],
+    "emptyAtStart": true,
+    "emptyAtEnd": true,
+    "densityPerNarration": "1 overlay cada 12-20 s",
+    "audit": "Overlay.audit() debe devolver start=0, end=0, ok=true; reporta ademas moduleScale y stroke en px de lienzo",
+    "strokeMinimum": 6,
+    "strokeMinimumMobile": 9
+  }
+}

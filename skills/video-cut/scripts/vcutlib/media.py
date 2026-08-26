@@ -1,0 +1,186 @@
+# -*- coding: utf-8 -*-
+"""Assets para el editor: proxies de preview, waveforms y tiras de miniaturas.
+
+Nada de esto toca el material original: son archivos de apoyo dentro de
+`<proyecto>/cache/`. El export final siempre apunta a los archivos de camara.
+"""
+from __future__ import annotations
+
+from pathlib import Path
+
+from . import util
+
+PEAKS_PER_SEC = 40
+THUMB_H = 48
+THUMB_COLS = 20
+THUMB_MAX = 240
+
+
+_NVENC = None
+
+
+def nvenc_available():
+    """Prueba un encode real.
+
+    Que `-encoders` liste h264_nvenc no significa que funcione: el driver de la
+    maquina puede ser mas viejo que la API que pide este build de ffmpeg.
+    """
+    global _NVENC
+    if _NVENC is not None:
+        return _NVENC
+    try:
+        util.run([util.FFMPEG, "-hide_banner", "-loglevel", "error", "-y",
+                  "-f", "lavfi", "-i", "color=c=black:s=256x144:r=25:d=0.2",
+                  "-c:v", "h264_nvenc", "-f", "null", "-"])
+        _NVENC = True
+    except RuntimeError:
+        _NVENC = False
+    return _NVENC
+
+
+# ------------------------------------------------------------ proxy
+
+def _proxy_cmd(source, out, height, encoder):
+    cmd = [util.FFMPEG, "-hide_banner", "-loglevel", "error", "-y",
+           "-i", str(source["path"])]
+    if source.get("has_video"):
+        target_h = min(height, source["height"] or height)
+        if encoder == "nvenc":
+            cmd += ["-c:v", "h264_nvenc", "-preset", "p4", "-rc", "vbr",
+                    "-cq", "30", "-b:v", "0"]
+        else:
+            cmd += ["-c:v", "libx264", "-preset", "veryfast", "-crf", "27"]
+        # GOP de 1 s: el scrub en el navegador es casi instantaneo.
+        cmd += ["-vf", "scale=-2:%d" % target_h, "-pix_fmt", "yuv420p",
+                "-force_key_frames", "expr:gte(t,n_forced*1)",
+                "-map", "0:v:0"]
+    else:
+        cmd += ["-vn"]
+
+    if source.get("has_audio"):
+        cmd += ["-map", "0:a:0", "-c:a", "aac", "-b:a", "128k", "-ac", "2"]
+    else:
+        cmd += ["-an"]
+
+    return cmd + ["-movflags", "+faststart", str(out)]
+
+
+def build_proxy(source, cache_dir, height=540, force=False):
+    """Copia ligera H.264 para que el navegador reproduzca y haga scrub fluido."""
+    cache_dir = Path(cache_dir)
+    out = cache_dir / "proxy" / ("%s.mp4" % source["id"])
+    if out.exists() and not force and out.stat().st_size > 1024:
+        return out
+    out.parent.mkdir(parents=True, exist_ok=True)
+
+    encoders = ["nvenc", "x264"] if nvenc_available() else ["x264"]
+    last = None
+    for enc in encoders:
+        try:
+            util.run(_proxy_cmd(source, out, height, enc))
+            return out
+        except RuntimeError as exc:
+            last = exc
+            if out.exists():
+                out.unlink()
+            if enc != encoders[-1]:
+                util.eprint("    nvenc fallo, reintento con libx264")
+    raise RuntimeError("No se pudo generar el proxy de %s: %s" % (source["name"], last))
+
+
+# ------------------------------------------------------------ waveform
+
+def build_waveform(source, cache_dir, force=False):
+    """Picos de audio en uint8 (40/s) para dibujar la onda en el timeline."""
+    import numpy as np
+
+    cache_dir = Path(cache_dir)
+    out = cache_dir / "waveform" / ("%s.bin" % source["id"])
+    if out.exists() and not force and out.stat().st_size > 0:
+        return out
+    if not source.get("has_audio"):
+        return None
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    rate = 8000
+    pcm = util.run_bytes([
+        util.FFMPEG, "-hide_banner", "-loglevel", "error",
+        "-i", str(source["path"]),
+        "-vn", "-ac", "1", "-ar", str(rate), "-f", "s16le", "-",
+    ])
+    if not pcm:
+        return None
+
+    samples = np.frombuffer(pcm, dtype="<i2")
+    bucket = max(1, rate // PEAKS_PER_SEC)
+    usable = (len(samples) // bucket) * bucket
+    if usable == 0:
+        return None
+    blocks = np.abs(samples[:usable].astype(np.int32)).reshape(-1, bucket)
+    peaks = blocks.max(axis=1)
+    # Escala perceptual: la raiz levanta los pasajes bajos sin saturar los picos.
+    norm = np.sqrt(peaks / 32768.0)
+    out.write_bytes((norm * 255).clip(0, 255).astype(np.uint8).tobytes())
+    return out
+
+
+# ------------------------------------------------------------ filmstrip
+
+def build_filmstrip(source, cache_dir, force=False):
+    """Sprite sheet de miniaturas para el fondo de los clips del timeline."""
+    cache_dir = Path(cache_dir)
+    out = cache_dir / "filmstrip" / ("%s.jpg" % source["id"])
+    if not source.get("has_video") or not source.get("duration"):
+        return None
+
+    w, h = source["width"] or 16, source["height"] or 9
+    tw = int(round(THUMB_H * (w / float(h))))
+    tw += tw % 2
+    tw = max(tw, 8)
+
+    count = min(THUMB_MAX, max(4, int(source["duration"])))
+    rows = max(1, -(-count // THUMB_COLS))
+    interval = source["duration"] / float(count)
+    meta = {"url": None, "cols": THUMB_COLS, "rows": rows, "count": count,
+            "tw": tw, "th": THUMB_H, "interval": round(interval, 4)}
+
+    if out.exists() and not force and out.stat().st_size > 1024:
+        meta["url"] = str(out)
+        return meta
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    vf = "fps=%.6f,scale=%d:%d,tile=%dx%d" % (1.0 / interval, tw, THUMB_H,
+                                              THUMB_COLS, rows)
+    try:
+        util.run([
+            util.FFMPEG, "-hide_banner", "-loglevel", "error", "-y",
+            "-i", str(source["path"]), "-vf", vf,
+            "-frames:v", "1", "-q:v", "5", "-update", "1", str(out),
+        ])
+    except RuntimeError as exc:
+        util.eprint("  ! sin filmstrip para %s (%s)" % (source["name"],
+                                                        str(exc).splitlines()[0]))
+        return None
+    meta["url"] = str(out)
+    return meta
+
+
+# ------------------------------------------------------------ orquestacion
+
+def build_all(project, project_dir, force=False, proxy_height=540,
+              proxies=True, waveforms=True, filmstrips=True, proxy_all=False):
+    """Genera los assets que falten y anota las rutas en el proyecto."""
+    cache = Path(project_dir) / "cache"
+    for s in project["sources"]:
+        label = s["name"]
+        if proxies and (proxy_all or s.get("needs_proxy")):
+            util.eprint("  proxy   %s" % label)
+            s["proxy"] = str(build_proxy(s, cache, proxy_height, force))
+        if waveforms and s.get("has_audio"):
+            util.eprint("  onda    %s" % label)
+            wf = build_waveform(s, cache, force)
+            s["waveform"] = str(wf) if wf else None
+        if filmstrips and s.get("has_video"):
+            util.eprint("  tiras   %s" % label)
+            s["filmstrip"] = build_filmstrip(s, cache, force)
+    return project

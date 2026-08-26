@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://motion-overlays.local/overlay-manifest.schema.json",
+  "title": "Overlay manifest",
+  "description": "Contrato de salida de un proyecto de motion-overlays. Cada proyecto entrega un overlays.json con esta forma, para que un editor humano o un agente de video pueda colocar los clips sin abrir los HTML.",
+  "type": "object",
+  "required": ["project", "canvas", "style", "narration", "overlays"],
+  "properties": {
+    "project": { "type": "string", "description": "Identificador corto del video." },
+    "generatedBy": { "type": "string", "description": "skill motion-overlays vX.Y.Z" },
+    "canvas": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer", "const": 1920 },
+        "height": { "type": "integer", "const": 1080 },
+        "fps": { "type": "integer", "default": 30 },
+        "alpha": { "type": "boolean", "const": true }
+      }
+    },
+    "style": {
+      "type": "string",
+      "description": "id del estilo aplicado (ver spec/styles.json)",
+      "enum": ["s-line", "s-tech", "s-bold", "s-hand", "s-iso", "s-soft3d", "s-flat"]
+    },
+    "narration": {
+      "type": "object",
+      "properties": {
+        "language": { "type": "string", "default": "es" },
+        "wordsPerSecond": { "type": "number", "default": 2.6 },
+        "hasSubtitles": { "type": "boolean", "description": "Si es true, los overlays no repiten texto del guion." }
+      }
+    },
+    "overlays": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "duration", "concept", "line", "cueIn", "cueOut"],
+        "properties": {
+          "file": { "type": "string", "description": "HTML relativo a la carpeta del proyecto." },
+          "duration": { "type": "number", "description": "Segundos exactos del timeline (Overlay.duration)." },
+          "concept": { "type": "string", "description": "Qué idea comunica." },
+          "metaphor": { "type": "string", "description": "Con qué objeto o relación se ve." },
+          "line": { "type": "string", "description": "Frase de la narración que acompaña." },
+          "cueIn": {
+            "type": "object",
+            "required": ["word"],
+            "description": "Dónde empieza el clip en la locución.",
+            "properties": {
+              "word": { "type": "string" },
+              "wordIndex": { "type": "integer", "description": "Posición de esa palabra dentro de la frase, base 1." },
+              "offsetSeconds": { "type": "number", "default": 0 }
+            }
+          },
+          "cueOut": {
+            "type": "object",
+            "required": ["word"],
+            "properties": {
+              "word": { "type": "string" },
+              "wordIndex": { "type": "integer" },
+              "tailSeconds": { "type": "number", "default": 0.6, "maximum": 0.6 }
+            }
+          },
+          "beats": {
+            "type": "array",
+            "description": "Momentos internos anclados a palabras. Permite reajustar el timeline si cambia la locución.",
+            "items": {
+              "type": "object",
+              "required": ["t", "label"],
+              "properties": {
+                "t": { "type": "number" },
+                "label": { "type": "string" },
+                "word": { "type": "string" },
+                "hold": { "type": "boolean", "description": "true = pausa deliberada, no entra nada nuevo." }
+              }
+            }
+          },
+          "position": {
+            "type": "string",
+            "enum": ["pos-center", "pos-left", "pos-right", "pos-top", "pos-bottom", "pos-left-top"],
+            "default": "pos-center",
+            "description": "Encuadre dentro del lienzo. Cambiarlo es una clase en el HTML, no un recorte."
+          },
+          "safeToScale": { "type": "boolean", "default": true, "description": "El contenido está agrupado: se puede reducir al 60-70 % sin recortes." },
+          "textOnScreen": { "type": "array", "items": { "type": "string" }, "description": "Etiquetas de interfaz visibles. Sirve para verificar que no duplican el subtítulo." },
+          "audit": {
+            "type": "object",
+            "properties": {
+              "emptyAtStart": { "type": "boolean" },
+              "emptyAtEnd": { "type": "boolean" },
+              "ok": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "skipped": {
+      "type": "array",
+      "description": "Frases que deliberadamente NO llevan overlay, con el motivo. Evita que otro agente las 'complete'.",
+      "items": {
+        "type": "object",
+        "required": ["line", "reason"],
+        "properties": {
+          "line": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "render": {
+      "type": "object",
+      "properties": {
+        "captureUrl": { "type": "string", "default": "<file>?paused=1&t=<segundo>", "description": "El runtime expone Overlay.seek(t) y Overlay.duration para capturar frame a frame de forma determinista." },
+        "chromeFlags": { "type": "string", "default": "--headless=new --default-background-color=00000000 --window-size=1920,1080" },
+        "recommendedCodec": { "type": "string", "default": "prores_ks profile 4444 pix_fmt yuva444p10le" },
+        "fallback": { "type": "string", "default": "?bg=green + chroma key" }
+      }
+    }
+  }
+}

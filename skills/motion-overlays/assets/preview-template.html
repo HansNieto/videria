@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motion overlays — preview</title>
+<style>
+  :root{
+    --bg:#0C0F14; --panel:#141922; --line:rgba(255,255,255,.10);
+    --tx:#E8EDF5; --tx2:rgba(232,237,245,.55); --acc:#5B8CFF;
+    --font: system-ui,"Segoe UI Variable Display","Segoe UI",Inter,Roboto,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--font)}
+  header{
+    position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:18px;
+    align-items:center;padding:20px 28px;background:rgba(12,15,20,.92);
+    border-bottom:1px solid var(--line);backdrop-filter:blur(8px)
+  }
+  h1{font-size:16px;font-weight:650;letter-spacing:.02em;margin:0}
+  h1 span{color:var(--tx2);font-weight:450;margin-left:10px}
+  .spacer{flex:1}
+  .ctrl{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx2)}
+  .seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{
+    background:transparent;border:0;color:var(--tx2);font:500 12px var(--font);
+    padding:7px 11px;cursor:pointer;letter-spacing:.04em
+  }
+  .seg button+button{border-left:1px solid var(--line)}
+  .seg button.on{background:var(--acc);color:#fff}
+  .btn{
+    background:var(--panel);border:1px solid var(--line);color:var(--tx);
+    font:500 12px var(--font);padding:8px 14px;border-radius:9px;cursor:pointer
+  }
+  .btn:hover{border-color:rgba(255,255,255,.28)}
+
+  main{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));
+       gap:26px;padding:26px 28px 60px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .view{position:relative;aspect-ratio:16/9;background:#0A0D12;overflow:hidden}
+  .view.bg-light  {background:#E8ECF2}
+  .view.bg-photo  {background:radial-gradient(120% 90% at 20% 10%,#4a5b73 0%,#26313f 55%,#131820 100%)}
+  .view.bg-checker{background-color:#2a2f37;
+    background-image:linear-gradient(45deg,#363c46 25%,transparent 25%,transparent 75%,#363c46 75%),
+                     linear-gradient(45deg,#363c46 25%,transparent 25%,transparent 75%,#363c46 75%);
+    background-size:24px 24px;background-position:0 0,12px 12px}
+  .view iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent}
+  .meta{padding:14px 16px 16px;display:flex;gap:12px;align-items:flex-start}
+  .meta .t{flex:1;min-width:0}
+  .name{font-size:13px;font-weight:600;letter-spacing:.02em}
+  .note{font-size:12px;color:var(--tx2);margin-top:5px;line-height:1.5}
+  .dur{font-size:11px;color:var(--acc);font-variant-numeric:tabular-nums;
+       border:1px solid rgba(91,140,255,.35);border-radius:6px;padding:3px 7px;white-space:nowrap}
+  .acts{display:flex;gap:6px;padding:0 16px 16px}
+  .acts .btn{padding:6px 11px;font-size:11px}
+  .hint{padding:0 28px 40px;color:var(--tx2);font-size:12px;line-height:1.7;max-width:900px}
+  code{background:#1b2230;padding:2px 6px;border-radius:5px;font-size:11px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Motion overlays <span id="count"></span></h1>
+  <div class="spacer"></div>
+  <div class="ctrl">fondo
+    <div class="seg" id="bgseg">
+      <button data-bg="" class="on">alfa</button>
+      <button data-bg="checker">damero</button>
+      <button data-bg="light">claro</button>
+      <button data-bg="photo">video</button>
+    </div>
+  </div>
+  <button class="btn" id="replayAll">repetir todo</button>
+</header>
+
+<main id="grid"></main>
+
+<p class="hint">
+  Cada tarjeta reproduce el HTML real en bucle. <strong>Abrir</strong> lo lanza a pantalla
+  completa en una pestaña nueva; ahí funcionan: <code>espacio</code> play/pausa ·
+  <code>R</code> repetir · <code>H</code> HUD con el tiempo · <code>←/→</code> avance por
+  frame · <code>Overlay.audit()</code> en la consola para verificar que entra y sale limpio.
+</p>
+
+<script>
+/* ==== Rellenar al crear el proyecto ====================================== */
+const FILES = [
+  { file: '01_concepto.html', note: 'Fragmento del guion al que acompaña.' },
+  // { file: '02_otro.html',  note: '…' },
+];
+/* ========================================================================= */
+
+const grid = document.getElementById('grid');
+const frames = [];
+let currentBg = '';
+
+FILES.forEach(item => {
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="view"><iframe loading="lazy" src="${item.file}?loop=1&gap=0.7"></iframe></div>
+    <div class="meta">
+      <div class="t">
+        <div class="name">${item.file}</div>
+        <div class="note">${item.note || ''}</div>
+      </div>
+      <div class="dur">— s</div>
+    </div>
+    <div class="acts">
+      <button class="btn act-replay">repetir</button>
+      <button class="btn act-open">abrir</button>
+    </div>`;
+  grid.appendChild(card);
+
+  const frame = card.querySelector('iframe');
+  const view  = card.querySelector('.view');
+  frames.push({ frame, view, dur: card.querySelector('.dur'), file: item.file });
+
+  card.querySelector('.act-replay').onclick = () =>
+    frame.contentWindow.postMessage({ __overlay: 'replay' }, '*');
+  card.querySelector('.act-open').onclick = () =>
+    window.open(item.file, '_blank');
+});
+
+document.getElementById('count').textContent = FILES.length + ' escenas';
+
+window.addEventListener('message', e => {
+  const d = e.data || {};
+  if (d.__overlay !== 'ready') return;
+  const hit = frames.find(f => f.frame.contentWindow === e.source);
+  if (hit) hit.dur.textContent = d.duration.toFixed(2) + ' s';
+});
+
+document.getElementById('bgseg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('#bgseg button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  currentBg = b.dataset.bg;
+  frames.forEach(f => {
+    f.view.className = 'view' + (currentBg ? ' bg-' + currentBg : '');
+    f.frame.contentWindow.postMessage({ __overlay: 'bg', bg: '' }, '*');
+  });
+});
+
+document.getElementById('replayAll').onclick = () =>
+  frames.forEach(f => f.frame.contentWindow.postMessage({ __overlay: 'replay' }, '*'));
+</script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+{
+  "$comment": "Catálogo de estilos de ilustración. La clase va en #stage. Ver references/visual-styles.md.",
+  "version": "1.3.0",
+  "default": "s-line",
+  "families": {
+    "trazo": "el dibujo es el contorno; se aplica a escenas ya hechas cambiando la clase",
+    "masa": "el dibujo es la silueta rellena; obliga a redibujar los objetos"
+  },
+  "styles": [
+    {
+      "id": "s-line",
+      "class": null,
+      "name": "Línea mínima",
+      "family": "trazo",
+      "recommended": true,
+      "legibilityOnFootage": "excelente",
+      "cost": "bajo",
+      "bestFor": [
+        "procesos",
+        "datos",
+        "relaciones",
+        "caso general"
+      ],
+      "avoid": [],
+      "construction": "Trazo de 3px, esquinas redondeadas, rellenos translúcidos, un acento.",
+      "motion": "El estándar de motion-language.md.",
+      "stroke": {
+        "base": 6,
+        "thin": 4,
+        "hero": 8,
+        "mobileSafe": false,
+        "unit": "px de lienzo 1920"
+      }
+    },
+    {
+      "id": "s-tech",
+      "class": "s-tech",
+      "name": "Editorial técnico",
+      "family": "trazo",
+      "legibilityOnFootage": "muy buena",
+      "cost": "bajo",
+      "bestFor": [
+        "métricas",
+        "análisis",
+        "precisión",
+        "sistemas"
+      ],
+      "avoid": [
+        "tono emocional"
+      ],
+      "construction": "Trazo 2px, tipografía monoespaciada, cotas y guías punteadas, radios pequeños.",
+      "motion": "Más seco: power2.out 0.35-0.45, sin overshoot, stagger 0.05, líneas dibujadas con drawSVG.",
+      "stroke": {
+        "base": 5,
+        "thin": 3.5,
+        "hero": 7,
+        "mobileSafe": false,
+        "unit": "px de lienzo 1920"
+      }
+    },
+    {
+      "id": "s-bold",
+      "class": "s-bold",
+      "name": "Trazo grueso",
+      "family": "trazo",
+      "legibilityOnFootage": "excelente",
+      "cost": "bajo",
+      "bestFor": [
+        "metraje ruidoso",
+        "móvil",
+        "compresión agresiva",
+        "vertical"
+      ],
+      "avoid": [
+        "escenas con muchos elementos"
+      ],
+      "construction": "Trazo 5-7px, sombra dura desplazada, contraste alto, menos elementos.",
+      "motion": "Con peso: entradas 0.5-0.6 con settle, aterrizajes marcados, stagger 0.08.",
+      "stroke": {
+        "base": 11,
+        "thin": 7,
+        "hero": 15,
+        "mobileSafe": true,
+        "unit": "px de lienzo 1920"
+      }
+    },
+    {
+      "id": "s-hand",
+      "class": "s-hand",
+      "name": "Dibujado a mano",
+      "family": "trazo",
+      "legibilityOnFootage": "buena",
+      "cost": "bajo",
+      "bestFor": [
+        "tono docente",
+        "consejo",
+        "cercanía"
+      ],
+      "avoid": [
+        "dinero",
+        "cifras exactas",
+        "informes"
+      ],
+      "construction": "Filtro de desplazamiento #ovRoughen sobre el módulo. Tipografía limpia (nada de fuentes tipo cómic).",
+      "motion": "Más suelto: duraciones +15%, back.out(1.4) permitido, rotaciones de 1-3°.",
+      "caveat": "No apliques el filtro a elementos que escalen mucho: el temblor escala con ellos.",
+      "stroke": {
+        "base": 7,
+        "thin": 5,
+        "hero": 10,
+        "mobileSafe": false,
+        "unit": "px de lienzo 1920"
+      }
+    },
+    {
+      "id": "s-iso",
+      "class": "s-iso",
+      "name": "Isométrico",
+      "family": "masa",
+      "legibilityOnFootage": "buena",
+      "cost": "alto",
+      "bestFor": [
+        "infraestructura",
+        "áreas",
+        "el sistema visto desde fuera"
+      ],
+      "avoid": [
+        "escenas con más de 4 objetos"
+      ],
+      "construction": "Planos dentro de .iso (matriz 2:1). Los volúmenes se dibujan con 3 caras (iso-top / iso-side / iso-face), no se proyectan. Una sola fuente de luz.",
+      "motion": "Movimiento en ejes isométricos; entradas verticales que aterrizan en el plano; nada de rotaciones libres.",
+      "stroke": {
+        "base": 5.5,
+        "thin": 4,
+        "hero": 7,
+        "mobileSafe": false,
+        "unit": "px de lienzo 1920"
+      }
+    },
+    {
+      "id": "s-soft3d",
+      "class": "s-soft3d",
+      "name": "3D suave",
+      "family": "masa",
+      "legibilityOnFootage": "buena",
+      "cost": "alto",
+      "bestFor": [
+        "producto",
+        "dinero",
+        "objetos tangibles",
+        "cuando no se quieren líneas finas"
+      ],
+      "avoid": [
+        "escenas con más de 4 objetos"
+      ],
+      "construction": "Formas rellenas con degradado (solid / solid accent|gold|ok|warn|bad|glass|dark), brillo .spec arriba a la izquierda, conexiones .rail de 12px. Cambios de estado por crossfade: los degradados no se interpolan.",
+      "motion": "El brillo se mueve 3-5px menos que el objeto (parallax). Entradas con settle y scale 0.9 → 1.",
+      "stroke": {
+        "base": 5,
+        "thin": 4,
+        "hero": 6.5,
+        "mobileSafe": false,
+        "unit": "px de lienzo 1920"
+      }
+    },
+    {
+      "id": "s-flat",
+      "class": "s-flat",
+      "name": "Flat humanista",
+      "family": "masa",
+      "legibilityOnFootage": "media",
+      "cost": "medio",
+      "bestFor": [
+        "equipos",
+        "personas",
+        "cultura",
+        "tono amable"
+      ],
+      "avoid": [
+        "dinero",
+        "control",
+        "fallos"
+      ],
+      "construction": "Siluetas de color plano sin contorno oscuro (el contorno desaparece sobre metraje oscuro). Máximo 3 colores planos + blanco.",
+      "motion": "Rebote moderado back.out(1.5), stagger 0.1, formas que crecen desde su base.",
+      "stroke": {
+        "base": 9,
+        "thin": 6,
+        "hero": 12,
+        "mobileSafe": true,
+        "unit": "px de lienzo 1920"
+      }
+    }
+  ],
+  "selectionGuide": [
+    {
+      "topic": "procesos, decisiones, cifras",
+      "offer": [
+        "s-line",
+        "s-tech",
+        "s-bold"
+      ]
+    },
+    {
+      "topic": "datos, métricas, análisis",
+      "offer": [
+        "s-tech",
+        "s-line",
+        "s-soft3d"
+      ]
+    },
+    {
+      "topic": "consejo cercano, docente",
+      "offer": [
+        "s-hand",
+        "s-line",
+        "s-flat"
+      ]
+    },
+    {
+      "topic": "infraestructura, sistemas",
+      "offer": [
+        "s-iso",
+        "s-line",
+        "s-tech"
+      ]
+    },
+    {
+      "topic": "producto, dinero, tangible",
+      "offer": [
+        "s-soft3d",
+        "s-bold",
+        "s-line"
+      ]
+    },
+    {
+      "topic": "equipos, personas",
+      "offer": [
+        "s-flat",
+        "s-line",
+        "s-hand"
+      ]
+    },
+    {
+      "topic": "móvil o metraje ruidoso",
+      "offer": [
+        "s-bold",
+        "s-line",
+        "s-flat"
+      ]
+    },
+    {
+      "topic": "sin líneas finas",
+      "offer": [
+        "s-soft3d",
+        "s-bold",
+        "s-flat"
+      ]
+    }
+  ],
+  "strokeNote": "Los grosores estan en px del lienzo 1920: overlay.js compensa el scale() del modulo. mobileSafe = base >= 9 px, umbral por debajo del cual el trazo cae de 2 px reales cuando el video se ve en un telefono. Si el video es vertical o va a redes, usa s-bold."
+}

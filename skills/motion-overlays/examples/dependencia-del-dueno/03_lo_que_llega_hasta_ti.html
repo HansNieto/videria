@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>03 — Lo que llega hasta ti</title>
+<link rel="stylesheet" href="./lib/overlay.css">
+</head>
+<body>
+<!-- Frase 3: "…qué cosas llegan innecesariamente hasta ti: descuentos pequeños,
+     compras rutinarias, devoluciones o decisiones operativas."
+     Estilo 3D suave: objetos de masa blanca, carriles de 12px. -->
+<div id="stage" class="s-soft3d">
+  <svg class="canvas" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <g class="frame pos-center">
+      <g class="module" transform="translate(960,711) scale(2.55)">
+
+        <!-- destino: tú -->
+        <g class="at" transform="translate(0,-175) scale(1.1)">
+          <g class="o owner">
+            <circle class="solid" cx="0" cy="-34" r="18"/>
+            <ellipse class="spec" cx="-7" cy="-41" rx="9" ry="6"/>
+            <path class="solid accent" d="M-28,31 V22 A28,28 0 0 1 28,22 V31 Z"/>
+          </g>
+        </g>
+
+        <!-- tu bandeja -->
+        <g class="o tray">
+          <rect class="solid" x="-230" y="-112" width="460" height="14" rx="7"/>
+          <ellipse class="spec" cx="-95" cy="-108" rx="88" ry="4"/>
+        </g>
+
+        <!-- vías: todo sube en paralelo -->
+        <g class="o way w1"><path id="a1" class="rail" d="M-180,-6 V-96"/></g>
+        <g class="o way w2"><path id="a2" class="rail" d="M-60,-6 V-96"/></g>
+        <g class="o way w3"><path id="a3" class="rail" d="M60,-6 V-96"/></g>
+        <g class="o way w4"><path id="a4" class="rail" d="M180,-6 V-96"/></g>
+
+        <!-- 1 · descuento pequeño -->
+        <g class="at" transform="translate(-180,46)">
+          <g class="o item i1">
+            <circle class="solid" r="38"/>
+            <ellipse class="spec" cx="-11" cy="-16" rx="16" ry="10"/>
+            <text class="tag t-ink" y="10" text-anchor="middle" style="font-size:30px">%</text>
+          </g>
+          <g class="o ring r1"><circle class="mark" r="52"/></g>
+        </g>
+
+        <!-- 2 · compra rutinaria -->
+        <g class="at" transform="translate(-60,46)">
+          <g class="o item i2">
+            <circle class="solid" r="38"/>
+            <ellipse class="spec" cx="-11" cy="-16" rx="16" ry="10"/>
+            <path class="ink-3" d="M-19,-6 L0,-17 L19,-6 L0,5 Z"/>
+            <path class="ink-1" d="M-19,-6 L0,5 L0,27 L-19,16 Z"/>
+            <path class="ink-2" d="M19,-6 L0,5 L0,27 L19,16 Z"/>
+          </g>
+          <g class="o ring r2"><circle class="mark" r="52"/></g>
+        </g>
+
+        <!-- 3 · devolución -->
+        <g class="at" transform="translate(60,46)">
+          <g class="o item i3">
+            <circle class="solid" r="38"/>
+            <ellipse class="spec" cx="-11" cy="-16" rx="16" ry="10"/>
+            <path class="inkline" d="M17,-11 H-7 a13,13 0 0 0 0,26 H6"
+                  style="stroke-width:6"/>
+            <path class="ink" d="M17,-22 L28,-11 L17,0 Z"/>
+          </g>
+          <g class="o ring r3"><circle class="mark" r="52"/></g>
+        </g>
+
+        <!-- 4 · decisión operativa -->
+        <g class="at" transform="translate(180,46)">
+          <g class="o item i4">
+            <circle class="solid" r="38"/>
+            <ellipse class="spec" cx="-11" cy="-16" rx="16" ry="10"/>
+            <g class="teeth">
+              <path class="inkline" style="stroke-width:11" d="M0,-18 V-26"/>
+              <path class="inkline" style="stroke-width:11" d="M0,-18 V-26" transform="rotate(45)"/>
+              <path class="inkline" style="stroke-width:11" d="M0,-18 V-26" transform="rotate(90)"/>
+              <path class="inkline" style="stroke-width:11" d="M0,-18 V-26" transform="rotate(135)"/>
+              <path class="inkline" style="stroke-width:11" d="M0,-18 V-26" transform="rotate(180)"/>
+              <path class="inkline" style="stroke-width:11" d="M0,-18 V-26" transform="rotate(225)"/>
+              <path class="inkline" style="stroke-width:11" d="M0,-18 V-26" transform="rotate(270)"/>
+              <path class="inkline" style="stroke-width:11" d="M0,-18 V-26" transform="rotate(315)"/>
+            </g>
+            <circle class="ink" r="19"/>
+            <circle class="solid" r="8"/>
+          </g>
+          <g class="o ring r4"><circle class="mark" r="52"/></g>
+        </g>
+
+      </g>
+    </g>
+  </svg>
+</div>
+
+<style>
+  /* piezas en tinta sobre la masa blanca */
+  .ink     { fill: #0B1220; stroke: none; }
+  .ink-1   { fill: #0B1220; stroke: none; }
+  .ink-2   { fill: #17212F; stroke: none; }
+  .ink-3   { fill: #2A3646; stroke: none; }
+  .inkline { fill: none; stroke: #0B1220; stroke-width: 5;
+             stroke-linecap: round; stroke-linejoin: round; }
+  .mark    { fill: none; stroke: #FFB020; stroke-width: 9; }
+</style>
+
+<script src="./lib/gsap.min.js"></script>
+<script src="./lib/CustomEase.min.js"></script>
+<script src="./lib/DrawSVGPlugin.min.js"></script>
+<script src="./lib/overlay.js"></script>
+<script>
+/* Entra en "ti" · sale tras "operativas" */
+const BEATS = {
+  in:   0.00,   // "hasta ti:"
+  i1:   0.39,   // "descuentos pequeños"
+  i2:   1.16,   // "compras rutinarias"
+  i3:   1.93,   // "devoluciones"
+  i4:   2.70,   // "decisiones operativas"
+  mark: 3.15,   // se marcan las cuatro
+  exit: 3.72
+};
+
+Overlay.scene({
+  id: '03_lo_que_llega_hasta_ti',
+  build(tl) {
+    gsap.set('.o', { autoAlpha: 0 });
+
+    /* ENTRADA — el destino y la bandeja */
+    tl.fromTo('.owner', { autoAlpha: 0, y: -14, scale: .93 },
+                        { autoAlpha: 1, y: 0, scale: 1, duration: .5 }, BEATS.in)
+      .fromTo('.tray', { autoAlpha: 0, scaleX: .5, transformOrigin: '50% 50%' },
+                       { autoAlpha: 1, scaleX: 1, duration: .55,
+                         ease: 'power2.inOut' }, BEATS.in + .1);
+
+    /* DESARROLLO — cada cosa entra con su palabra y sube */
+    [['i1','w1','a1',BEATS.i1], ['i2','w2','a2',BEATS.i2],
+     ['i3','w3','a3',BEATS.i3], ['i4','w4','a4',BEATS.i4]].forEach(([i, w, a, t]) => {
+      tl.fromTo('.' + i, { autoAlpha: 0, y: 26, scale: .82 },
+                         { autoAlpha: 1, y: 0, scale: 1, duration: .45, ease: 'settle' }, t)
+        .set('.' + w, { autoAlpha: 1 }, t + .12)
+        .fromTo('#' + a, { drawSVG: '0% 0%' },
+                         { drawSVG: '0% 100%', duration: .4, ease: 'power2.out' }, t + .12)
+        .to('.tray', { scaleY: 1.5, transformOrigin: '50% 50%', duration: .14,
+                       yoyo: true, repeat: 1, ease: 'power2.out' }, t + .46);
+    });
+
+    /* CLÍMAX — las cuatro quedan identificadas */
+    tl.fromTo('.ring', { autoAlpha: 0, scale: .74 },
+                       { autoAlpha: 1, scale: 1, duration: .38, ease: 'settle',
+                         stagger: .085 }, BEATS.mark)
+      .to('.rail', { stroke: '#FFB020', duration: .3, stagger: .085 }, BEATS.mark + .04)
+      .to('.owner', { autoAlpha: .4, duration: .4 }, BEATS.mark + .2);
+
+    /* SALIDA — se retiran hacia abajo, por donde vinieron */
+    tl.to('.ring',  { autoAlpha: 0, scale: 1.14, duration: .26, ease: 'swift',
+                      stagger: .03 }, BEATS.exit)
+      .to('.way',   { autoAlpha: 0, duration: .24, ease: 'swift' }, BEATS.exit + .04)
+      .to('.item',  { autoAlpha: 0, y: 18, scale: .86, duration: .3, ease: 'swift',
+                      stagger: .04 }, BEATS.exit + .06)
+      .to('.tray',  { autoAlpha: 0, scaleX: .9, transformOrigin: '50% 50%',
+                      duration: .3, ease: 'swift' }, BEATS.exit + .1)
+      .to('.owner', { autoAlpha: 0, y: -10, duration: .28, ease: 'swift' }, BEATS.exit + .12);
+  }
+});
+</script>
+</body>
+</html>

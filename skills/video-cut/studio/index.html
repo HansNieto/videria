@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>vcut studio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='4' fill='%235b8cff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/studio/studio.css">
+</head>
+<body>
+
+<div class="boot" id="boot">
+  <div class="spin"></div>
+  <div id="bootMsg">Cargando proyecto…</div>
+</div>
+
+<div id="app" class="hidden">
+
+  <!-- ------------------------------------------------------------ topbar -->
+  <header class="topbar">
+    <div class="brand">◈ studio</div>
+    <div class="proj">
+      <b id="projName">—</b>
+      <span id="projStats"></span>
+    </div>
+    <div class="spacer"></div>
+    <div class="actions">
+      <button class="icon ghost" id="btnUndo" title="Deshacer (Ctrl+Z)">↶</button>
+      <button class="icon ghost" id="btnRedo" title="Rehacer (Ctrl+Shift+Z)">↷</button>
+      <a class="btn ghost" href="/" title="Editor de cortes clásico">cortes</a>
+      <button id="btnDraft" title="Borrador rápido a 720p (D)">Borrador</button>
+      <button class="primary" id="btnRender" title="Render final (Ctrl+R)">Renderizar</button>
+      <button class="icon" id="btnSave" title="Guardar (Ctrl+S)"><span class="dot" id="saveDot"></span>Guardar</button>
+    </div>
+  </header>
+
+  <!-- -------------------------------------------------------------- main -->
+  <main class="main">
+
+    <!-- librería -->
+    <aside class="lib">
+      <div class="lib-tabs">
+        <button class="lt active" data-lib="zoom" title="Zooms">⛶</button>
+        <button class="lt" data-lib="trans" title="Transiciones">⇄</button>
+        <button class="lt" data-lib="text" title="Texto">T</button>
+        <button class="lt" data-lib="sfx" title="Sonido">♪</button>
+        <button class="lt" data-lib="ovl" title="Motion graphics">▣</button>
+        <button class="lt" data-lib="stk" title="Stickers">★</button>
+      </div>
+      <div class="lib-body" id="libBody"></div>
+    </aside>
+
+    <!-- escenario -->
+    <section class="stage">
+      <div class="stage-top">
+        <div class="seg" id="modeSeg">
+          <button class="on" data-mode="select" title="Seleccionar y mover (V)">✥ mover</button>
+          <button data-mode="frame" title="Reencuadrar: arrastrá para el pan, rueda para el zoom (Z)">⛶ encuadre</button>
+        </div>
+        <div class="spacer"></div>
+        <label class="chk"><input type="checkbox" id="chkGuides"> guías</label>
+        <label class="chk"><input type="checkbox" id="chkSafe"> zona segura</label>
+        <span class="muted" id="stageInfo"></span>
+      </div>
+
+      <div class="canvas-wrap" id="canvasWrap">
+        <div class="canvas-box" id="canvasBox">
+          <canvas id="view"></canvas>
+          <div class="vhost" id="vhost"></div>
+          <div class="badge-src" id="badgeSrc"></div>
+          <div class="empty" id="canvasEmpty">Sin clips activos</div>
+        </div>
+      </div>
+
+      <div class="transport">
+        <button class="icon" id="btnHome" title="Inicio (Home)">⏮</button>
+        <button class="icon" id="btnPrev" title="Clip anterior (,)">◀◀</button>
+        <button class="icon big primary" id="btnPlay" title="Reproducir (Espacio)">▶</button>
+        <button class="icon" id="btnNext" title="Clip siguiente (.)">▶▶</button>
+        <button class="icon" id="btnEnd" title="Final (End)">⏭</button>
+        <span class="tc"><b id="tCur">00:00.00</b><span class="muted"> / </span><span id="tTot" class="muted">00:00.00</span></span>
+        <div class="spacer"></div>
+        <label class="chk"><input type="checkbox" id="chkAudio" checked> audio</label>
+        <label class="zoomctl">zoom
+          <input type="range" id="tlZoom" min="8" max="400" step="1" value="70">
+        </label>
+      </div>
+    </section>
+
+    <!-- inspector -->
+    <aside class="insp">
+      <div class="insp-head" id="inspHead">nada seleccionado</div>
+      <div class="insp-body" id="inspBody"></div>
+    </aside>
+  </main>
+
+  <!-- ---------------------------------------------------------- timeline -->
+  <footer class="tl">
+    <div class="tl-head">
+      <div class="tl-names" id="tlNames"></div>
+      <div class="tl-ruler-wrap">
+        <canvas id="ruler"></canvas>
+      </div>
+    </div>
+    <div class="tl-scroll" id="tlScroll">
+      <div class="tl-gutter" id="tlGutter"></div>
+      <div class="tl-inner" id="tlInner">
+        <div class="tracks" id="tracks"></div>
+        <div class="playhead" id="playhead"></div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<div id="toast"></div>
+<div id="menuHost"></div>
+
+<div class="modal hidden" id="renderModal">
+  <div class="modal-card">
+    <h3 id="rmTitle">Renderizando…</h3>
+    <div class="bar"><i id="rmBar"></i></div>
+    <div class="rm-meta"><span id="rmStage">preparando</span><span id="rmPct">0%</span></div>
+    <pre id="rmErr" class="hidden"></pre>
+    <div class="modal-actions">
+      <button id="rmCancel">Cancelar</button>
+      <button id="rmOpen" class="primary hidden">Abrir carpeta</button>
+      <button id="rmClose" class="hidden">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script src="/studio/js/text.js"></script>
+<script src="/studio/js/state.js"></script>
+<script src="/studio/js/player.js"></script>
+<script src="/studio/js/timeline.js"></script>
+<script src="/studio/js/inspector.js"></script>
+<script src="/studio/js/library.js"></script>
+<script src="/studio/js/app.js"></script>
+</body>
+</html>

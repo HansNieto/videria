@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="360"
+     viewBox="0 0 360 360">
+<g style="filter: drop-shadow(0 6px 10px rgba(11,18,32,0.55));">
+  <circle cx="180" cy="180" r="126" fill="none" stroke="#FFFFFF"
+     stroke-width="24"/>
+  <path d="M180 106 L180 184 L238 214" stroke="#FFFFFF" stroke-width="24"
+     fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

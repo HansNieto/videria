@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="360"
+     viewBox="0 0 360 360">
+<g style="filter: drop-shadow(0 6px 10px rgba(11,18,32,0.55));">
+  <ellipse cx="180" cy="180" rx="152" ry="110"
+     transform="rotate(-7 180 180)" stroke="#5B8CFF" stroke-width="13" fill="none"
+     stroke-linecap="round" stroke-dasharray="600 120"/>
+  <ellipse cx="180" cy="180" rx="140" ry="99" transform="rotate(4 180 180)"
+     stroke="#5B8CFF" stroke-width="9" fill="none" stroke-linecap="round"
+     stroke-dasharray="520 160" opacity=".75"/>
+</g>
+</svg>

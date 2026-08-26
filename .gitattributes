@@ -1,0 +1,14 @@
+* text=auto
+
+# Los scripts de shell tienen que llegar con LF aunque se clonen en Windows:
+# con CRLF, bash falla con "bad interpreter".
+*.sh  text eol=lf
+*.ps1 text eol=crlf
+
+# Binarios, que git no los toque.
+*.png binary
+*.jpg binary
+*.mp3 binary
+*.wav binary
+*.ttf binary
+*.otf binary

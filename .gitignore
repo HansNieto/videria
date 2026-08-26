@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+*.bak
+.pytest_cache/
+.DS_Store
+Thumbs.db
+desktop.ini
