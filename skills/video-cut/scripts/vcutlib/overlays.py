@@ -59,8 +59,13 @@ def find_sequences(roots, max_depth=4, own=None):
             key = str(d).lower()
             if key in seen:
                 continue
-            frames = sorted(f for f in d.iterdir()
-                            if f.is_file() and SEQ_RE.match(f.name))
+            try:
+                # Una carpeta que el sistema no deja leer no puede tumbar el
+                # montaje entero: se salta y se sigue.
+                frames = sorted(f for f in d.iterdir()
+                                if f.is_file() and SEQ_RE.match(f.name))
+            except OSError:
+                continue
             if len(frames) < MIN_FRAMES:
                 continue
             seen.add(key)

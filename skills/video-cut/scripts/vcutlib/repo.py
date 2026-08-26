@@ -38,10 +38,26 @@ broll/cache/
 *.tmp
 """
 
-AVISO_YML = """# Avisa cuando la otra persona sube una revisión.
+GITATTRIBUTES = """* text=auto
+
+# El workflow corre en Linux: si llega con CRLF, falla.
+*.yml text eol=lf
+*.sh  text eol=lf
+
+# Nada que git deba tocar.
+*.mp4 binary
+*.jpg binary
+*.bin binary
+"""
+
+AVISO_YML = r"""# Avisa cuando la otra persona sube una revisión.
 #
-# GitHub no notifica los push a secas, así que este flujo abre un issue
-# mencionando a quien tiene que renderizar. Llega por correo y al móvil.
+# GitHub no notifica los push a secas, así que esto abre un issue mencionando a
+# quien tiene que renderizar. Llega por correo y al móvil.
+#
+# Todo lo que viene del commit (el mensaje, los archivos) entra por `env:` y no
+# interpolado dentro del script: un mensaje con comillas rompería el comando, y
+# uno escrito con mala idea podría ejecutar algo.
 name: Aviso de revisión
 
 on:
@@ -57,8 +73,7 @@ permissions:
 
 jobs:
   avisar:
-    # Solo cuando empuja alguien que no sea quien renderiza: los propios
-    # push no tienen que avisarse a uno mismo.
+    # Los push propios no tienen que avisarse a uno mismo.
     if: github.actor != '%(duenio)s'
     runs-on: ubuntu-latest
     steps:
@@ -69,23 +84,25 @@ jobs:
           QUIEN: ${{ github.actor }}
           SHA: ${{ github.sha }}
           MENSAJE: ${{ github.event.head_commit.message }}
+          TOCADOS: ${{ join(github.event.head_commit.modified, ', ') }}
         run: |
-          gh issue create --repo "$REPO" \\
-            --title "Revisión lista de $QUIEN" \\
-            --assignee "%(duenio)s" \\
-            --body "@%(duenio)s hay cambios para renderizar.
-
-          **$MENSAJE**
-
-          Cambió: $(echo '${{ join(github.event.head_commit.modified, ", ") }}')
-
-          \\`\\`\\`
-          git -C tu/proyecto pull
-          python \\$VCUT render --project tu/proyecto
-          \\`\\`\\`
-
-          [Ver el cambio](https://github.com/$REPO/commit/$SHA)"
+          {
+            echo "@%(duenio)s hay cambios para renderizar."
+            echo
+            echo "> $MENSAJE"
+            echo
+            echo "Tocó: \`$TOCADOS\`"
+            echo
+            echo '```'
+            echo 'git -C tu/proyecto pull'
+            echo 'python $VCUT render --project tu/proyecto'
+            echo '```'
+            echo
+            echo "[Ver el cambio](https://github.com/$REPO/commit/$SHA)"
+          } > cuerpo.md
+          gh issue create --repo "$REPO"             --title "Revisión lista de $QUIEN"             --assignee "%(duenio)s"             --body-file cuerpo.md
 """
+
 
 LEEME = """# %(nombre)s
 
@@ -130,6 +147,13 @@ usá el **borrador** (tecla `B`), que para eso está.
 es simple: **uno a la vez**. Antes de empezar, `git pull`; al terminar, `push`.
 Si aun así choca, gana quien tenga el trabajo más reciente y el otro rehace.
 """
+
+
+def _escribir(ruta, texto):
+    """Escribe con LF pase lo que pase."""
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    with open(ruta, "w", encoding="utf-8", newline=chr(10)) as f:
+        f.write(texto)
 
 
 def _git(args, cwd, check=True):
@@ -222,15 +246,20 @@ def preparar(project_dir, duenio, nombre=None, url=None):
     # originales se van a local.json.
     studio.save_project(pdir, project, backup=True)
 
-    (pdir / ".gitignore").write_text(GITIGNORE, encoding="utf-8")
+    # Estos tres archivos siempre con LF. El workflow corre en un runner de
+    # Linux: un retorno de carro al final de cada linea le cambiaria el
+    # nombre al archivo del cuerpo y el aviso fallaria. En Windows, escribir
+    # texto sin decir nada traduce a CRLF.
+    _escribir(pdir / ".gitignore", GITIGNORE)
+    _escribir(pdir / ".gitattributes", GITATTRIBUTES)
     wf = pdir / ".github" / "workflows"
     wf.mkdir(parents=True, exist_ok=True)
-    (wf / "aviso.yml").write_text(AVISO_YML % {"duenio": duenio}, encoding="utf-8")
-    (pdir / "LEEME.md").write_text(
-        LEEME % {"nombre": nombre or project.get("name") or pdir.name,
-                 "duenio": duenio, "url": url or "<url-del-repo>"},
-        encoding="utf-8")
-    hechos["archivos"] = [".gitignore", ".github/workflows/aviso.yml", "LEEME.md"]
+    _escribir(wf / "aviso.yml", AVISO_YML % {"duenio": duenio})
+    _escribir(pdir / "LEEME.md",
+              LEEME % {"nombre": nombre or project.get("name") or pdir.name,
+                       "duenio": duenio, "url": url or "<url-del-repo>"})
+    hechos["archivos"] = [".gitignore", ".gitattributes",
+                          ".github/workflows/aviso.yml", "LEEME.md"]
     return hechos, project
 
 
@@ -274,9 +303,9 @@ def init(project_dir, duenio, privado=True, crear=True, nombre=None):
         if r.returncode == 0:
             hechos["remoto"] = (r.stdout or r.stderr).strip().splitlines()[0]
             url = hechos["remoto"]
-            (pdir / "LEEME.md").write_text(
-                LEEME % {"nombre": nombre or project.get("name") or pdir.name,
-                         "duenio": duenio, "url": url}, encoding="utf-8")
+            _escribir(pdir / "LEEME.md",
+                      LEEME % {"nombre": nombre or project.get("name") or pdir.name,
+                               "duenio": duenio, "url": url})
             _git(["add", "LEEME.md"], pdir)
             _git(["commit", "-m", "LEEME con la url del repo"], pdir, check=False)
             _git(["push", "-q", "origin", "main"], pdir, check=False)
