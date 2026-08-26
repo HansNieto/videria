@@ -5,3 +5,10 @@ __pycache__/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Nunca: credenciales.
+claves-para-tu-amigo.md
+claves*.md
+config.toml
+*.env
+.env*
