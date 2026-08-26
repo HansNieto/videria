@@ -186,10 +186,11 @@ guardar · `B` borrador · `Ctrl+R` render · `+`/`−` zoom de timeline ·
 
 ```
 skills/
-├── video-cut/          la plataforma: vcut.py, el studio, plantillas, stickers
-├── motion-overlays/    overlays animados en HTML+SVG+GSAP, fondo transparente,
-│                       pensados para superponer sobre el vídeo
-└── subtitulo/          subtitulado apilado estilo CapCut, ya calibrado
+├── video-cut/          la plataforma: vcut.py, el studio, plantillas
+│   └── assets/         los 8 sonidos de las transiciones, las tipografías
+│                       de los subtítulos y los stickers ya rasterizados
+└── motion-overlays/    overlays animados en HTML+SVG+GSAP, fondo transparente,
+                        pensados para superponer sobre el vídeo
 nuevo-video.ps1         el atajo de un comando (Windows)
 instalar.ps1 / .sh      copian las skills a ~/.claude/skills
 ```
@@ -201,11 +202,10 @@ La documentación de verdad está adentro de cada skill:
 - `skills/video-cut/references/studio-schema.md` — la capa creativa: zooms,
   keyframes, curvas, transiciones, textos.
 - `skills/video-cut/references/troubleshooting.md` — cuando algo falla.
-
-**Nota sobre `subtitulo`:** esa skill genera el vídeo con
-[MoneyPrinterTurbo](https://github.com/harry0703/MoneyPrinterTurbo), que se
-instala aparte y pide sus propias claves de API. Las otras dos son
-autosuficientes.
+- `skills/video-cut/assets/fonts/LICENCIAS.md` — las tres tipografías que trae y
+  cómo cambiarlas.
+- `skills/video-cut/assets/sfx/generar-sfx.py` — cómo están hechos los sonidos,
+  por si querés otros.
 
 ---
 
