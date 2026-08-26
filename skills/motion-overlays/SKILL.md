@@ -251,7 +251,7 @@ Abre cada archivo en Chrome y verifica:
 Además del README en prosa, cada proyecto entrega un **`overlays.json`**: la misma
 información en formato legible por máquina, para que un editor —humano o agente— coloque
 los clips sin abrir los HTML. Esquema en `spec/overlay-manifest.schema.json`;
-ejemplo completo en `examples/dependencia-del-dueno/overlays.json`.
+el manifiesto se describe entero en `spec/overlay-manifest.schema.json`.
 
 Contiene, por overlay: archivo, duración exacta, concepto, metáfora, frase del guion,
 **palabra de entrada y de salida** (con su índice dentro de la frase), los beats internos
@@ -302,7 +302,7 @@ video, un pipeline de generación), el contrato es:
 | Tokens del sistema visual (color, tipografía, tiempos, densidad) | `spec/design-tokens.json` |
 | Catálogo de estilos y cuándo aplicar cada uno | `spec/styles.json` |
 | Forma del manifiesto de salida | `spec/overlay-manifest.schema.json` |
-| Ejemplo completo y funcionando | `examples/dependencia-del-dueno/` |
+| Formato del manifiesto de montaje | `spec/overlay-manifest.schema.json` |
 | Errores conocidos que no dan error en consola | `references/pitfalls.md` |
 
 Y en tiempo de ejecución, cada HTML expone:

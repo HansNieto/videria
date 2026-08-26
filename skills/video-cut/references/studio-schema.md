@@ -211,6 +211,12 @@ decenas de filtros.
   desaparece, el render avisa y usa `src` perdiendo la transparencia.
 - Un `.mov` ProRes 4444 funciona en el render pero no en el preview.
 - Los stickers son PNG normales: no llevan `seq` y no la necesitan.
+- **B-roll** (`"broll": true`): un plano de recurso que puso `vcut broll`. Es un
+  overlay corriente con `scale: 1` y del tamaño exacto del lienzo, porque el
+  clip se recorta al encuadre y se queda mudo *al descargarlo*, no al
+  renderizar. Lleva `stock: {query, autor, pagina, fuente}` para saber de dónde
+  salió y poder citarlo. Volver a correr `vcut broll` reemplaza los que tengan
+  esta marca y respeta el resto; con `--add` no borra nada.
 - `in` de un audio es el punto de entrada dentro del archivo.
 - El ducking usa la voz de los clips como cadena lateral
   (`sidechaincompress`), así que la música baja sola cuando alguien habla.

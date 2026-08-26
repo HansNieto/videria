@@ -51,6 +51,7 @@ python $VCUT decide --project "C:/ruta/proyecto"
 python $VCUT edit --project "C:/ruta/proyecto"
 
 # 6. Subtítulos desde la transcripción y plataforma completa
+python $VCUT broll  --project "C:/ruta/proyecto" --dry-run   # planos de recurso
 python $VCUT subs   --project "C:/ruta/proyecto"
 python $VCUT studio --project "C:/ruta/proyecto"
 
@@ -270,6 +271,12 @@ python $VCUT subs --project "proj" [--style capcut] [--keywords "IA,ventas"]
 python $VCUT overlays --project "proj" [--place] [--fps 30] [--y 0.30]
                                        [--min-score 0.28] [--add] [--force]
 
+# BROLL — planos de recurso de Pexels sobre lo que se está diciendo
+python $VCUT broll --project "proj" --dry-run          # el plan, sin tocar la red
+python $VCUT broll --project "proj" [--plan broll/plan.json] [--every 3]
+                                    [--max 8] [--dur 2.6] [--kind video|photo]
+                                    [--candidates 10] [--add]
+
 # STICKERS — genera la librería (SVG editables -> PNG con alfa)
 python $VCUT stickers [--force] [--scale 3]
 
@@ -411,6 +418,41 @@ anterior/siguiente · `V` mover · `Z` encuadre · `S` cortar en el cabezal ·
 Guardar escribe `timeline.json` y, si se tocaron los cortes, también
 `project.json`. Ver `references/studio-schema.md` para el formato y para las
 decisiones de diseño que hay detrás.
+
+## B-roll: que no sea un plano fijo de alguien hablando
+
+`vcut broll` lee la transcripción, saca de cada tramo las palabras que lo
+describen, busca un clip en **Pexels** y lo deja puesto encima de esa frase. El
+resultado es un item normal de la pista de overlays: se mueve, se recorta y se
+borra como cualquier otro.
+
+**El paso obligatorio es mirar el plan antes de gastar peticiones.** La
+heurística elige por rareza de la palabra, y en castellano se le cuela algún
+verbo conjugado. Vos entendés la frase; ella no:
+
+```bash
+python $VCUT broll --project "proj" --dry-run     # escribe broll/plan.json
+# corregí las consultas que no describan una imagen
+python $VCUT broll --project "proj" --plan "proj/broll/plan.json"
+```
+
+Una consulta buena es un sustantivo concreto que se pueda fotografiar
+(*"factura electrónica"*, *"reunión equipo"*). Una mala es un verbo o un
+abstracto (*"definir debe"*, *"verdadero problema"*).
+
+**Qué pasa con cada clip.** Se descarga a `cache/broll/`, se recorta al encuadre
+del proyecto, se le quita el audio y se deja en `broll/` a la duración pedida.
+Por eso entra en el render y en el preview sin ningún tratamiento especial: para
+los dos es un overlay del tamaño exacto del lienzo. La voz sigue sonando debajo,
+porque el clip de stock llega mudo.
+
+**La clave** se busca en `PEXELS_API_KEY`, en `<proyecto>/credenciales.json` o en
+`~/.vcut/credenciales.json`, por ese orden. Es gratis
+(https://www.pexels.com/api/) y nunca se escribe en el proyecto. Sin clave, el
+comando explica dónde ponerla y no hace nada más.
+
+**Créditos.** Pexels no exige atribución pero la pide. Cada pasada deja
+`broll/CREDITOS.md` con el autor y el enlace de cada clip.
 
 ## Recursos gráficos y stickers
 

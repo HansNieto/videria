@@ -14,7 +14,9 @@ abre en el navegador. Podés usarlo de dos maneras:
 - **A mano**, con los comandos de `vcut` que están más abajo. No hace falta
   Claude Code para esto: es Python y ffmpeg.
 
-Todo el procesamiento ocurre en tu máquina. Los vídeos no salen a ningún lado.
+Todo el procesamiento ocurre en tu máquina y tus vídeos no salen a ningún lado.
+La única función que usa internet es el b-roll automático, que **descarga**
+clips de stock de Pexels; es opcional y no sube nada tuyo.
 
 ---
 
@@ -38,6 +40,10 @@ se abre en el navegador:
   arrastrando las manijas. Hay curvas listas (suave, frena, latigazo, rebote,
   anticipa, resorte) y sacando una manija fuera del cuadro el zoom se pasa de
   largo y vuelve.
+- **B-roll automático**: lee la transcripción, busca en Pexels un clip que
+  ilustre lo que se está diciendo y lo coloca sobre esa frase. Así el vídeo no
+  es un plano fijo de alguien hablando. Es lo único que sale a internet, es
+  opcional, y la clave de Pexels es gratis.
 - **Textos** que se mueven arrastrando sobre el preview.
 - **Transiciones** con golpe de sonido, que no consumen tiempo: son un acento
   centrado en el corte, no una mezcla de dos clips.
@@ -59,6 +65,7 @@ cortes no se lleva por delante el trabajo de post.
 | **flask, numpy, pillow** | editor, ondas, medir texto | `pip install flask numpy pillow` |
 | **faster-whisper** | transcribir | `pip install faster-whisper` |
 | Chrome o Edge | rasterizar los stickers | ya lo tenés |
+| Clave de Pexels | **solo** para el b-roll automático | gratis en [pexels.com/api](https://www.pexels.com/api/) |
 | Claude Code | opcional, para manejarlo hablando | [claude.com/claude-code](https://claude.com/claude-code) |
 
 Todo junto:
@@ -138,6 +145,11 @@ python $VCUT decide --project "C:/ruta/proyecto"
 
 # 5. Subtítulos desde la transcripción
 python $VCUT subs --project "C:/ruta/proyecto"
+
+# 5.bis. Planos de recurso (opcional, pide clave de Pexels).
+#        Primero el plan, se revisa, y después se descarga.
+python $VCUT broll --project "C:/ruta/proyecto" --dry-run
+python $VCUT broll --project "C:/ruta/proyecto" --plan "C:/ruta/proyecto/broll/plan.json"
 
 # 6. Una plantilla de montaje (subtítulos + zooms + transiciones de una)
 python $VCUT template apply --project "C:/ruta/proyecto" --name tiktok

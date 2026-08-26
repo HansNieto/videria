@@ -19,8 +19,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from vcutlib import (disfluencias, analyze, exporters, ingest, media, overlays,  # noqa: E402
                      pack as packmod, plan, qa, render as rendermod,
-                     stickers as stickermod, studio, subs as submod, templates,
-                     transcribe, util)
+                     stickers as stickermod, stock, studio, subs as submod,
+                     templates, transcribe, util)
 
 util.setup_stdio()
 
@@ -257,6 +257,83 @@ def cmd_overlays(args):
         studio.save(pdir, tl)
         res.update(rep)
     out(res)
+
+
+def cmd_broll(args):
+    """Planos de recurso de Pexels sobre lo que se esta diciendo."""
+    pdir, pfile, project = load_project(args)
+    tl = studio.load(pdir, project)
+    canvas = tl["canvas"]
+
+    if args.plan:
+        # Un plan revisado a mano (o por el agente) manda sobre la heuristica:
+        # elegir la palabra que se puede fotografiar se le da mejor a quien
+        # entiende la frase que a una lista de terminaciones.
+        entradas = util.read_json(Path(args.plan), None)
+        if isinstance(entradas, dict):
+            entradas = entradas.get("plan")
+        if not entradas:
+            raise SystemExit("El plan %s esta vacio o no se pudo leer" % args.plan)
+    else:
+        entradas = stock.plan(project, tl, cada=args.every, maximo=args.max,
+                              dur=args.dur)
+    if not entradas:
+        out({"ok": True, "colocados": 0,
+             "nota": "No hay tramos que pidan b-roll: o son muy cortos, o el "
+                     "texto no da palabras con las que buscar."})
+        return
+
+    if args.dry_run:
+        destino = Path(pdir) / "broll" / "plan.json"
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        util.write_json(destino, {"plan": entradas})
+        out({"ok": True, "dry_run": True, "plan": entradas,
+             "archivo": str(destino),
+             "nota": "Revisá las consultas y corregí las que no describan una "
+                     "imagen. Después: vcut broll --plan " + str(destino)})
+        return
+
+    key = stock.api_key(pdir)
+    if not key:
+        raise SystemExit(stock.donde_va_la_clave(pdir))
+
+    vertical = int(canvas["height"]) >= int(canvas["width"])
+    puestos, sin_sitio = [], []
+    for i, e in enumerate(entradas, 1):
+        util.eprint("  [%d/%d] %s" % (i, len(entradas), e["query"]))
+        try:
+            res = stock.buscar(e["query"], key, vertical=vertical,
+                               kind=args.kind, per_page=args.candidates)
+            hit = stock.elegir(res, canvas, e["dur"], kind=args.kind)
+        except RuntimeError as err:
+            raise SystemExit(str(err))
+        if not hit:
+            sin_sitio.append({"seg": e["seg"], "query": e["query"],
+                              "motivo": "sin resultados usables"})
+            continue
+        crudo = Path(pdir) / "cache" / "broll" / ("%s-%d.mp4" % (stock._slug(e["query"]), i))
+        try:
+            stock.descargar(hit["url"], crudo)
+            # Del clip de stock se toma el centro: el arranque suele ser el
+            # peor fotograma y el final suele venir con corte.
+            arranca = max(0.0, ((hit.get("dur") or e["dur"]) - e["dur"]) / 2.0)
+            final = Path(pdir) / "broll" / ("%s-%d.mp4" % (stock._slug(e["query"]), i))
+            stock.normalizar(crudo, final, canvas, e["dur"], empieza=arranca)
+        except Exception as err:                       # noqa: BLE001
+            sin_sitio.append({"seg": e["seg"], "query": e["query"],
+                              "motivo": str(err)[:120]})
+            continue
+        puestos.append(dict(e, path=final, autor=hit.get("autor", ""),
+                            pagina=hit.get("pagina", "")))
+
+    items = stock.colocar(tl, puestos, reemplazar=not args.add)
+    studio.save(pdir, tl)
+    cred = stock.creditos(pdir, puestos) if puestos else None
+    out({"ok": True, "colocados": len(items), "sin_sitio": sin_sitio,
+         "creditos": str(cred) if cred else None,
+         "items": [{"id": it["id"], "seg": it["anchor"]["seg"],
+                    "dur": it["dur"], "query": it["stock"]["query"]}
+                   for it in items]})
 
 
 def cmd_stickers(args):
@@ -533,6 +610,25 @@ def build_parser():
                     help="No quitar los overlays colocados antes")
     sp.add_argument("--force", action="store_true", help="Reconvertir aunque exista")
     sp.set_defaults(func=cmd_overlays)
+
+    sp = sub.add_parser("broll", help="Planos de recurso de Pexels sobre lo "
+                                     "que se esta diciendo")
+    add_project(sp)
+    sp.add_argument("--every", type=int, default=3,
+                    help="Uno de cada cuantos tramos lleva plano de recurso")
+    sp.add_argument("--max", type=int, default=8, help="Tope de planos")
+    sp.add_argument("--dur", type=float, default=2.6,
+                    help="Segundos que dura cada plano")
+    sp.add_argument("--kind", choices=["video", "photo"], default="video")
+    sp.add_argument("--candidates", type=int, default=10,
+                    help="Resultados que se piden a Pexels por busqueda")
+    sp.add_argument("--add", action="store_true",
+                    help="Sumar a los que ya hay en vez de reemplazarlos")
+    sp.add_argument("--dry-run", action="store_true",
+                    help="Escribe el plan en broll/plan.json y no toca la red")
+    sp.add_argument("--plan", default=None,
+                    help="Usar un plan ya revisado en vez de calcularlo")
+    sp.set_defaults(func=cmd_broll)
 
     sp = sub.add_parser("stickers", help="Genera la libreria de stickers "
                                         "(SVG editables -> PNG con alfa)")

@@ -12,3 +12,7 @@ claves*.md
 config.toml
 *.env
 .env*
+
+# Ejemplos con guiones de videos reales: no viajan al repo.
+skills/motion-overlays/examples/
+credenciales.json

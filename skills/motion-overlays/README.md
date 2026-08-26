@@ -49,8 +49,7 @@ motion-overlays/
 │   ├── preview-template.html   galería 00-preview.html
 │   ├── estilos.html            muestrario 00-estilos.html
 │   └── capture.mjs             captura frame a frame con alfa
-└── examples/
-    └── dependencia-del-dueno/  proyecto completo verificado: 6 escenas + manifiesto
+└── spec/                       esquema del manifiesto y tokens del sistema
 ```
 
 ## Instalar
