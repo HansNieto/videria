@@ -365,7 +365,8 @@ ST.timeline = (() => {
     } else if (drag.kind === 'imove') {
       const { it } = st.findItem(drag.id);
       if (!it) return;
-      const nt = Math.max(0, drag.start + dt);
+      const snapped = snapItemTime(drag.id, Math.max(0, drag.start + dt), drag.dur);
+      const nt = nonOverlappingStart(drag.id, snapped, drag.dur);
       if (it.anchor) {
         const a = st.anchorAt(nt);
         if (a) it.anchor = Object.assign({}, it.anchor, a);
@@ -378,9 +379,14 @@ ST.timeline = (() => {
       const { it } = st.findItem(drag.id);
       if (!it) return;
       if (drag.side === 'r') {
-        it.dur = +Math.max(0.1, drag.dur + dt).toFixed(3);
+        let end = snapItemEdge(drag.id, drag.start + Math.max(0.1, drag.dur + dt));
+        end = Math.min(end, subtitleRightLimit(drag.id, drag.start));
+        it.dur = +Math.max(0.1, end - drag.start).toFixed(3);
       } else {
-        const shift = clamp(dt, -drag.start, drag.dur - 0.1);
+        const raw = clamp(drag.start + dt, 0, drag.start + drag.dur - 0.1);
+        const snapped = Math.max(snapItemEdge(drag.id, raw),
+                                 subtitleLeftLimit(drag.id, drag.start + drag.dur));
+        const shift = snapped - drag.start;
         it.dur = +Math.max(0.1, drag.dur - shift).toFixed(3);
         if (it.anchor) {
           it.anchor.offset = +((+it.anchor.offset || 0) + shift).toFixed(3);
@@ -404,6 +410,78 @@ ST.timeline = (() => {
         w.e = +((+w.e || 0) + delta).toFixed(3);
       }
     }
+  }
+
+  // Ajuste magnetico: al acercar un borde a otro objeto de la misma pista,
+  // se alinea. No crea grupos ni cambia la duracion de nadie mas.
+  const SNAP_PX = 8;
+  function snapItemEdge(id, value) {
+    const { trk } = st.findItem(id);
+    if (!trk) return value;
+    const edges = [];
+    for (const other of trk.items || []) {
+      if (other.id === id || other.hidden) continue;
+      const r = S.items.find((x) => x.id === other.id);
+      if (!r) continue;
+      edges.push(r.t, r.t_end);
+    }
+    let best = value, dist = SNAP_PX / Math.max(1, S.pps);
+    for (const edge of edges) {
+      const d = Math.abs(edge - value);
+      if (d < dist) { best = edge; dist = d; }
+    }
+    return +best.toFixed(3);
+  }
+
+  function snapItemTime(id, start, dur) {
+    const a = snapItemEdge(id, start);
+    const b = snapItemEdge(id, start + dur);
+    // Si ambos bordes encuentran candidatos, gana el que este mas cerca.
+    return Math.abs(a - start) <= Math.abs(b - (start + dur)) ? a : +(b - dur).toFixed(3);
+  }
+
+  function subtitleRanges(id) {
+    const { trk } = st.findItem(id);
+    if (!trk || trk.id !== 't_sub') return null;
+    return S.items.filter((x) => x.track === trk.id && x.id !== id)
+      .map((x) => ({ t: x.t, end: x.t_end })).sort((a, b) => a.t - b.t);
+  }
+
+  // Busca el hueco valido mas cercano. Asi una tarjeta de subtitulo puede
+  // moverse libremente, pero nunca queda dibujada encima de otra.
+  function nonOverlappingStart(id, wanted, dur) {
+    const ranges = subtitleRanges(id);
+    if (!ranges) return wanted;
+    const gaps = [];
+    let from = 0;
+    for (const r of ranges) {
+      if (r.t - from >= dur) gaps.push([from, r.t - dur]);
+      from = Math.max(from, r.end);
+    }
+    if (S.total - from >= dur) gaps.push([from, S.total - dur]);
+    if (!gaps.length) return wanted;
+    let best = gaps[0][0], dist = Infinity;
+    for (const [a, b] of gaps) {
+      const v = clamp(wanted, a, b);
+      const d = Math.abs(v - wanted);
+      if (d < dist) { best = v; dist = d; }
+    }
+    return +best.toFixed(3);
+  }
+
+  function subtitleRightLimit(id, start) {
+    const ranges = subtitleRanges(id);
+    if (!ranges) return Infinity;
+    const next = ranges.find((r) => r.t >= start + 0.001);
+    return next ? next.t : Infinity;
+  }
+
+  function subtitleLeftLimit(id, end) {
+    const ranges = subtitleRanges(id);
+    if (!ranges) return 0;
+    let limit = 0;
+    for (const r of ranges) if (r.end <= end + 0.001) limit = Math.max(limit, r.end);
+    return limit;
   }
 
   function onUp() {
@@ -506,7 +584,7 @@ ST.timeline = (() => {
     ST.app.menu(ev.clientX, ev.clientY, items);
   }
 
-  function splitAtPlayhead(segId) {
+  async function splitAtPlayhead(segId) {
     const clip = st.clipOf(segId);
     if (!clip || S.t <= clip.t0 + 0.06 || S.t >= clip.t1 - 0.06) {
       return ST.app.toast('Poné el cabezal dentro del clip', 'bad');
@@ -530,6 +608,27 @@ ST.timeline = (() => {
     // la segunda arranca limpia para no heredar un zoom a medias.
     st.resolve();
     ST.app.renderAll();
+    // Las tarjetas automaticas se derivan de las palabras de cada mitad. Se
+    // regeneran solo para los dos clips nuevos, preservando textos manuales.
+    await ST.app.regenSubs([seg.id, b.id]);
+  }
+
+  function trimAtPlayhead(side) {
+    const clip = st.clipAt(S.t);
+    if (!clip || S.t <= clip.t0 + 0.06 || S.t >= clip.t1 - 0.06) {
+      return ST.app.toast('Poné el cabezal dentro del clip', 'bad');
+    }
+    st.push();
+    const seg = st.segOf(clip.seg);
+    const cutSrc = seg.in + (S.t - clip.t0) * clip.speed;
+    if (side === 'left') seg.in = cutSrc;
+    else seg.out = cutSrc;
+    seg.words = (seg.words || []).filter((w) => side === 'left' ? w.e > cutSrc : w.s < cutSrc);
+    seg.text = seg.words.map((w) => w.w).join(' ');
+    seg.locked = true;
+    st.resolve();
+    ST.app.renderAll();
+    ST.app.regenSubs([seg.id]);
   }
 
   /* -------------------------------------------------------- arrastrar aqui */
@@ -584,5 +683,5 @@ ST.timeline = (() => {
     render();
   }
 
-  return { bind, render, movePlayhead, autoScroll, setZoom, splitAtPlayhead, ROWS };
+  return { bind, render, movePlayhead, autoScroll, setZoom, splitAtPlayhead, trimAtPlayhead, ROWS };
 })();

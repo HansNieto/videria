@@ -6,7 +6,7 @@
   --clip:#20304a; --clip-b:#3f5f96;
   --text-it:#6f4bd8; --ovl-it:#0f766e; --aud-it:#8a5a12; --sfx-it:#8f2f52;
   --radius:8px;
-  --h-top:50px; --h-tl:272px; --w-lib:236px; --w-insp:344px;
+  --h-top:50px; --h-tl:272px; --w-lib:236px; --w-preview:minmax(380px,42vw);
   --tl-name-w:118px;
 }
 *{box-sizing:border-box}
@@ -56,10 +56,12 @@ kbd{background:var(--panel3);border:1px solid var(--line2);border-radius:4px;
   border-radius:50%;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 
-#app{display:grid;grid-template-rows:var(--h-top) 1fr var(--h-tl);height:100vh}
+#app{display:grid;
+  grid-template-columns:var(--w-lib) minmax(460px,1fr) var(--w-preview);
+  grid-template-rows:var(--h-top) minmax(0,1fr) var(--h-tl);height:100vh}
 
 /* ---------------------------------------------------------------- topbar */
-.topbar{display:flex;align-items:center;gap:14px;padding:0 12px;
+.topbar{display:flex;grid-column:1/-1;grid-row:1;align-items:center;gap:14px;padding:0 12px;
   background:var(--panel);border-bottom:1px solid var(--line)}
 .brand{font-weight:700;letter-spacing:.5px;color:var(--accent)}
 .proj{display:flex;flex-direction:column;line-height:1.15;min-width:0}
@@ -70,10 +72,10 @@ kbd{background:var(--panel3);border:1px solid var(--line2);border-radius:4px;
 .dot.dirty{background:var(--warn)}
 
 /* ------------------------------------------------------------------ main */
-.main{display:grid;grid-template-columns:var(--w-lib) 1fr var(--w-insp);min-height:0}
+.main{display:contents}
 
 /* librería */
-.lib{display:grid;grid-template-rows:auto 1fr;min-height:0;background:var(--panel);
+.lib{display:grid;grid-column:1;grid-row:2;grid-template-rows:auto 1fr;min-height:0;background:var(--panel);
   border-right:1px solid var(--line)}
 .lib-tabs{display:flex;gap:2px;padding:6px;border-bottom:1px solid var(--line)}
 .lt{flex:1;justify-content:center;background:transparent;border-color:transparent;
@@ -97,7 +99,7 @@ kbd{background:var(--panel3);border:1px solid var(--line2);border-radius:4px;
 .lib-search{margin-bottom:8px}
 
 /* escenario */
-.stage{display:grid;grid-template-rows:auto 1fr auto;min-width:0;background:#05060a}
+.stage{display:grid;grid-column:3;grid-row:2/4;grid-template-rows:auto 1fr auto;min-width:0;background:#05060a}
 .stage-top{display:flex;align-items:center;gap:12px;padding:6px 10px;
   background:var(--panel);border-bottom:1px solid var(--line);font-size:12px}
 .seg{display:flex;border:1px solid var(--line2);border-radius:6px;overflow:hidden}
@@ -119,13 +121,15 @@ kbd{background:var(--panel3);border:1px solid var(--line2);border-radius:4px;
 .canvas-box .empty{position:absolute;inset:0;display:grid;place-content:center;
   color:var(--tx3);font-size:12px}
 .transport{display:flex;align-items:center;gap:9px;padding:7px 11px;
-  background:var(--panel);border-top:1px solid var(--line)}
+  background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+.cut-actions{display:flex;align-items:center;gap:4px;padding-left:4px;border-left:1px solid var(--line)}
+.cut-actions button{padding:5px 7px;font-size:11px}
 .tc{font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.3px}
 .zoomctl{display:flex;align-items:center;gap:7px;color:var(--tx2);font-size:11.5px;width:190px}
 
 /* inspector */
-.insp{display:grid;grid-template-rows:auto 1fr;min-height:0;background:var(--panel);
-  border-left:1px solid var(--line)}
+.insp{display:grid;grid-column:2;grid-row:2;grid-template-rows:auto 1fr;min-height:0;background:var(--panel);
+  border-right:1px solid var(--line)}
 .insp-head{padding:9px 12px;border-bottom:1px solid var(--line);font-size:12px;
   font-weight:600;display:flex;align-items:center;gap:8px}
 .insp-head .tag{font-weight:500;font-size:10px;text-transform:uppercase;
@@ -183,7 +187,7 @@ kbd{background:var(--panel3);border:1px solid var(--line2);border-radius:4px;
 .kfrow .kfease:disabled{opacity:.4}
 
 /* ---------------------------------------------------------------- timeline */
-.tl{display:grid;grid-template-rows:22px 1fr;background:var(--panel);
+.tl{display:grid;grid-column:1/3;grid-row:3;grid-template-rows:22px 1fr;background:var(--panel);
   border-top:1px solid var(--line);min-height:0}
 .tl-head{display:grid;grid-template-columns:var(--tl-name-w) 1fr;border-bottom:1px solid var(--line)}
 .tl-names{border-right:1px solid var(--line)}

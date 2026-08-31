@@ -156,6 +156,9 @@ ST.inspector = (() => {
         if (done) st.push();
         st.setClip(seg, { speed: +v.toFixed(3) });
         commit();
+        // Los tiempos de palabra se expresan en tiempo de salida: al cambiar
+        // velocidad, regenerarlos evita que los subtitulos se adelanten o atrasen.
+        if (done) ST.app.regenSubs([seg]);
       }));
     gt.appendChild(el('p', 'note', 'Duración: ' + clip.srcDur.toFixed(2) + 's de origen → ' +
       clip.dur.toFixed(2) + 's en la secuencia.'));
@@ -922,6 +925,32 @@ ST.inspector = (() => {
     g.appendChild(num('duración', +it.dur || 0, 0.05, (v) => {
       st.push(); it.dur = Math.max(0.1, v); commit();
     }, 0.1));
+    if (resolved.track === 't_sub') {
+      g.appendChild(slider('velocidad', +it.subtitle_speed || 1, 0.5, 2, 0.05,
+        (v) => v.toFixed(2) + '×', (v, done) => {
+          if (done) st.push();
+          const oldRate = +it.subtitle_speed || 1;
+          const oldDur = Math.max(0.1, +it.dur || resolved.dur || 0.1);
+          let newDur = oldDur * oldRate / Math.max(0.01, v);
+          const next = S.items.filter((x) => x.track === 't_sub' && x.id !== it.id &&
+                                      x.t >= resolved.t + 0.001)
+            .sort((a, b) => a.t - b.t)[0];
+          if (next) newDur = Math.min(newDur, Math.max(0.1, next.t - resolved.t));
+          const ratio = newDur / oldDur;
+          for (const ln of it.lines || []) {
+            for (const w of ln) {
+              w.s = +((+w.s || 0) * ratio).toFixed(3);
+              w.e = +((+w.e || 0) * ratio).toFixed(3);
+            }
+          }
+          it.dur = +newDur.toFixed(3);
+          it.subtitle_speed = +(oldRate / ratio).toFixed(3);
+          it.auto = false;
+          commit();
+        }));
+      g.appendChild(el('p', 'note',
+        'Acelera o ralentiza el revelado de palabras sin invadir el siguiente subtítulo.'));
+    }
     const anchored = !!it.anchor;
     const a = el('input'); a.type = 'checkbox'; a.checked = anchored;
     a.title = 'Anclado a un clip: si el clip se mueve o se recorta, esto lo sigue';

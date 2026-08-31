@@ -207,6 +207,13 @@ La documentación de verdad está adentro de cada skill:
 - `skills/video-cut/assets/sfx/generar-sfx.py` — cómo están hechos los sonidos,
   por si querés otros.
 
+Tutoriales visuales por rol:
+
+- [`docs/tutorial-propietario.html`](docs/tutorial-propietario.html) — preparar,
+  subir, recibir y renderizar cada vídeo.
+- [`docs/tutorial-revisor.html`](docs/tutorial-revisor.html) — descargar,
+  corregir y entregar una revisión creativa.
+
 ---
 
 ## Editar entre dos máquinas

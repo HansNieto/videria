@@ -488,6 +488,31 @@ ST.player = (() => {
       ctx.strokeRect(W * 0.06, H * 0.10, W * 0.88, H * 0.74);
       ctx.setLineDash([]);
     }
+    if (S.tiktokUi) {
+      // Referencia visual solamente: se pinta despues de todo el preview y
+      // nunca entra en timeline.json ni en el grafo de ffmpeg.
+      ctx.save();
+      ctx.fillStyle = '#ffffffd9';
+      ctx.strokeStyle = '#000b';
+      ctx.lineWidth = 5 / k;
+      ctx.font = '700 ' + (42 / k) + 'px system-ui,sans-serif';
+      ctx.textAlign = 'center';
+      const x = W * 0.91;
+      const ys = [H * 0.53, H * 0.63, H * 0.73, H * 0.83];
+      const icons = ['♡', '◌', '↗', '♫'];
+      for (let i = 0; i < icons.length; i++) {
+        ctx.strokeText(icons[i], x, ys[i]);
+        ctx.fillText(icons[i], x, ys[i]);
+      }
+      ctx.strokeStyle = '#ff5f7ea8';
+      ctx.setLineDash([10 / k, 7 / k]);
+      ctx.strokeRect(W * 0.765, H * 0.485, W * 0.20, H * 0.38);
+      ctx.setLineDash([]);
+      ctx.font = '600 ' + (20 / k) + 'px system-ui,sans-serif';
+      ctx.fillStyle = '#ffb4c2';
+      ctx.fillText('zona TikTok', W * 0.84, H * 0.47);
+      ctx.restore();
+    }
     // Caja del texto seleccionado y encuadre del clip en modo reencuadre.
     if (S.sel && S.sel.kind === 'item') {
       const it = S.items.find((x) => x.id === S.sel.id);

@@ -60,6 +60,7 @@
         <div class="spacer"></div>
         <label class="chk"><input type="checkbox" id="chkGuides"> guías</label>
         <label class="chk"><input type="checkbox" id="chkSafe"> zona segura</label>
+        <label class="chk"><input type="checkbox" id="chkTikTok"> interfaz TikTok</label>
         <span class="muted" id="stageInfo"></span>
       </div>
 
@@ -75,9 +76,16 @@
       <div class="transport">
         <button class="icon" id="btnHome" title="Inicio (Home)">⏮</button>
         <button class="icon" id="btnPrev" title="Clip anterior (,)">◀◀</button>
+        <button class="icon" id="btnBackFrame" title="Retroceder un fotograma (←)">◀</button>
         <button class="icon big primary" id="btnPlay" title="Reproducir (Espacio)">▶</button>
+        <button class="icon" id="btnForwardFrame" title="Avanzar un fotograma (→)">▶</button>
         <button class="icon" id="btnNext" title="Clip siguiente (.)">▶▶</button>
         <button class="icon" id="btnEnd" title="Final (End)">⏭</button>
+        <span class="cut-actions" aria-label="Opciones de corte">
+          <button id="btnCutLeft" title="Elimina la parte izquierda del clip hasta el cabezal">recortar izquierda</button>
+          <button id="btnSplit" title="Divide el clip en el cabezal (S)">dividir</button>
+          <button id="btnCutRight" title="Elimina la parte derecha del clip desde el cabezal">recortar derecha</button>
+        </span>
         <span class="tc"><b id="tCur">00:00.00</b><span class="muted"> / </span><span id="tTot" class="muted">00:00.00</span></span>
         <div class="spacer"></div>
         <label class="chk"><input type="checkbox" id="chkAudio" checked> audio</label>

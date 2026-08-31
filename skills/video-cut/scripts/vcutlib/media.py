@@ -33,7 +33,7 @@ def nvenc_available():
                   "-f", "lavfi", "-i", "color=c=black:s=256x144:r=25:d=0.2",
                   "-c:v", "h264_nvenc", "-f", "null", "-"])
         _NVENC = True
-    except RuntimeError:
+    except (RuntimeError, OSError):
         _NVENC = False
     return _NVENC
 

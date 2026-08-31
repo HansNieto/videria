@@ -114,7 +114,9 @@ def cards_for_clip(clip, seg, style, canvas_w, project_dir=None,
     for a, b in zip(out, out[1:]):
         limit = b["anchor"]["offset"] - 0.02
         if a["anchor"]["offset"] + a["dur"] > limit:
-            a["dur"] = round(max(0.2, limit - a["anchor"]["offset"]), 3)
+            # Nunca se solapan: es preferible una tarjeta muy breve a dos
+            # subtitulos encima. El siguiente bloque conserva el texto entero.
+            a["dur"] = round(max(0.02, limit - a["anchor"]["offset"]), 3)
     return out
 
 

@@ -10,7 +10,7 @@ ST.S = {
   clips: [], items: [], trans: [], total: 0,
   t: 0, playing: false, sel: null,
   pps: 70, dirty: false, undo: [], redo: [],
-  mode: 'select', guides: false, safe: false, audio: true,
+  mode: 'select', guides: false, safe: false, tiktokUi: false, audio: true,
   sources: {},
 };
 

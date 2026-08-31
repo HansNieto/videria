@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Videria · Tutorial del revisor</title>
+  <link rel="stylesheet" href="tutorial.css">
+</head>
+<body data-role="revisor">
+<header><div class="shell">
+  <div class="eyebrow">Videria · flujo por rol</div>
+  <h1>Tú corriges y das el toque creativo.</h1>
+  <p class="lead">Trabajas con proxies livianos. Puedes ajustar la edición completa sin descargar los vídeos 4K ni hacer el render final.</p>
+  <div class="role"><i></i><b>Rol: revisor creativo</b></div>
+</div></header>
+<div class="shell layout">
+  <nav>
+    <a href="#mapa">Mapa rápido</a><a href="#una-vez">Preparar una vez</a>
+    <a href="#recibir">Recibir un vídeo</a><a href="#editar">Qué revisar</a>
+    <a href="#entregar">Entregar</a><a href="#actualizar">Actualizar Videria</a>
+    <a href="#reglas">Reglas importantes</a>
+  </nav>
+  <main>
+    <section id="mapa">
+      <h2>Tu flujo</h2>
+      <div class="flow"><div><b>01</b><span>Pull o clone</span></div><div><b>02</b><span>Abrir Studio</span></div><div><b>03</b><span>Corregir y guardar</span></div><div><b>04</b><span>Commit y push</span></div></div>
+      <div class="note">Los proxies son copias de baja resolución para editar. El propietario conservará los originales y hará el render final.</div>
+    </section>
+
+    <section id="una-vez">
+      <h2>Preparación de una sola vez</h2>
+      <div class="steps">
+        <article class="step"><h3>Instala herramientas</h3><p>Necesitas Python, Git, ffmpeg y GitHub CLI.</p><pre>pip install flask numpy pillow
+gh auth login</pre></article>
+        <article class="step"><h3>Clona e instala Videria</h3><pre>git clone https://github.com/HansNieto/videria.git
+cd videria
+.\instalar.ps1</pre></article>
+        <article class="step"><h3>Acepta la invitación</h3><p>El propietario debe agregarte como colaborador de cada repositorio privado.</p></article>
+      </div>
+    </section>
+
+    <section id="recibir">
+      <h2>Recibir un proyecto</h2>
+      <p>La primera vez, clona la URL que te envíen:</p>
+      <pre>cd C:\Videria\revisiones
+git clone URL-DEL-REPOSITORIO
+cd videria-V021-precio-servicio</pre>
+      <p>Si ya lo habías descargado, no lo clones otra vez:</p>
+      <pre>cd C:\Videria\revisiones\videria-V021-precio-servicio
+git status
+git pull</pre>
+      <div class="warning"><b>Antes de editar:</b> <code>git status</code> debe estar limpio y <code>git pull</code> debe terminar correctamente.</div>
+      <pre>$VCUT = "$env:USERPROFILE\.claude\skills\video-cut\scripts\vcut.py"
+python $VCUT studio --project .</pre>
+    </section>
+
+    <section id="editar">
+      <h2>Lista de revisión creativa</h2>
+      <label class="check"><input type="checkbox"><span>Escuchar todo el discurso: sin palabras cortadas, repeticiones ni saltos de intención.</span></label>
+      <label class="check"><input type="checkbox"><span>Corregir textos y verificar que ningún subtítulo se superponga.</span></label>
+      <label class="check"><input type="checkbox"><span>Revisar encuadres y zooms; evitar movimientos repetidos o bruscos sin intención.</span></label>
+      <label class="check"><input type="checkbox"><span>Activar “interfaz TikTok” y mantener textos fuera de la zona de iconos.</span></label>
+      <label class="check"><input type="checkbox"><span>Revisar transiciones y SFX; no colocar un efecto en cada corte.</span></label>
+      <label class="check"><input type="checkbox"><span>Comprobar música, volumen y ducking.</span></label>
+      <label class="check"><input type="checkbox"><span>Sacar un borrador con el botón <b>Borrador</b> y mirarlo de principio a fin.</span></label>
+      <label class="check"><input type="checkbox"><span>Guardar con <code>Ctrl+S</code>.</span></label>
+      <div class="warning">Si añades imágenes, música, sonidos u overlays, impórtalos desde el Studio y verifica que aparezcan dentro de <code>assets/</code>. Una ruta a tu Escritorio no funcionará en la máquina del propietario.</div>
+    </section>
+
+    <section id="entregar">
+      <h2>Entregar la revisión</h2>
+      <p>Cierra el Studio después de guardar y ejecuta:</p>
+      <pre>git status
+git add -A
+git commit -m "Revisión creativa lista para render"
+git pull --rebase
+git push</pre>
+      <div class="success">Cuando <code>git push</code> termina sin errores, la revisión está entregada. El propietario recibe un aviso y renderiza desde sus originales.</div>
+      <p>No crees archivos llamados <code>final-final</code>. El commit de Git ya identifica la versión entregada.</p>
+    </section>
+
+    <section id="actualizar">
+      <h2>Cuando actualicemos la app</h2>
+      <p>Los proyectos no se reinstalan. Solo actualizas la carpeta de Videria y vuelves a copiar sus skills:</p>
+      <pre>cd C:\ruta\a\videria
+git status
+git pull
+.\instalar.ps1</pre>
+      <p>Cierra los Studio abiertos y vuelve a ejecutarlos. Si el propietario avisa que un proyecto requiere una versión nueva, actualiza antes de tocarlo.</p>
+      <div class="warning">Si <code>git status</code> dentro de la app muestra archivos modificados, no hagas pull a ciegas. Envía una captura al propietario.</div>
+    </section>
+
+    <section id="reglas">
+      <h2>Reglas que evitan problemas</h2>
+      <table><thead><tr><th>Haz</th><th>Evita</th></tr></thead><tbody>
+        <tr><td><code>git pull</code> antes de empezar.</td><td>Editar los dos al mismo tiempo.</td></tr>
+        <tr><td>Guardar y hacer un solo commit claro.</td><td>Subir MP4 finales o material original.</td></tr>
+        <tr><td>Usar proxies para el borrador.</td><td>Usar el borrador como archivo publicable.</td></tr>
+        <tr><td>Comunicar cualquier error de Git.</td><td>Resolver un conflicto borrando JSON al azar.</td></tr>
+      </tbody></table>
+    </section>
+  </main>
+</div>
+<footer><div class="shell">Videria · Tutorial del revisor creativo · flujo v1</div></footer>
+<script src="tutorial.js"></script>
+</body></html>

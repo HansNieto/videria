@@ -358,6 +358,14 @@ ST.app = (() => {
     $('btnEnd').onclick = () => ST.player.seek(S.total);
     $('btnPrev').onclick = () => gotoClip(-1);
     $('btnNext').onclick = () => gotoClip(1);
+    $('btnBackFrame').onclick = () => ST.player.seek(S.t - 1 / (S.tl.canvas.fps || 30));
+    $('btnForwardFrame').onclick = () => ST.player.seek(S.t + 1 / (S.tl.canvas.fps || 30));
+    $('btnCutLeft').onclick = () => ST.timeline.trimAtPlayhead('left');
+    $('btnSplit').onclick = () => {
+      const clip = st.clipAt(S.t);
+      if (clip) ST.timeline.splitAtPlayhead(clip.seg);
+    };
+    $('btnCutRight').onclick = () => ST.timeline.trimAtPlayhead('right');
     $('btnSave').onclick = save;
     $('btnUndo').onclick = () => st.undo();
     $('btnRedo').onclick = () => st.redo();
@@ -366,6 +374,7 @@ ST.app = (() => {
     $('tlZoom').oninput = (ev) => ST.timeline.setZoom(+ev.target.value);
     $('chkGuides').onchange = (ev) => { S.guides = ev.target.checked; ST.player.paint(); };
     $('chkSafe').onchange = (ev) => { S.safe = ev.target.checked; ST.player.paint(); };
+    $('chkTikTok').onchange = (ev) => { S.tiktokUi = ev.target.checked; ST.player.paint(); };
     $('chkAudio').onchange = (ev) => { S.audio = ev.target.checked; ST.player.seek(S.t); };
     for (const b of document.querySelectorAll('#modeSeg button')) {
       b.onclick = () => setMode(b.dataset.mode);
