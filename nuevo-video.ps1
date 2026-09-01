@@ -19,6 +19,10 @@ param(
     # tiny | base | small | medium | large-v3. medium es el equilibrio bueno.
     [string]$Modelo = "medium",
 
+    # Codigo ISO del idioma. Los videos de Videria son en espanol; fijarlo evita
+    # que un primer clip vacio haga que Whisper detecte ingles para todo el lote.
+    [string]$Idioma = "es",
+
     # name (por nombre de archivo) o date (por fecha de grabacion).
     [string]$Orden = "name",
 
@@ -58,7 +62,7 @@ Write-Host "Plantilla: $(if ($SoloCortes) { '(ninguna)' } else { $Plantilla })"
 #    material con el modelo medium.
 Paso 1 "Transcribiendo y cortando (lo lento; podes ir a por un cafe)"
 python $VCUT run $Videos --project $Proyecto --sort $Orden --model $Modelo `
-    --proxy-all --height 640
+    --lang $Idioma --proxy-all --height 640
 if ($LASTEXITCODE -ne 0) { Morir "fallo el paso run" }
 
 # 2. Contrastar los cortes con el audio real y recortar el aire que sobra.
