@@ -40,24 +40,31 @@ gh auth login</pre></article>
 
     <section id="cada-video">
       <h2>Qué hacer con cada vídeo</h2>
-      <label class="check"><input type="checkbox"><span>Crear una carpeta como <code>V021-precio-servicio</code>.</span></label>
+      <label class="check"><input type="checkbox"><span>Crear la carpeta dentro de <code>videria\videos</code>, por ejemplo <code>videos\video21</code>.</span></label>
       <label class="check"><input type="checkbox"><span>Copiar dentro todos los MOV/MP4 originales y no volver a renombrarlos.</span></label>
-      <label class="check"><input type="checkbox"><span>Ejecutar el pipeline automático.</span></label>
+      <h3>La opción fácil: pedírselo a Codex</h3>
+      <p>No necesitas abrir PowerShell. Escribe este mensaje en una tarea de Codex, cambiando solamente el número de vídeo:</p>
+      <pre>Preedita el video de esta carpeta:
+C:\Users\Hans\Documents\videria2.0\videria\videos\video17
+
+Usa la plantilla tiktok, no renderices todavía y abre el Studio al terminar.</pre>
+      <div class="success">Para la carpeta que aparece en tu captura, ese mensaje es suficiente. Codex ejecutará el proceso y te irá mostrando el progreso.</div>
+      <h3>La opción manual: ejecutar el comando tú mismo</h3>
+      <label class="check"><input type="checkbox"><span>Abrir PowerShell y ejecutar el pipeline automático.</span></label>
       <pre>cd C:\Users\Hans\Documents\videria2.0\videria
-.\nuevo-video.ps1 "C:\Users\Hans\Documents\videria2.0\V021-precio-servicio" &#96;
-  -Nombre "V021-precio-servicio" -Plantilla tiktok</pre>
+.\nuevo-video.ps1 ".\videos\video17" -Nombre "video17" -Plantilla tiktok</pre>
       <label class="check"><input type="checkbox"><span>Leer <code>review.md</code> y <code>qa.md</code>; comprobar que el discurso sea continuo.</span></label>
       <label class="check"><input type="checkbox"><span>Abrir el Studio, revisar los cortes y guardar con <code>Ctrl+S</code>.</span></label>
-      <div class="note">El proyecto aparecerá como <code>V021-precio-servicio-proyecto</code>. Los originales permanecen en la carpeta anterior.</div>
+      <div class="note">El procesamiento crea <code>videos\video17-proyecto</code> al lado de <code>videos\video17</code>. La primera carpeta es la edición; la segunda conserva los originales.</div>
     </section>
 
     <section id="enviar">
       <h2>Subir el proyecto para tu amigo</h2>
       <pre>$VCUT = "$env:USERPROFILE\.claude\skills\video-cut\scripts\vcut.py"
 python $VCUT repo init &#96;
-  --project "C:\Users\Hans\Documents\videria2.0\V021-precio-servicio-proyecto" &#96;
+  --project "C:\Users\Hans\Documents\videria2.0\videria\videos\video17-proyecto" &#96;
   --usuario HansNieto &#96;
-  --nombre "videria-V021-precio-servicio"</pre>
+  --nombre "videria-video17"</pre>
       <p>Abre el repositorio privado en GitHub y añade a tu amigo como colaborador. Envíale la URL y el tutorial del revisor.</p>
       <table><thead><tr><th>Sí viaja</th><th>No viaja</th></tr></thead><tbody><tr><td>Proxies, cortes, subtítulos, transcripciones, assets y timeline.</td><td>Originales, <code>local.json</code>, caché, credenciales y renders.</td></tr></tbody></table>
     </section>
@@ -66,12 +73,12 @@ python $VCUT repo init &#96;
       <h2>Recibir la revisión y renderizar</h2>
       <label class="check"><input type="checkbox"><span>Esperar el aviso “revisión lista”. No editen los dos al mismo tiempo.</span></label>
       <label class="check"><input type="checkbox"><span>Traer la edición en la misma carpeta local; no volver a clonar.</span></label>
-      <pre>git -C "C:\Users\Hans\Documents\videria2.0\V021-precio-servicio-proyecto" pull</pre>
+      <pre>git -C "C:\Users\Hans\Documents\videria2.0\videria\videos\video17-proyecto" pull</pre>
       <label class="check"><input type="checkbox"><span>Abrir Studio y comprobar cortes, subtítulos, música y overlays.</span></label>
-      <pre>python $VCUT studio --project "C:\Users\Hans\Documents\videria2.0\V021-precio-servicio-proyecto"</pre>
+      <pre>python $VCUT studio --project "C:\Users\Hans\Documents\videria2.0\videria\videos\video17-proyecto"</pre>
       <label class="check"><input type="checkbox"><span>Renderizar desde los originales.</span></label>
-      <pre>python $VCUT render --project "C:\Users\Hans\Documents\videria2.0\V021-precio-servicio-proyecto"</pre>
-      <div class="success">El MP4 final queda en <code>V021-precio-servicio-proyecto\exports\</code>.</div>
+      <pre>python $VCUT render --project "C:\Users\Hans\Documents\videria2.0\videria\videos\video17-proyecto"</pre>
+      <div class="success">El MP4 final queda en <code>videos\video17-proyecto\exports\</code>.</div>
     </section>
 
     <section id="actualizar">
@@ -88,7 +95,7 @@ git pull
     <section id="orden">
       <h2>Reglas para mantener todo ordenado</h2>
       <table><thead><tr><th>Elemento</th><th>Regla</th></tr></thead><tbody>
-        <tr><td>Originales</td><td>Una carpeta <code>V###-tema</code>; nunca se renombran tras procesar.</td></tr>
+        <tr><td>Originales</td><td>Una carpeta <code>videos\video##</code>; nunca se renombran tras procesar.</td></tr>
         <tr><td>Proyecto</td><td>La carpeta hermana terminada en <code>-proyecto</code>.</td></tr>
         <tr><td>GitHub</td><td>Un repositorio privado por vídeo: <code>videria-V###-tema</code>.</td></tr>
         <tr><td>Renders</td><td>Siempre dentro de <code>exports/</code>; Git los ignora.</td></tr>
