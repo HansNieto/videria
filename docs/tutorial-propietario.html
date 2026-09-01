@@ -47,12 +47,15 @@ gh auth login</pre></article>
       <pre>Preedita el video de esta carpeta:
 C:\Users\Hans\Documents\videria2.0\videria\videos\video17
 
-Usa la plantilla tiktok, no renderices todavía y abre el Studio al terminar.</pre>
+Usa la plantilla tiktok. Además, revisa el plan de B-roll, descarga recursos de Pexels y usa la skill motion-overlays para crear animaciones relacionadas con el guion. No renderices todavía y abre el Studio al terminar.</pre>
       <div class="success">Para la carpeta que aparece en tu captura, ese mensaje es suficiente. Codex ejecutará el proceso y te irá mostrando el progreso.</div>
       <h3>La opción manual: ejecutar el comando tú mismo</h3>
       <label class="check"><input type="checkbox"><span>Abrir PowerShell y ejecutar el pipeline automático.</span></label>
       <pre>cd C:\Users\Hans\Documents\videria2.0\videria
 .\nuevo-video.ps1 ".\videos\video17" -Nombre "video17" -Plantilla tiktok</pre>
+      <p>Ese comando prepara <code>broll\plan.json</code> y <code>recursos-pendientes.md</code>. Después de revisar las búsquedas y generar las animaciones, intégralo todo con:</p>
+      <pre>.\completar-recursos.ps1 ".\videos\video17-proyecto"</pre>
+      <div class="warning">Pexels necesita una clave configurada una sola vez en <code>C:\Users\Hans\.vcut\credenciales.json</code>, con el formato <code>{"pexels_api_key":"TU_CLAVE"}</code>. Ese archivo nunca se sube a GitHub.</div>
       <label class="check"><input type="checkbox"><span>Leer <code>review.md</code> y <code>qa.md</code>; comprobar que el discurso sea continuo.</span></label>
       <label class="check"><input type="checkbox"><span>Abrir el Studio, revisar los cortes y guardar con <code>Ctrl+S</code>.</span></label>
       <div class="note">El procesamiento crea <code>videos\video17-proyecto</code> al lado de <code>videos\video17</code>. La primera carpeta es la edición; la segunda conserva los originales.</div>

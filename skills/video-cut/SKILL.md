@@ -1,6 +1,12 @@
 ---
 name: video-cut
-description: Plataforma de edición de vídeo completa y local, tipo CapCut. Fase 1 — ordena varios vídeos, los transcribe, elimina silencios, detecta tomas repetidas y se queda con la buena, y arma un timeline plano sin renderizar ni perder calidad. Fase 2 (studio) — encima de esos cortes: subtítulos apilados con palabra resaltada generados desde la transcripción, textos que se mueven arrastrando sobre el preview, zooms con keyframes, transiciones con sonido, música con ducking, overlays, velocidad y color; y render final a MP4 con ffmpeg. Úsala cuando el usuario pida recortar/limpiar grabaciones, quitar silencios, elegir entre tomas repetidas, transcribir clips con timestamps, exportar un timeline a DaVinci Resolve / Premiere / Final Cut, o editar el vídeo entero — mover los textos, poner subtítulos, manipular zooms, añadir transiciones, música o efectos — y sacar el MP4 listo para subir. Trigger en "recortar videos", "quitar silencios", "tomas repetidas", "video plano", "limpiar grabación", "transcribir y cortar", "editor de cortes", "editor tipo capcut", "mover los textos", "subtítulos", "zooms", "transiciones", "renderizar el video", "exportar timeline", "FCPXML", "EDL", "sin renderizar".
+description: >-
+  Plataforma de edición de vídeo completa y local, tipo CapCut. Fase 1 ordena
+  varios vídeos, los transcribe, elimina silencios, detecta tomas repetidas y
+  arma un timeline sin renderizar. Fase 2 añade subtítulos, textos, zooms,
+  transiciones, música, overlays, velocidad y color, y renderiza a MP4. Úsala
+  para recortar o limpiar grabaciones, elegir tomas, transcribir, editar el
+  vídeo completo o exportar a DaVinci Resolve, Premiere o Final Cut.
 ---
 
 # vcut — cortar sin render, y editar todo lo demás encima

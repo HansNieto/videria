@@ -274,10 +274,15 @@ def place(project, tl, items, track_id="t_ovl", min_score=0.28, y=0.30,
             orphan.append({"name": ov["name"], "score": score,
                            "title": ov.get("title")})
             continue
-        # Centrado en el clip: si el overlay es mas largo que el clip, empieza
-        # con el y se corta donde acabe el clip.
-        dur = min(float(ov["dur"]), clip["dur"])
+        # Centrado si cabe en el clip. Si dura más, puede continuar encima de
+        # los clips siguientes: la pista de overlays es independiente y cortar
+        # aquí elimina precisamente el clímax o la salida de la animación.
+        dur = float(ov["dur"])
         offset = max(0.0, (clip["dur"] - dur) / 2.0)
+        # Solo se limita contra el final real de la secuencia.
+        total = float(res.get("duration") or 0.0)
+        if total:
+            dur = min(dur, max(0.0, total - (clip["t0"] + offset)))
         sc = scale if scale is not None else _fit_scale(ov, canvas)
         item = {
             "id": studio.new_id(tl, "o"),

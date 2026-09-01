@@ -4,7 +4,7 @@
 #   .\nuevo-video.ps1 "C:\ruta\videos" -Nombre tiktok-3 -Plantilla limpio
 #
 # Hace: ordenar -> transcribir -> cortar silencios y tomas repetidas ->
-# proxies -> subtitulos + zooms + transiciones -> abrir el editor.
+# proxies -> subtitulos + zooms + transiciones -> preparar recursos -> abrir el editor.
 
 param(
     [Parameter(Mandatory = $true, Position = 0)]
@@ -37,7 +37,10 @@ param(
 # stderr, y Windows PowerShell 5.1 convierte cualquier stderr de un ejecutable
 # nativo en un error terminante. El exito se comprueba con $LASTEXITCODE.
 $ErrorActionPreference = "Continue"
-$VCUT = Join-Path $env:USERPROFILE ".claude\skills\video-cut\scripts\vcut.py"
+$VCUT = Join-Path $PSScriptRoot "skills\video-cut\scripts\vcut.py"
+if (-not (Test-Path -LiteralPath $VCUT)) {
+    $VCUT = Join-Path $env:USERPROFILE ".claude\skills\video-cut\scripts\vcut.py"
+}
 
 function Morir($msg) { Write-Host $msg -ForegroundColor Red; exit 1 }
 
@@ -71,10 +74,37 @@ python $VCUT qa --project $Proyecto --write
 python $VCUT decide --project $Proyecto
 
 if (-not $SoloCortes) {
-    # 3. Subtitulos, zooms, transiciones y overlays de una vez.
+    # 3. Subtitulos, zooms y transiciones de una vez.
     Paso 3 "Aplicando la plantilla '$Plantilla'"
     python $VCUT template apply --project $Proyecto --name $Plantilla
     if ($LASTEXITCODE -ne 0) { Morir "fallo la plantilla" }
+
+    # 4. La descarga no se hace a ciegas: primero queda un plan de Pexels para
+    #    que el agente revise las búsquedas. Las animaciones también necesitan
+    #    entender el guion, por eso se deja un encargo explícito en el proyecto.
+    Paso 4 "Preparando la fase de recursos visuales"
+    python $VCUT broll --project $Proyecto --dry-run
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "No se pudo preparar el plan de B-roll; la edición base sí quedó lista." -ForegroundColor Yellow
+    }
+
+    $Encargo = Join-Path $Proyecto "recursos-pendientes.md"
+    @"
+# Recursos visuales pendientes
+
+Este proyecto ya tiene cortes, subtítulos, zooms y transiciones.
+
+Antes de compartirlo o renderizarlo:
+
+1. Revisar `broll/plan.json`: cada consulta debe describir una imagen concreta y relacionada con la frase.
+2. Usar la skill `motion-overlays` para crear animaciones transparentes de 2–6 segundos en los momentos que necesiten explicación visual.
+3. Capturar sus PNG dentro de `motion-overlays/frames/`.
+4. Ejecutar desde la carpeta de Videria:
+
+   .\completar-recursos.ps1 "$Proyecto"
+
+La clave de Pexels nunca debe guardarse dentro del repositorio.
+"@ | Set-Content -LiteralPath $Encargo -Encoding UTF8
 }
 
 $reloj.Stop()
@@ -83,12 +113,15 @@ Write-Host ("Listo en {0:mm\:ss}." -f $reloj.Elapsed) -ForegroundColor Green
 Write-Host "Revisa antes de editar:"
 Write-Host "  $Proyecto\review.md   <- el dialogo que quedo"
 Write-Host "  $Proyecto\qa.md       <- lo que dice el audio"
+if (-not $SoloCortes) {
+    Write-Host "  $Proyecto\recursos-pendientes.md <- animaciones y B-roll por completar"
+}
 Write-Host ""
 Write-Host "Cuando termines de editar:"
 Write-Host "  python `"$VCUT`" render --project `"$Proyecto`" --draft   (borrador)"
 Write-Host "  python `"$VCUT`" render --project `"$Proyecto`"           (final)"
 
 if (-not $NoAbrir) {
-    Paso 4 "Abriendo el studio"
+    Paso 5 "Abriendo el studio"
     python $VCUT studio --project $Proyecto
 }

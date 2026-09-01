@@ -27,6 +27,7 @@ from . import studio, util
 
 GITIGNORE = """# Lo que es de cada máquina, no del proyecto.
 local.json
+credenciales.json
 
 # Se regenera solo, y pesa.
 cache/

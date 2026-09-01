@@ -50,7 +50,10 @@ for (const file of files) {
 
   const url = pathToFileURL(path.resolve(file)).href +
               '?paused=1&loop=0' + (bg && bg !== true ? '&bg=' + bg : '');
-  await page.goto(url, { waitUntil: 'networkidle0' });
+  // Las páginas locales con GSAP no necesitan esperar actividad de red. El
+  // evento load confirma que las librerías locales ya están disponibles y
+  // evita timeouts falsos en equipos Windows.
+  await page.goto(url, { waitUntil: 'load', timeout: 15000 });
   await page.waitForFunction('window.Overlay && window.Overlay.duration > 0', { timeout: 15000 });
 
   const duration = await page.evaluate(() => window.Overlay.duration);
