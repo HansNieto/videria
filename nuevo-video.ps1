@@ -44,6 +44,23 @@ if (-not (Test-Path -LiteralPath $VCUT)) {
 
 function Morir($msg) { Write-Host $msg -ForegroundColor Red; exit 1 }
 
+function ConfigurarFFmpeg {
+    if (Get-Command ffmpeg -ErrorAction SilentlyContinue) { return }
+    $Paquetes = Join-Path $env:LOCALAPPDATA "Microsoft\WinGet\Packages"
+    if (-not (Test-Path -LiteralPath $Paquetes)) { return }
+    $Ffmpeg = Get-ChildItem -LiteralPath $Paquetes -Recurse -Filter "ffmpeg.exe" -File -ErrorAction SilentlyContinue |
+              Where-Object { $_.FullName -match "Gyan\.FFmpeg" } | Select-Object -First 1
+    if ($Ffmpeg) {
+        $Bin = Split-Path $Ffmpeg.FullName -Parent
+        $env:Path = "$Bin;$env:Path"
+        $env:VCUT_FFMPEG = $Ffmpeg.FullName
+        $Probe = Join-Path $Bin "ffprobe.exe"
+        if (Test-Path -LiteralPath $Probe) { $env:VCUT_FFPROBE = $Probe }
+    }
+}
+
+ConfigurarFFmpeg
+
 if (-not (Test-Path $VCUT)) { Morir "No encuentro vcut.py en $VCUT" }
 if (-not (Test-Path $Videos)) { Morir "No existe la carpeta de videos: $Videos" }
 
