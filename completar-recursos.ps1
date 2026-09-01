@@ -4,7 +4,7 @@
 #
 # Requisitos previos:
 # - broll\plan.json revisado por una persona o agente.
-# - PEXELS_API_KEY o ~/.vcut/credenciales.json para descargar B-roll.
+# - .env junto a este script, PEXELS_API_KEY o ~/.vcut/credenciales.json.
 # - motion-overlays\frames\<escena>\0000.png para integrar animaciones.
 
 param(
@@ -24,6 +24,28 @@ if (-not (Test-Path -LiteralPath $VCUT)) {
 function Morir($msg) { Write-Host $msg -ForegroundColor Red; exit 1 }
 function Avisar($msg) { Write-Host $msg -ForegroundColor Yellow }
 
+function CargarEnvLocal {
+    # Lee asignaciones simples sin ejecutar el contenido. Esto permite guardar
+    # PEXELS_API_KEY en `videria\.env`, que ya esta ignorado por Git.
+    $EnvFile = Join-Path $PSScriptRoot ".env"
+    if (-not (Test-Path -LiteralPath $EnvFile)) { return }
+    foreach ($Linea in Get-Content -LiteralPath $EnvFile) {
+        $Limpia = $Linea.Trim()
+        if (-not $Limpia -or $Limpia.StartsWith("#")) { continue }
+        if ($Limpia -notmatch '^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$') { continue }
+        $Nombre = $Matches[1]
+        $Valor = $Matches[2].Trim()
+        if ($Valor.Length -ge 2 -and
+            (($Valor.StartsWith('"') -and $Valor.EndsWith('"')) -or
+             ($Valor.StartsWith("'") -and $Valor.EndsWith("'")))) {
+            $Valor = $Valor.Substring(1, $Valor.Length - 2)
+        }
+        if (-not [string]::IsNullOrWhiteSpace($Valor)) {
+            [Environment]::SetEnvironmentVariable($Nombre, $Valor, "Process")
+        }
+    }
+}
+
 function ConfigurarFFmpeg {
     if (Get-Command ffmpeg -ErrorAction SilentlyContinue) { return }
     $Paquetes = Join-Path $env:LOCALAPPDATA "Microsoft\WinGet\Packages"
@@ -39,6 +61,7 @@ function ConfigurarFFmpeg {
     }
 }
 
+CargarEnvLocal
 ConfigurarFFmpeg
 
 if (-not (Test-Path -LiteralPath $VCUT)) { Morir "No encuentro vcut.py en $VCUT" }
@@ -77,8 +100,9 @@ if (-not $SoloOverlays) {
             python $VCUT broll --project $Proyecto --plan $Plan
             if ($LASTEXITCODE -ne 0) { Morir "Fallo al descargar o colocar el B-roll." }
         } else {
-            Avisar "Falta la clave de Pexels. Configúrala una sola vez en $GlobalCred"
-            Avisar 'Formato: {"pexels_api_key":"TU_CLAVE"}'
+            $EnvLocal = Join-Path $PSScriptRoot ".env"
+            Avisar "Falta la clave de Pexels. Configúrala una sola vez en $EnvLocal"
+            Avisar 'Formato: PEXELS_API_KEY=TU_CLAVE'
         }
     }
 }
