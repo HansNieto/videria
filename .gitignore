@@ -6,6 +6,13 @@ __pycache__/
 Thumbs.db
 desktop.ini
 
+# Material local de producción: originales, proyectos y renders nunca
+# pertenecen al repositorio de la aplicación.
+/videos/
+
+# Copia local para compartir los tutoriales; la fuente vive en docs/.
+/docs.zip
+
 # Nunca: credenciales.
 claves-para-tu-amigo.md
 claves*.md
