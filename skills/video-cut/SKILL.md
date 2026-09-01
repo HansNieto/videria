@@ -454,6 +454,11 @@ Una consulta buena es un sustantivo concreto que se pueda fotografiar
 (*"factura electrónica"*, *"reunión equipo"*). Una mala es un verbo o un
 abstracto (*"definir debe"*, *"verdadero problema"*).
 
+Si corregís la consulta en otro idioma, declará también su catálogo en esa
+entrada del plan: `"locale": "en-US"` para inglés o `"locale": "es-ES"`
+para español. Pexels interpreta peor una frase inglesa si se la envía al
+catálogo español.
+
 **Qué pasa con cada clip.** Se descarga a `cache/broll/`, se recorta al encuadre
 del proyecto, se le quita el audio y se deja en `broll/` a la duración pedida.
 Por eso entra en el render y en el preview sin ningún tratamiento especial: para

@@ -306,8 +306,14 @@ def cmd_broll(args):
     for i, e in enumerate(entradas, 1):
         util.eprint("  [%d/%d] %s" % (i, len(entradas), e["query"]))
         try:
+            # Un plan revisado puede escribir las consultas en un idioma
+            # distinto al de la transcripcion. Pexels usa `locale` para
+            # interpretar la busqueda; mezclar una consulta inglesa con
+            # `es-ES` devuelve resultados sorprendentemente irrelevantes.
+            locale = e.get("locale") or "es-ES"
             res = stock.buscar(e["query"], key, vertical=vertical,
-                               kind=args.kind, per_page=args.candidates)
+                               kind=args.kind, per_page=args.candidates,
+                               locale=locale)
             hit = stock.elegir(res, canvas, e["dur"], kind=args.kind)
         except RuntimeError as err:
             raise SystemExit(str(err))
