@@ -10,7 +10,8 @@ import sys
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.2.0'
+VERSION = '2.3.0'
+FFMPEG_VERSION = '8.0.1'
 
 
 def make_icon():
@@ -33,6 +34,9 @@ def main():
     for path in (ffbin/'ffmpeg.exe', ffbin/'ffprobe.exe', ffbin.parent/'LICENSE', ffbin.parent/'README.txt'):
         if not path.is_file():
             raise SystemExit('Falta dependencia o licencia: ' + str(path))
+    version = subprocess.check_output([str(ffbin/'ffmpeg.exe'), '-version'], text=True)
+    if not version.startswith('ffmpeg version ' + FFMPEG_VERSION + '-'):
+        raise SystemExit('Usa el build FFmpeg 8.0.1 probado con NVENC; builds nuevos pueden exigir otro driver.')
     icon = make_icon()
     command = [sys.executable, '-m', 'PyInstaller', '--noconfirm', '--clean', '--onedir', '--windowed',
                '--name', 'Videria', '--icon', str(icon), '--paths', str(ROOT/'desktop'),

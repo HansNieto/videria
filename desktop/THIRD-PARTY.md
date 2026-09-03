@@ -11,6 +11,11 @@ FFmpeg y FFprobe proceden de la distribución Windows de Gyan. Se distribuyen
 sin modificaciones. Su licencia GPL v3 y el README de su compilador se incluyen
 en `licenses/ffmpeg`. FFmpeg es un proyecto independiente de Videria.
 
+Versión incluida: **8.0.1 full_build**, compatible con NVENC API 13.0.
+Paquete de origen: https://github.com/GyanD/codexffmpeg/releases/tag/8.0.1
+SHA-256 del ZIP: `467cde100a47ed4b03a897988aeb4a296890c1e2b2d2864204657d002bc5fb90`.
+No se instala ni actualiza el controlador NVIDIA.
+
 - Binarios, información de compilación y fuentes: https://www.gyan.dev/ffmpeg/builds/
 - Código fuente FFmpeg: https://ffmpeg.org/download.html#get-sources
 - Repositorio FFmpeg: https://git.ffmpeg.org/ffmpeg.git

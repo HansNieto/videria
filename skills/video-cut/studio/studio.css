@@ -118,7 +118,11 @@ kbd{background:var(--panel3);border:1px solid var(--line2);border-radius:4px;
 .canvas-box.frame canvas{cursor:grab}
 .canvas-box.frame canvas:active{cursor:grabbing}
 .canvas-box.moving canvas{cursor:move}
-.vhost{position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0}
+.vhost{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.vhost video{position:absolute;display:none;max-width:none}
+#view{position:relative;z-index:1}
+.color-pair input[type=range]{min-width:40px;flex:1}
+.color-pair input[type=number]{width:84px;flex:0 0 84px;text-align:right}
 .badge-src{position:absolute;left:8px;top:8px;background:#000a;border:1px solid var(--line);
   padding:2px 7px;border-radius:5px;font-size:10.5px;color:var(--tx2);
   max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

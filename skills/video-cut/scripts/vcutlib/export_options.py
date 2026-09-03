@@ -13,6 +13,7 @@ def validate(raw):
         "quality": (16, 18, 20, 23, 28),
         "encoder": ("auto", "x264", "nvenc"),
         "audio_bitrate": ("128k", "192k", "320k"),
+        "color_mode": ("original", "sdr"),
     }
     result = {}
     for key, values in allowed.items():

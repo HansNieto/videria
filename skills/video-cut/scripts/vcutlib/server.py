@@ -36,7 +36,6 @@ def create_app(project_dir):
     app = Flask(__name__, static_folder=None)
     app.config["JSON_AS_ASCII"] = False
     lock = threading.Lock()
-    hq_lock = threading.Lock()
     jobs = {}
     jobs_lock = threading.Lock()
 
@@ -181,6 +180,7 @@ def create_app(project_dir):
             "zmax": studio.ZMAX,
             "sref": studio.SREF,
             "nvenc": media.nvenc_available(),
+            "nvenc_hevc": media.nvenc_available("hevc"),
         })
 
     @app.route("/api/font/<path:name>")
@@ -248,23 +248,16 @@ def create_app(project_dir):
         src = find_source(project, sid)
         path = src.get("proxy") or src["path"]
         if request.args.get("quality") == "hq" and src.get("has_video"):
-            try:
-                # Caché local: no modifica project.json ni entra al repositorio.
-                # El render final continúa usando el original de cámara.
-                hq_dir = project_dir / "cache" / "preview_hq"
-                with hq_lock:
-                    hq = media.build_proxy(src, hq_dir, height=1920)
-                path = str(hq)
-            except Exception:
-                # Si el equipo no puede crear el HQ, el editor sigue siendo
-                # utilizable con el proxy ligero que ya existía.
-                path = src.get("proxy") or src["path"]
+            # Native playback handles the source HDR profile. Never substitute
+            # a tone-mapped cache for an available original.
+            path = src["path"]
         if not Path(path).exists():
             path = src["path"]
         if not Path(path).exists():
             abort(404, "archivo no encontrado: %s" % path)
         # conditional=True habilita Range: sin esto el navegador no puede buscar.
-        return send_file(path, conditional=True)
+        return send_file(path, conditional=True,
+                         mimetype="video/mp4" if Path(path).suffix.lower() in (".mov", ".mp4") else None)
 
     @app.route("/api/waveform/<sid>")
     def waveform(sid):

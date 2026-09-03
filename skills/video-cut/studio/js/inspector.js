@@ -60,6 +60,39 @@ ST.inspector = (() => {
     return field(label, s);
   }
 
+  function colorSlider(key, label, val, min, max, step, onInput) {
+    const pair = el('div', 'pair color-pair');
+    const range = el('input'), number = el('input');
+    range.type = 'range'; number.type = 'number';
+    for (const i of [range, number]) {
+      i.min = min; i.max = max; i.step = step; i.value = val;
+      i.setAttribute('aria-label', label + (i === number ? ' (valor)' : ' (barra)'));
+      i.dataset.colorKey = key;
+    }
+    let changing = false, current = +val;
+    const apply = (raw, syncNumber = true) => {
+      if (raw.trim() === '' || !Number.isFinite(Number(raw))) return false;
+      const v = +clamp(Number(raw), min, max).toFixed(2);
+      if (v !== current) {
+        if (!changing) { st.push(); changing = true; }
+        current = v; onInput(v);
+      }
+      range.value = v; if (syncNumber) number.value = v.toFixed(2);
+      return true;
+    };
+    range.oninput = () => apply(range.value);
+    range.onchange = () => { apply(range.value); changing = false; };
+    number.oninput = () => apply(number.value, false);
+    number.onchange = () => {
+      if (!apply(number.value)) number.value = current.toFixed(2);
+      changing = false;
+    };
+    number.onblur = () => { number.value = current.toFixed(2); changing = false; };
+    number.onkeydown = (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); number.blur(); } };
+    pair.appendChild(range); pair.appendChild(number);
+    return field(label, pair);
+  }
+
   function num(label, val, step, onChange, min, max) {
     const i = el('input');
     i.type = 'number'; i.step = step; i.value = val;
@@ -187,21 +220,28 @@ ST.inspector = (() => {
 
     // ---- look
     const look = cfg.look || {};
-    const gl = grp('Look');
-    const lk = (key, label, min, max, step, dflt, fmt) =>
-      slider(label, look[key] != null ? look[key] : dflt, min, max, step, fmt,
-        (v, done) => {
-          if (done) st.push();
+    const gl = grp('Color · ajustes manuales');
+    gl.appendChild(el('p', 'note', 'Sin corrección automática. Brillo 0, contraste 1, saturación 1, temperatura 0 y viñeta 0 conservan el color de origen.'));
+    const enabled = el('input'); enabled.type = 'checkbox'; enabled.checked = cfg.look_enabled !== false;
+    enabled.setAttribute('aria-label', 'Aplicar ajustes de color');
+    enabled.onchange = () => { st.push(); st.setClip(seg, { look_enabled: enabled.checked }); commit(false); };
+    gl.appendChild(field('aplicar ajustes', enabled));
+    const lk = (key, label, min, max, step, dflt) =>
+      colorSlider(key, label, look[key] != null ? look[key] : dflt, min, max, step,
+        (v) => {
           const nl = Object.assign({}, st.clipCfg(seg).look || {});
           nl[key] = v;
-          st.setClip(seg, { look: nl });
+          st.setClip(seg, { look: nl, look_enabled: true }); enabled.checked = true;
           commit(false);
         });
     gl.appendChild(lk('brightness', 'brillo', -0.4, 0.4, 0.01, 0, (v) => v.toFixed(2)));
     gl.appendChild(lk('contrast', 'contraste', 0.5, 2, 0.01, 1, (v) => v.toFixed(2)));
     gl.appendChild(lk('saturation', 'saturación', 0, 2.5, 0.01, 1, (v) => v.toFixed(2)));
-    gl.appendChild(lk('temp', 'temperatura', -1, 1, 0.02, 0, (v) => v.toFixed(2)));
-    gl.appendChild(lk('vignette', 'viñeta', 0, 1, 0.02, 0, (v) => v.toFixed(2)));
+    gl.appendChild(lk('temp', 'temperatura', -1, 1, 0.01, 0));
+    gl.appendChild(lk('vignette', 'viñeta', 0, 1, 0.01, 0));
+    gl.appendChild(buttons([['Restablecer color', () => {
+      st.push(); st.setClip(seg, { look: {}, look_enabled: true }); commit(false); render();
+    }, 'Vuelve a valores neutros solo en este clip; se puede deshacer con Ctrl+Z']]));
     const flip = el('input'); flip.type = 'checkbox'; flip.checked = !!cfg.flip;
     flip.onchange = () => { st.push(); st.setClip(seg, { flip: flip.checked }); commit(); };
     gl.appendChild(field('espejar', flip));

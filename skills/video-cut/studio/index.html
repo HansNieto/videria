@@ -62,12 +62,13 @@
         <label class="chk"><input type="checkbox" id="chkGuides"> guías</label>
         <label class="chk"><input type="checkbox" id="chkSafe"> zona segura</label>
         <label class="chk"><input type="checkbox" id="chkTikTok"> interfaz TikTok</label>
-        <label class="chk" title="Preview SDR de hasta 1080×1920 desde el original; la primera carga puede tardar. Sin originales, usa el proxy disponible."><input type="checkbox" id="chkHQ" checked> HQ</label>
+        <label class="chk" title="Reproduce el original sin convertir su color. HDR/HEVC requiere soporte del equipo. Sin originales solo hay proxies de revisión, que pueden tener otro color."><input type="checkbox" id="chkHQ" checked> Original</label>
         <span class="muted" id="stageInfo"></span>
       </div>
 
       <div class="canvas-wrap" id="canvasWrap">
         <div class="canvas-box" id="canvasBox">
+          <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="temperaturePreview" color-interpolation-filters="sRGB"><feColorMatrix id="temperatureMatrix" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter></defs></svg>
           <canvas id="view"></canvas>
           <div class="vhost" id="vhost"></div>
           <div class="badge-src" id="badgeSrc"></div>
@@ -136,7 +137,7 @@
 <div class="modal hidden" id="exportModal">
   <form class="modal-card export-card" id="exportForm">
     <h3 id="exportTitle">Exportar vídeo</h3>
-    <p class="muted">MP4 · H.264 + AAC · SDR Rec.709. El HDR se convierte automáticamente.</p>
+    <p class="muted">Sin corrección automática. Color original conserva HDR; requiere un reproductor compatible. Los ajustes manuales activados sí se aplican.</p>
     <label>Nombre del archivo<input type="text" id="exName" maxlength="100" required></label>
     <div class="export-grid">
       <label>Resolución<select id="exResolution">
@@ -155,12 +156,14 @@
         <option value="23">Compacta</option><option value="28">Ligera</option>
       </select></label>
       <label>Codificador<select id="exEncoder">
-        <option value="auto">Automático</option><option value="x264">CPU · H.264</option>
-        <option value="nvenc">GPU NVIDIA · H.264</option>
+        <option value="auto">Automático</option><option value="x264">CPU</option>
+        <option value="nvenc">GPU NVIDIA</option>
       </select></label>
+      <label>Color<select id="exColor"><option value="original">Color original · sin conversión</option><option value="sdr">SDR compatible · convierte HDR</option></select></label>
       <label>Audio<select id="exAudio"><option>128k</option><option selected>192k</option><option>320k</option></select></label>
     </div>
     <p id="exSummary"></p>
+    <p id="exHardware" class="muted"></p>
     <p class="muted">Se conserva la proporción vertical/horizontal. Aumentar resolución o FPS no recupera detalle del original. No se sobrescriben exportaciones anteriores.</p>
     <div class="modal-actions"><button type="button" id="exCancel">Cancelar</button><button class="primary" type="submit">Exportar</button></div>
   </form>

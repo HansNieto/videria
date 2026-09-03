@@ -195,16 +195,22 @@ ST.app = (() => {
     $('exName').value = S.project.name || 'video';
     $('exResolution').value = draft ? '720' : '0';
     $('exFps').value = '0';
-    $('exEncoder').value = (S.tl.render || {}).encoder || 'auto';
+    $('exColor').value = 'original';
+    $('exEncoder').value = 'auto';
     const gpu = [...$('exEncoder').options].find(o => o.value === 'nvenc');
     if (gpu) gpu.disabled = S.cat.nvenc === false;
     if (gpu?.disabled && $('exEncoder').value === 'nvenc') $('exEncoder').value = 'auto';
     const summary = () => {
       const c = S.tl.canvas, short = +$('exResolution').value;
       const k = short ? short / Math.min(c.width, c.height) : 1;
-      $('exSummary').textContent = `${Math.round(c.width*k/2)*2} × ${Math.round(c.height*k/2)*2} · ${+$('exFps').value || c.fps} FPS · ${draft ? 'Borrador: no usar como entrega final' : 'Color SDR compatible con redes sociales'}`;
+      $('exSummary').textContent = `${Math.round(c.width*k/2)*2} × ${Math.round(c.height*k/2)*2} · ${+$('exFps').value || c.fps} FPS · ${$('exColor').value === 'original' ? 'Color original: HDR/10-bit → HEVC; SDR/8-bit → H.264' : 'Conversión HDR → SDR Rec.709 activada'}${draft ? ' · Borrador: color y calidad dependen del proxy' : ''}`;
+      $('exHardware').textContent = $('exEncoder').value === 'x264' ? 'CPU seleccionada manualmente.' :
+        (S.cat.nvenc && S.cat.nvenc_hevc ? 'GPU NVIDIA disponible: codificación acelerada H.264 y HEVC/HDR.' :
+          'GPU NVIDIA no disponible para todos los formatos. Automático usará CPU si hace falta.') +
+        ' Los efectos, capas y subtítulos todavía usan CPU. En el Administrador de tareas mira «Video Encode», no solo «3D».';
     };
-    $('exResolution').onchange = summary; $('exFps').onchange = summary; summary();
+    $('exResolution').onchange = summary; $('exFps').onchange = summary; $('exColor').onchange = summary; summary();
+    $('exEncoder').onchange = summary;
     $('exCancel').onclick = () => $('exportModal').classList.add('hidden');
     $('exportForm').onsubmit = (ev) => {
       ev.preventDefault();
@@ -213,6 +219,7 @@ ST.app = (() => {
         resolution: +$('exResolution').value, fps: +$('exFps').value,
         quality: +$('exQuality').value, encoder: $('exEncoder').value,
         audio_bitrate: $('exAudio').value,
+        color_mode: $('exColor').value,
       });
     };
     $('exportModal').classList.remove('hidden');
@@ -263,7 +270,7 @@ ST.app = (() => {
           $('rmBar').style.width = '100%';
           $('rmPct').textContent = '100%';
           const mb = (j.info && j.info.size ? (j.info.size / 1048576).toFixed(1) + ' MB' : '');
-          $('rmStage').textContent = (j.out || '').split(/[\\/]/).pop() + '  ' + mb;
+          $('rmStage').textContent = (j.out || '').split(/[\\/]/).pop() + '  ' + mb + ' · ' + (j.info?.encoder || '');
           const open = $('rmOpen');
           open.classList.remove('hidden');
           open.onclick = () => post('/api/reveal', { path: j.out });
@@ -460,7 +467,7 @@ ST.app = (() => {
     $('chkHQ').onchange = (ev) => {
       S.previewHQ = ev.target.checked;
       ST.player.reloadQuality();
-      toast(S.previewHQ ? 'Preview HQ: se genera una vez y queda en caché' : 'Preview ligero activado');
+      toast(S.previewHQ ? 'Original sin conversión de color. HDR depende del soporte de pantalla/reproductor.' : 'Proxy de revisión: puede diferir en color y calidad del original');
     };
     $('chkAudio').onchange = (ev) => { S.audio = ev.target.checked; ST.player.seek(S.t); };
     for (const b of document.querySelectorAll('#modeSeg button')) {

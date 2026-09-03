@@ -201,7 +201,25 @@ def contain(tw, th, bg="black"):
 
 # ------------------------------------------------------------ video por clip
 
-def clip_chain(clip, canvas, fit):
+def depth_zoom(W, H, z, px, py):
+    """zoompan only supports 8-bit; frame-evaluated scale/crop keeps 10-bit HDR."""
+    return ("scale=w='ceil(%d*(%s)/2)*2':h='ceil(%d*(%s)/2)*2':eval=frame:flags=lanczos,"
+            "crop=%d:%d:x='(iw-ow)/2*(1+(%s))':y='(ih-oh)/2*(1+(%s))'"
+            % (W, z, H, z, W, H, px, py))
+
+
+def depth_eq(bright="0", contrast="1", sat="1"):
+    # GEQ supports planar 10-bit; FFmpeg's eq filter silently reduces to 8-bit.
+    if not any(re.search(r"\bT\b", s) for s in (bright, contrast, sat)):
+        return ("lutyuv=y='clip((val-511.5)*(%s)+511.5+(%s)*1023,0,1023)':"
+                "u='clip((val-512)*(%s)+512,0,1023)':"
+                "v='clip((val-512)*(%s)+512,0,1023)'" % (contrast, bright, sat, sat))
+    return ("geq=lum='clip((lum(X,Y)-511.5)*(%s)+511.5+(%s)*1023,0,1023)':"
+            "cb='clip((cb(X,Y)-512)*(%s)+512,0,1023)':"
+            "cr='clip((cr(X,Y)-512)*(%s)+512,0,1023)':a=1023" % (contrast, bright, sat, sat))
+
+
+def clip_chain(clip, canvas, fit, high_depth=False):
     """Filtros de un clip, de la entrada a un stream listo para concatenar."""
     W, H = int(canvas["width"]), int(canvas["height"])
     fps = float(canvas["fps"])
@@ -229,29 +247,38 @@ def clip_chain(clip, canvas, fit):
         zexpr = piecewise(kfs, "scale", 1.0, clock)
         pxexpr = piecewise(kfs, "x", 0.0, clock)
         pyexpr = piecewise(kfs, "y", 0.0, clock)
-        parts.append(
+        if high_depth:
+            parts.append(depth_zoom(W, H, "clip(%s,1,%.3f)" % (zexpr.replace("it", "t"), studio.ZMAX),
+                                    pxexpr.replace("it", "t"), pyexpr.replace("it", "t")))
+        else:
+            parts.append(
             "zoompan=z='clip(%s,1,%.3f)'"
             ":x='in_w/2-(in_w/zoom/2)+(%s)*(in_w/2-(in_w/zoom/2))'"
             ":y='in_h/2-(in_h/zoom/2)+(%s)*(in_h/2-(in_h/zoom/2))'"
             ":d=1:s=%dx%d:fps=%.4f" % (zexpr, studio.ZMAX, pxexpr, pyexpr,
                                        W, H, fps))
-    look = cfg.get("look") or {}
+    look = (cfg.get("look") or {}) if cfg.get("look_enabled", True) else {}
     eqp = []
     if abs(float(look.get("brightness") or 0)) > 1e-3:
         eqp.append("brightness=%.4f" % float(look["brightness"]))
     if abs(float(look.get("contrast") or 1) - 1) > 1e-3:
         eqp.append("contrast=%.4f" % float(look["contrast"]))
-    if abs(float(look.get("saturation") or 1) - 1) > 1e-3:
+    if abs(float(look.get("saturation", 1)) - 1) > 1e-3:
         eqp.append("saturation=%.4f" % float(look["saturation"]))
     if eqp:
-        parts.append("eq=" + ":".join(eqp))
+        parts.append(depth_eq(str(look.get("brightness", 0)), str(look.get("contrast", 1)),
+                              str(look.get("saturation", 1))) if high_depth else "eq=" + ":".join(eqp))
     temp = float(look.get("temp") or 0)
     if abs(temp) > 1e-3:
         # Positivo calienta: sube rojo y baja azul, en partes iguales.
         parts.append("colorbalance=rs=%.3f:bs=%.3f" % (temp * 0.3, -temp * 0.3))
     vig = float(look.get("vignette") or 0)
     if vig > 1e-3:
-        parts.append("vignette=angle=PI/%.2f" % max(2.5, 6.0 - vig * 3.0))
+        if high_depth:
+            parts.append("geq=lum='64+(lum(X,Y)-64)*pow(max(0,cos(sqrt(pow(X-W/2,2)+pow(Y-H/2,2))/hypot(W/2,H/2)*PI/%.2f)),4)':cb='cb(X,Y)':cr='cr(X,Y)':a=1023"
+                         % max(2.5, 6.0 - vig * 3.0))
+        else:
+            parts.append("vignette=angle=PI/%.2f" % max(2.5, 6.0 - vig * 3.0))
     parts.append("setsar=1")
     if not zooming:
         parts.append("scale=%d:%d:flags=lanczos" % (W, H))
@@ -286,7 +313,7 @@ def clip_audio_chain(clip, has_audio):
 GEOM_ZMAX = 1.6
 
 
-def geom_stage(trans, canvas):
+def geom_stage(trans, canvas, high_depth=False):
     """Un solo zoompan que resuelve punch zoom, sacudida y whip.
 
     Se anade solo si hay alguna transicion geometrica: zoompan reescala todos
@@ -327,6 +354,9 @@ def geom_stage(trans, canvas):
     z = "1" + ("+" + "+".join(zt) if zt else "")
     px = "+".join(xt) if xt else "0"
     py = "+".join(yt) if yt else "0"
+    if high_depth:
+        return depth_zoom(W, H, "clip(%s,1,%.3f)" % (z.replace("it", "t"), GEOM_ZMAX),
+                          px.replace("it", "t"), py.replace("it", "t"))
     return ("zoompan=z='clip(%s,1,%.3f)'"
             ":x='in_w/2-(in_w/zoom/2)+(%s)*(in_w/2-(in_w/zoom/2))'"
             ":y='in_h/2-(in_h/zoom/2)+(%s)*(in_h/2-(in_h/zoom/2))'"
@@ -334,7 +364,7 @@ def geom_stage(trans, canvas):
             % (z, GEOM_ZMAX, px, py, W, H, fps))
 
 
-def fx_stages(trans, canvas):
+def fx_stages(trans, canvas, high_depth=False):
     """Filtros por ventana, agrupados por valor para no encadenar de mas."""
     fps = float(canvas["fps"])
     frame = 1.0 / max(1.0, fps)
@@ -386,6 +416,8 @@ def fx_stages(trans, canvas):
                 sh = max(1, int(round(26 * s * level)))
                 val = ("rgbashift", "rh=%d:bh=-%d:gv=%d:edge=smear"
                        % (sh, sh, sh // 2))
+                if high_depth:
+                    val = ("chromashift", "cbh=%d:crh=-%d:edge=smear" % (sh, sh))
             else:
                 continue
             buckets.setdefault(val, []).extend(wins)
@@ -397,7 +429,14 @@ def fx_stages(trans, canvas):
             # Bajar solo el brillo dejaria la crominancia intacta y el negro
             # saldria teñido; hay que apagar tambien la saturacion.
             args.append("saturation='max(0,1-(%s))'" % "+".join(desat))
-        out.append("eq=" + ":".join(args) + ":eval=frame")
+        if high_depth:
+            windows = "+".join("between(t,%.4f,%.4f)" % (tr["t0"], tr["t1"])
+                               for tr in trans if tr["type"] in ("flash", "fade_black"))
+            out.append(depth_eq(re.sub(r"\bt\b", "T", "+".join(bright) or "0"), "1",
+                                re.sub(r"\bt\b", "T", "max(0,1-(%s))" % "+".join(desat)) if desat else "1")
+                       + ":enable='%s'" % windows)
+        else:
+            out.append("eq=" + ":".join(args) + ":eval=frame")
     for (name, args), wins in buckets.items():
         out.append("%s=%s:enable='%s'" % (name, args, "+".join(wins)))
     return out
@@ -420,6 +459,7 @@ class Job:
         self.rcfg = dict(studio.DEFAULT_RENDER)
         self.rcfg.update(tl.get("render") or {})
         options = export_options.validate(options)
+        self.color_mode = options.get("color_mode", "original")
         self.rcfg.update({k: v for k, v in options.items()
                           if k in ("quality", "encoder", "audio_bitrate")})
         self.range = range_
@@ -478,8 +518,15 @@ class Job:
 
         if self.total <= 0:
             raise RuntimeError("no hay contenido activo: nada que renderizar")
-        graph.append("color=c=black:s=%dx%d:r=%.6f:d=%.4f,format=yuv420p[base]"
-                     % (W, H, fps, self.total))
+        # Read the actual input (not stale project tags, and never relabel SDR
+        # proxies as HDR). Original is the default for old projects as well.
+        first = self.source_path(self.clips[0]["source"])[0] if self.clips else None
+        self.profile = color.profile(color.metadata(first) if first and self.color_mode == "original" else {})
+        high_depth = self.profile["depth"] > 8
+        pix = color.pixel_format(self.profile)
+        overlay_format = "yuv420p10" if high_depth else "yuv420"
+        graph.append("color=c=black:s=%dx%d:r=%.6f:d=%.4f,format=%s,scale=out_range=%s,%s[base]"
+                     % (W, H, fps, self.total, pix, self.profile["range"], color.params(self.profile)))
         graph.append("anullsrc=r=48000:cl=stereo,atrim=duration=%.4f[silence]" % self.total)
         vbase = "base"
         alabels = ["[silence]"]
@@ -492,10 +539,11 @@ class Job:
             src_dur = c["dur"] * c["speed"]
             cmd += ["-ss", "%.4f" % c["in"], "-t", "%.4f" % src_dur, "-i", str(path)]
             graph.append("[%d:v]%s,%s,setpts=PTS+%.6f/TB[v%d]"
-                         % (idx, color.input_filter(path), clip_chain(c, self.canvas, fit), c["t0"], idx))
+                         % (idx, color.input_filter(path, self.profile, self.color_mode),
+                            clip_chain(c, self.canvas, fit, high_depth), c["t0"], idx))
             graph.append("[%s][v%d]overlay=eof_action=pass:repeatlast=0:"
-                         "enable='gte(t,%.6f)*lt(t,%.6f)'[stack%d]"
-                         % (vbase, idx, c["t0"], c["t1"], idx))
+                         "format=%s:enable='gte(t,%.6f)*lt(t,%.6f)'[stack%d]"
+                         % (vbase, idx, overlay_format, c["t0"], c["t1"], idx))
             vbase = "stack%d" % idx
             has_a = bool(src.get("has_audio"))
             if has_a:
@@ -523,11 +571,11 @@ class Job:
                           t0=t["t0"] - self.range[0], t1=t["t1"] - self.range[0])
                      for t in trans]
 
-        geom = geom_stage(trans, self.canvas)
+        geom = geom_stage(trans, self.canvas, high_depth)
         if geom:
             graph.append("[%s]%s[vg]" % (vcur, geom))
             vcur = "vg"
-        fx = fx_stages(trans, self.canvas)
+        fx = fx_stages(trans, self.canvas, high_depth)
         if fx:
             graph.append("[%s]%s[vfx]" % (vcur, ",".join(fx)))
             vcur = "vfx"
@@ -565,14 +613,21 @@ class Job:
                 else:
                     cmd += ["-i", str(src)]
             sc = float(it.get("scale") or 1.0) * W / self.res["canvas"]["width"]
-            chain = ["format=yuva420p", "setpts=PTS-STARTPTS+%.4f/TB" % max(0.0, t)]
+            chain = [color.resource_filter(src, self.profile),
+                     "format=" + ("yuva420p10le" if high_depth else "yuva420p"),
+                     "setpts=PTS-STARTPTS+%.4f/TB" % max(0.0, t)]
             if abs(sc - 1.0) > 1e-3:
                 chain.append("scale=iw*%.4f:ih*%.4f:flags=lanczos" % (sc, sc))
             op = float(it.get("opacity") if it.get("opacity") is not None else 1.0)
-            if op < 0.999:
-                chain.append("colorchannelmixer=aa=%.3f" % max(0.0, op))
             fade = float(it.get("fade") or 0.0)
-            if fade > 0.01:
+            if high_depth and (op < 0.999 or fade > 0.01):
+                alpha = "alpha(X,Y)*%.4f" % max(0.0, op)
+                if fade > 0.01:
+                    alpha += "*clip((T-%.4f)/%.4f,0,1)*clip((%.4f-T)/%.4f,0,1)" % (max(0.0,t),fade,t+it["dur"],fade)
+                chain.append("geq=lum='lum(X,Y)':cb='cb(X,Y)':cr='cr(X,Y)':a='%s'" % alpha)
+            elif op < 0.999:
+                chain.append("colorchannelmixer=aa=%.3f" % max(0.0, op))
+            if fade > 0.01 and not high_depth:
                 chain.append("fade=t=in:st=%.4f:d=%.4f:alpha=1" % (max(0.0, t), fade))
                 chain.append("fade=t=out:st=%.4f:d=%.4f:alpha=1"
                              % (max(0.0, t + it["dur"] - fade), fade))
@@ -581,8 +636,8 @@ class Job:
             yf = float(it.get("y") if it.get("y") is not None else 0.5)
             graph.append("[%s][o%d]overlay=x='main_w*%.4f-overlay_w/2'"
                          ":y='main_h*%.4f-overlay_h/2':eof_action=pass"
-                         ":enable='between(t,%.4f,%.4f)'[vo%d]"
-                         % (vcur, n, xf, yf, max(0.0, t), t + it["dur"], n))
+                         ":format=%s:enable='between(t,%.4f,%.4f)'[vo%d]"
+                         % (vcur, n, xf, yf, overlay_format, max(0.0, t), t + it["dur"], n))
             vcur = "vo%d" % n
             idx += 1
 
@@ -593,7 +648,7 @@ class Job:
                          % (vcur, _esc_path(ass_path), _esc_path(fdir)))
             vcur = "vt"
 
-        graph.append("[%s]format=yuv420p,%s[vout]" % (vcur, color.SDR_PARAMS))
+        graph.append("[%s]format=%s,%s[vout]" % (vcur, pix, color.params(self.profile)))
 
         # ------------------------------------------------ audio
         acur = "ac"
@@ -657,20 +712,33 @@ class Job:
         cmd += ["-filter_complex", ";".join(graph),
                 "-map", "[vout]", "-map", "[aout]"]
         cmd += self.encoder_args()
-        cmd += color.SDR_TAGS
+        cmd += color.tags(self.profile)
         cmd += ["-r", "%.4f" % fps, "-t", "%.4f" % self.total,
                 "-movflags", "+faststart", str(self.out)]
         return cmd, {"clips": len(self.clips), "total": self.total,
+                     "encoder": self.selected_encoder,
                      "canvas": self.canvas, "overlays": len(ovl),
+                     "color": self.profile, "color_mode": self.color_mode,
                      "audio_items": len(auds), "transitions": len(trans),
                      "warnings": self.warnings}
 
     def encoder_args(self):
         q = int(self.rcfg.get("quality") or 20)
         enc = self.rcfg.get("encoder") or "auto"
+        high_depth = self.profile["depth"] > 8
         if enc == "auto":
-            enc = "nvenc" if media.nvenc_available() else "x264"
+            enc = "nvenc" if media.nvenc_available("hevc" if high_depth else "h264") else "x264"
+            if enc == "x264":
+                self.warnings.append("GPU NVIDIA no disponible para este formato; se codificó con CPU.")
+        self.selected_encoder = ("hevc_nvenc" if high_depth else "h264_nvenc") if enc == "nvenc" else ("libx265" if high_depth else "libx264")
         ab = self.rcfg.get("audio_bitrate") or "192k"
+        if high_depth:
+            if enc == "nvenc":
+                v = ["-c:v", "hevc_nvenc", "-preset", "p4", "-rc", "vbr", "-cq", str(q), "-b:v", "0"]
+            else:
+                v = ["-c:v", "libx265", "-preset", "fast", "-crf", str(q), "-x265-params", "log-level=error"]
+            return v + ["-profile:v", "main10", "-tag:v", "hvc1", "-pix_fmt", "yuv420p10le",
+                        "-c:a", "aac", "-b:a", ab, "-ar", "48000"]
         if enc == "nvenc":
             preset = "p1" if self.draft else "p5"
             v = ["-c:v", "h264_nvenc", "-preset", preset, "-rc", "vbr",
@@ -814,6 +882,8 @@ def render(project, tl, project_dir, out_path, draft=False, range_=None,
     if on_stage:
         on_stage("video")
     cmd, info = job.build(ass if ainfo["events"] else None)
+    if on_stage:
+        on_stage("video · " + ("GPU NVIDIA · " if "nvenc" in info["encoder"] else "CPU · ") + info["encoder"])
     (pdir / "cache").mkdir(parents=True, exist_ok=True)
     # Windows corta la linea de comandos en 32 KB. Un proyecto con muchos
     # keyframes bezier (que se hornean en tramos rectos) llega ahi, asi que el

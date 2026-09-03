@@ -1,14 +1,10 @@
-"""One SDR/Rec.709 pipeline for camera originals, preview and export.
-
-Read the actual input, never the project's original metadata when using a
-proxy. In particular, an already tone-mapped proxy must not be mapped twice.
-"""
+"""Preserve source color by default. Tone mapping is an explicit export choice."""
 from functools import lru_cache
 from pathlib import Path
 
 from . import util
 
-CACHE_VERSION = "sdr-hable-v2"
+CACHE_VERSION = "original-v3"
 SDR_TAGS = ["-color_primaries", "bt709", "-color_trc", "bt709",
             "-colorspace", "bt709", "-color_range", "tv", "-map_metadata", "-1"]
 SDR_PARAMS = "setparams=range=limited:color_primaries=bt709:color_trc=bt709:colorspace=bt709"
@@ -47,5 +43,59 @@ def to_sdr(info):
     return "scale=" + args + "," + SDR_PARAMS
 
 
-def input_filter(path):
-    return to_sdr(metadata(path))
+def profile(info):
+    hdr = info.get("color_transfer") in ("arib-std-b67", "smpte2084")
+    def known(key, fallback):
+        v = info.get(key)
+        return v if v and v not in ("unknown", "unspecified", "reserved") else fallback
+    return {
+        "primaries": known("color_primaries", "bt2020" if hdr else "bt709"),
+        "transfer": known("color_transfer", "arib-std-b67" if hdr else "bt709"),
+        "matrix": known("color_space", "bt2020nc" if hdr else "bt709"),
+        "range": "pc" if info.get("color_range") == "pc" else "tv",
+        "hdr": hdr,
+        "depth": 10 if hdr or any(x in info.get("pix_fmt", "") for x in ("10", "12", "16")) else 8,
+    }
+
+
+def pixel_format(p):
+    return "yuv420p10le" if p["depth"] > 8 else "yuv420p"
+
+
+def params(p):
+    return "setparams=range=%s:color_primaries=%s:color_trc=%s:colorspace=%s" % (
+        "full" if p["range"] == "pc" else "limited", p["primaries"], p["transfer"], p["matrix"])
+
+
+def tags(p):
+    return ["-color_primaries", p["primaries"], "-color_trc", p["transfer"],
+            "-colorspace", p["matrix"], "-color_range", p["range"], "-map_metadata", "-1"]
+
+
+def input_filter(path, target=None, mode="original"):
+    info = metadata(path)
+    if mode == "sdr":
+        return to_sdr(info)
+    source = profile(info)
+    target = target or source
+    if any(source[k] != target[k] for k in ("primaries", "transfer", "matrix", "range")):
+        raise ValueError("Los clips tienen perfiles de color distintos. Para mezclarlos, "
+                         "elige explícitamente «SDR compatible» al exportar.")
+    # No eq, LUT, gamut conversion or tone mapping for an original-color clip.
+    return "format=" + pixel_format(target) + "," + params(target)
+
+
+def resource_filter(path, target):
+    """Map added SDR artwork into the HDR working space, never grade the camera."""
+    if not target["hdr"]:
+        return "null"
+    info = metadata(path)
+    source = profile(info)
+    if source["hdr"] and source["transfer"] == target["transfer"]:
+        return "null"
+    # Explicit input tags are needed for PNGs and other untagged SDR resources.
+    # zscale preserves alpha in planar GBR; use 16-bit to keep transparent edges.
+    return ("format=gbrap16le,zscale=primariesin=%s:transferin=%s:matrixin=gbr:rangein=full:"
+            "primaries=%s:transfer=%s:matrix=%s:range=limited:npl=100"
+            % (source["primaries"], source["transfer"], target["primaries"],
+               target["transfer"], target["matrix"]))

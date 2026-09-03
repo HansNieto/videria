@@ -7,6 +7,7 @@ Nada de esto toca el material original: son archivos de apoyo dentro de
 from __future__ import annotations
 
 from pathlib import Path
+from functools import lru_cache
 
 from . import color, util
 
@@ -16,26 +17,21 @@ THUMB_COLS = 20
 THUMB_MAX = 240
 
 
-_NVENC = None
-
-
-def nvenc_available():
+@lru_cache(maxsize=2)
+def nvenc_available(codec="h264"):
     """Prueba un encode real.
 
     Que `-encoders` liste h264_nvenc no significa que funcione: el driver de la
     maquina puede ser mas viejo que la API que pide este build de ffmpeg.
     """
-    global _NVENC
-    if _NVENC is not None:
-        return _NVENC
     try:
         util.run([util.FFMPEG, "-hide_banner", "-loglevel", "error", "-y",
                   "-f", "lavfi", "-i", "color=c=black:s=256x144:r=25:d=0.2",
-                  "-c:v", "h264_nvenc", "-f", "null", "-"])
-        _NVENC = True
+                  "-pix_fmt", "p010le" if codec == "hevc" else "yuv420p",
+                  "-c:v", codec + "_nvenc", "-f", "null", "-"])
+        return True
     except (RuntimeError, OSError):
-        _NVENC = False
-    return _NVENC
+        return False
 
 
 # ------------------------------------------------------------ proxy
@@ -43,17 +39,23 @@ def nvenc_available():
 def _proxy_cmd(source, out, height, encoder):
     cmd = [util.FFMPEG, "-hide_banner", "-loglevel", "error", "-y",
            "-i", str(source["path"])]
+    p = color.profile({})
     if source.get("has_video"):
         info = color.metadata(source["path"])
+        p = color.profile(info)
+        high_depth = p["depth"] > 8
         target_h = min(height, info.get("display_height") or height)
         quality = "18" if height >= 1080 else "24"
         if encoder == "nvenc":
-            cmd += ["-c:v", "h264_nvenc", "-preset", "p4", "-rc", "vbr",
+            cmd += ["-c:v", "hevc_nvenc" if high_depth else "h264_nvenc", "-preset", "p4", "-rc", "vbr",
                     "-cq", quality, "-b:v", "0"]
         else:
-            cmd += ["-c:v", "libx264", "-preset", "veryfast", "-crf", quality]
+            cmd += ["-c:v", "libx265" if high_depth else "libx264", "-preset", "veryfast", "-crf", quality]
+        if high_depth:
+            cmd += ["-profile:v", "main10", "-tag:v", "hvc1"]
         # GOP de 1 s: el scrub en el navegador es casi instantaneo.
-        cmd += ["-vf", color.to_sdr(info) + ",scale=-2:%d:flags=lanczos" % target_h, "-pix_fmt", "yuv420p",
+        cmd += ["-vf", color.input_filter(source["path"]) + ",scale=-2:%d:flags=lanczos" % target_h,
+                "-pix_fmt", color.pixel_format(p),
                 "-force_key_frames", "expr:gte(t,n_forced*1)",
                 "-map", "0:v:0"]
     else:
@@ -64,18 +66,19 @@ def _proxy_cmd(source, out, height, encoder):
     else:
         cmd += ["-an"]
 
-    return cmd + color.SDR_TAGS + ["-movflags", "+faststart", str(out)]
+    return cmd + color.tags(p) + ["-movflags", "+faststart", str(out)]
 
 
 def build_proxy(source, cache_dir, height=540, force=False):
-    """Copia ligera H.264 para que el navegador reproduzca y haga scrub fluido."""
+    """Copia ligera sin tone mapping; HDR/10-bit usa HEVC Main10."""
     cache_dir = Path(cache_dir)
     out = cache_dir / "proxy" / ("%s-%s.mp4" % (source["id"], color.CACHE_VERSION))
     if out.exists() and not force and out.stat().st_size > 1024:
         return out
     out.parent.mkdir(parents=True, exist_ok=True)
 
-    encoders = ["nvenc", "x264"] if nvenc_available() else ["x264"]
+    p = color.profile(color.metadata(source["path"])) if source.get("has_video") else color.profile({})
+    encoders = ["nvenc", "x264"] if nvenc_available("hevc" if p["depth"] > 8 else "h264") else ["x264"]
     last = None
     for enc in encoders:
         try:

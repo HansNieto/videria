@@ -166,7 +166,7 @@ ST.player = (() => {
     }
     v.addEventListener('error', () => ST.app.toast(
       'No pude cargar ' + ((S.sources[sid] || {}).name || sid) +
-      '. Generá proxies con: vcut.py media --project …', 'bad'));
+      '. El original HDR/HEVC necesita soporte del equipo. Puedes desmarcar Original para usar el proxy de revisión (color aproximado).', 'bad'));
     document.getElementById('vhost').appendChild(v);
     VID[key] = v; ORDER.push(key);
     while (ORDER.length > MAX_VIDEOS) {
@@ -198,7 +198,11 @@ ST.player = (() => {
       } else if (!v.paused) v.pause();
     }
     const front = active.at(-1), badge = document.getElementById('badgeSrc');
-    if (badge) badge.textContent = front ? (S.sources[front.source]?.name || '') : '';
+    if (badge) {
+      const source = front && S.sources[front.source];
+      badge.textContent = front ? (source?.name || '') +
+        (S.previewHQ && source?.tiene_original !== false ? ' · Original' : ' · Proxy (color aproximado)') : '';
+    }
     const next = S.clips.filter(c => !c.hidden && c.t0 > S.t).sort((a,b) => a.t0-b.t0)[0];
     if (next && next.t0-S.t < 2) {
       const v = videoEl(next);
@@ -337,8 +341,9 @@ ST.player = (() => {
     if (!ctx) return;
     const W = S.tl.canvas.width, H = S.tl.canvas.height;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.fillStyle = S.tl.canvas.bg || '#000';
-    ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    box.style.background = S.tl.canvas.bg || '#000';
+    for (const v of Object.values(VID)) v.style.display = 'none';
     ctx.setTransform(k, 0, 0, k, 0, 0);
 
     const clip = st.clipAt(S.t);
@@ -368,14 +373,29 @@ ST.player = (() => {
       ctx.save();
       if (g.blur > 0.4) ctx.filter = 'blur(' + (g.blur * 0.5).toFixed(1) + 'px)';
       if (clip.cfg.flip) { ctx.translate(W, 0); ctx.scale(-1, 1); }
-      const look = clip.cfg.look || {};
+      const look = clip.cfg.look_enabled === false ? {} : clip.cfg.look || {};
       const fl = [];
       if (Math.abs(+look.brightness || 0) > 1e-3) fl.push('brightness(' + (1 + (+look.brightness)) + ')');
       if (Math.abs((+look.contrast || 1) - 1) > 1e-3) fl.push('contrast(' + (+look.contrast) + ')');
-      if (Math.abs((+look.saturation || 1) - 1) > 1e-3) fl.push('saturate(' + (+look.saturation) + ')');
-      if (Math.abs(+look.temp || 0) > 1e-3) fl.push('sepia(' + Math.min(0.5, Math.abs(+look.temp) * 0.4) + ')');
+      if (Math.abs((look.saturation == null ? 1 : +look.saturation) - 1) > 1e-3) fl.push('saturate(' + (+look.saturation) + ')');
+      if (Math.abs(+look.temp || 0) > 1e-3) {
+        const temp = +look.temp;
+        const matrix = document.getElementById('temperatureMatrix');
+        if (matrix) matrix.setAttribute('values', `1 0 0 0 ${temp*0.15} 0 1 0 0 0 0 0 1 0 ${-temp*0.15} 0 0 0 1 0`);
+        fl.push('url(#temperaturePreview)');
+      }
       if (fl.length) ctx.filter = (ctx.filter === 'none' || !ctx.filter ? '' : ctx.filter + ' ') + fl.join(' ');
-      if (g.pix > 3) {
+      // Native <video> keeps the browser's HDR color-managed surface. Drawing
+      // it to an ordinary 8-bit 2D canvas clips/maps HDR even with no filter.
+      // Canvas is only used for explicit pixel/glitch effects; artwork stays
+      // on a transparent canvas above the camera, not baked into its pixels.
+      if (g.pix <= 3 && g.glitch <= 1) {
+        const ratio = dispW / W;
+        Object.assign(v.style, { display: 'block', width: dw*ratio+'px', height: dh*ratio+'px',
+          left: (clip.cfg.flip ? W-dx-dw : dx)*ratio+'px', top: dy*ratio+'px',
+          transform: clip.cfg.flip ? 'scaleX(-1)' : 'none',
+          filter: fl.concat(g.blur > 0.4 ? ['blur('+g.blur*ratio*0.5+'px)'] : []).join(' ') || 'none' });
+      } else if (g.pix > 3) {
         // Pixelado: se baja a un canvas chico y se sube sin suavizado.
         scratch = scratch || document.createElement('canvas');
         const bw = Math.max(8, Math.round(W / g.pix)), bh = Math.max(8, Math.round(H / g.pix));
@@ -401,6 +421,11 @@ ST.player = (() => {
       }
       ctx.restore();
       ctx.filter = 'none';
+      if (+look.vignette > 0) {
+        const vignette = ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.15,W/2,H/2,Math.hypot(W,H)/2);
+        vignette.addColorStop(0,'transparent'); vignette.addColorStop(1,`rgba(0,0,0,${clamp(+look.vignette,0,1)*0.75})`);
+        ctx.fillStyle=vignette; ctx.fillRect(0,0,W,H);
+      }
     }
     }
 

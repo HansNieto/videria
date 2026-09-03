@@ -8,6 +8,48 @@ from vcutlib import color, export_options, render, server, studio
 
 
 class ColorExportTests(unittest.TestCase):
+    def test_original_hdr_is_default_without_tone_mapping(self):
+        meta={'color_transfer':'arib-std-b67','color_primaries':'bt2020',
+              'color_space':'bt2020nc','color_range':'tv','pix_fmt':'yuv420p10le'}
+        with patch.object(color,'metadata',return_value=meta):
+            chain=color.input_filter('camera.mov')
+            self.assertNotIn('tonemap',chain)
+            self.assertNotIn('bt709',chain)
+            self.assertIn('yuv420p10le',chain)
+            self.assertIn('tonemap',color.input_filter('camera.mov',mode='sdr'))
+            with self.assertRaises(ValueError): color.input_filter('camera.mov',color.profile({}))
+
+    def test_manual_color_zero_and_disable(self):
+        clip={'cfg':{'look':{'saturation':0,'temp':1}},'speed':1}
+        canvas={'width':1080,'height':1920,'fps':30}
+        self.assertIn('saturation=0.0000',render.clip_chain(clip,canvas,'cover'))
+        self.assertIn('lutyuv',render.clip_chain(clip,canvas,'cover',True))
+        clip['cfg']['look_enabled']=False
+        chain=render.clip_chain(clip,canvas,'cover',True)
+        self.assertNotIn('lutyuv',chain); self.assertNotIn('colorbalance',chain)
+        self.assertEqual(clip['cfg']['look']['saturation'],0)
+
+    def test_auto_uses_real_gpu_capability_and_reports_cpu_fallback(self):
+        project={'sources':[],'segments':[]}
+        job=render.Job(project,studio.new_timeline(project),'.','test.mp4')
+        job.profile=color.profile({'color_transfer':'arib-std-b67'})
+        with patch('vcutlib.media.nvenc_available',return_value=True) as probe:
+            self.assertIn('hevc_nvenc',job.encoder_args())
+            probe.assert_called_once_with('hevc')
+        with patch('vcutlib.media.nvenc_available',return_value=False):
+            self.assertIn('libx265',job.encoder_args())
+            self.assertIn('CPU',job.warnings[-1])
+
+    def test_hdr_zoom_and_effects_do_not_use_eight_bit_filters(self):
+        cfg={'zoom':{'kf':[{'t':0,'scale':1.2}]}}
+        canvas={'width':1080,'height':1920,'fps':30}
+        chain=render.clip_chain({'cfg':cfg,'speed':1},canvas,'cover',True)
+        self.assertNotIn('zoompan',chain)
+        self.assertIn('eval=frame',chain)
+        tr=[{'type':'flash','t':1,'t0':0.8,'t1':1.2,'dur':0.4,'strength':1}]
+        chain=','.join(render.fx_stages(tr,canvas,True))
+        self.assertIn('between(T,',chain); self.assertIn('a=1023',chain)
+
     def test_hdr_and_sdr_are_not_mapped_twice(self):
         hdr=color.to_sdr({'color_transfer':'arib-std-b67','color_primaries':'bt2020'})
         self.assertLess(hdr.index('format=gbrpf32le'),hdr.index('tonemap='))
