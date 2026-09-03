@@ -1,6 +1,6 @@
 param([switch]$NoLaunch)
 $ErrorActionPreference = 'Stop'
-$version = '2.1.0'
+$version = '2.1.1'
 $source = Join-Path $PSScriptRoot 'Videria'
 if (-not (Test-Path -LiteralPath (Join-Path $source 'Videria.exe'))) {
     throw 'Primero extrae TODO el ZIP y luego ejecuta Instalar-Videria.cmd.'

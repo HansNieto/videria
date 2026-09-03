@@ -332,7 +332,9 @@ def resolve_asset(value, project_dir):
 
 
 def portable_asset(value, project_dir):
-    resolved = Path(resolve_asset(value, project_dir))
+    # Windows puede devolver C:\\Users\\NOMBRE~1 en TEMP mientras que pdir ya
+    # está expandido. Comparar ambos canónicos evita guardar rutas locales.
+    resolved = Path(resolve_asset(value, project_dir)).resolve()
     try:
         return resolved.relative_to(Path(project_dir).resolve()).as_posix()
     except ValueError:

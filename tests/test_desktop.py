@@ -14,7 +14,7 @@ from vcutlib import studio, util
 class DesktopTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         self.project = self.root/'video17-proyecto'
         self.project.mkdir()
         (self.project/'project.json').write_text(json.dumps({'name':'QA','sources':[], 'segments':[]}), encoding='utf-8')
@@ -35,7 +35,7 @@ class DesktopTests(unittest.TestCase):
         client=host.app.test_client()
         try:
             info=client.get('/desktop/projects',base_url='http://127.0.0.1').get_json()
-            self.assertEqual(info['version'],'2.1.0')
+            self.assertEqual(info['version'],'2.1.1')
             self.assertEqual(client.post('/desktop/open',json={'id':info['projects'][0]['id']},base_url='http://127.0.0.1').status_code,403)
             self.assertEqual(client.get('/desktop/projects',base_url='http://malicious.example').status_code,403)
             for path in ('/','/help/instalar-app.html'):
@@ -81,6 +81,18 @@ class DesktopTests(unittest.TestCase):
         self.assertEqual(studio.portable_asset(str(sticker),self.project),'@skill/assets/sfx/3_impacto.wav')
         self.assertEqual(studio.resolve_asset('@skill/assets/sfx/3_impacto.wav',self.project),str(sticker))
         with self.assertRaises(ValueError): studio.resolve_asset('@skill/../../secret',self.project)
+
+    @unittest.skipUnless(sys.platform == 'win32', 'Windows short paths')
+    def test_windows_short_asset_path_is_saved_relative(self):
+        import ctypes
+        asset = self.project/'assets/importados/nombre de sticker largo.png'
+        asset.parent.mkdir(parents=True)
+        asset.write_bytes(b'fixture')
+        short = ctypes.create_unicode_buffer(32768)
+        length = ctypes.windll.kernel32.GetShortPathNameW(str(asset), short, len(short))
+        self.assertGreater(length, 0)
+        self.assertEqual(studio.portable_asset(short.value,self.project),
+                         'assets/importados/nombre de sticker largo.png')
 
 
 if __name__=='__main__': unittest.main()
