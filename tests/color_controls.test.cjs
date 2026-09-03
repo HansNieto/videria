@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const src = fs.readFileSync(require('node:path').join(__dirname,'../skills/video-cut/studio/js/inspector.js'),'utf8');
+const src = fs.readFileSync(require('node:path').join(__dirname,'../skills/video-cut/studio/js/inspector.js'),'utf8').replace(/\r\n/g,'\n');
 const fn = src.match(/  function colorSlider\([\s\S]*?\n  }\n/)[0];
 const el = () => ({children:[],dataset:{},_value:'',get value(){return this._value;},set value(v){this._value=String(v);},setAttribute(){},appendChild(n){this.children.push(n);}});
 let snapshots = 0, applied = [];
