@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import os
 import copy
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -568,7 +569,8 @@ def resolve(project, tl):
         spd = min(max(float(cfg.get("speed") or 1.0), 0.25), 4.0)
         out_dur = src_dur / spd
         gap = max(0.0, float(cfg.get("gap_before") or 0.0))
-        t += gap
+        start = t + gap if cfg.get("start") is None else max(0.0, float(cfg["start"]))
+        lane = next((x for x in tl.get("tracks", []) if x["id"] == cfg.get("track", "_video")), {})
         clips.append({
             "seg": seg["id"],
             "source": seg["source"],
@@ -579,13 +581,16 @@ def resolve(project, tl):
             "speed": spd,
             "dur": round(out_dur, 4),
             "gap_before": round(gap, 4),
-            "t0": round(t, 4),
-            "t1": round(t + out_dur, 4),
+            "t0": round(start, 4),
+            "t1": round(start + out_dur, 4),
+            "track": lane.get("id", "_video"),
+            "z": lane.get("z", 0),
+            "hidden": bool(lane.get("hidden")),
             "text": seg.get("text", ""),
             "cfg": cfg,
             "index": len(clips),
         })
-        t += out_dur
+        t = max(t, start + out_dur)
 
     total = round(t, 4)
     by_seg = {c["seg"]: c for c in clips}
@@ -599,6 +604,9 @@ def resolve(project, tl):
             continue
         dur = float(tr.get("dur") or 0.3)
         prev = clips[c["index"] - 1]
+        if (c["hidden"] or prev["hidden"] or c["track"] != prev["track"]
+                or abs(prev["t1"] - c["t0"]) > 0.03):
+            continue
         # No puede comerse mas de la mitad de ninguno de los dos clips.
         dur = min(dur, prev["dur"] * 0.9, c["dur"] * 0.9)
         if dur <= 0.02:
@@ -626,6 +634,12 @@ def resolve(project, tl):
             if r:
                 items.append(r)
     items.sort(key=lambda x: (x["z"], x["t"]))
+    captions = sorted((it for it in items if it.get("subtitle")), key=lambda x: x["t"])
+    for current, following in zip(captions, captions[1:]):
+        current["t_end"] = min(current["t_end"], following["t"])
+        current["dur"] = round(max(0, current["t_end"] - current["t"]), 4)
+    items = [it for it in items if it["dur"] > 0.01]
+    total = max([total] + [it["t_end"] for it in items])
 
     return {"clips": clips, "total": total, "items": items,
             "transitions": trans, "canvas": tl["canvas"]}
@@ -649,15 +663,13 @@ def resolve_item(it, trk, by_seg, total):
     if dur <= 0.01:
         return None
     t = max(0.0, t)
-    if t >= total:
-        return None
-    dur = min(dur, total - t)
     r = dict(it)
     r["t"] = round(t, 4)
     r["dur"] = round(dur, 4)
     r["t_end"] = round(t + dur, 4)
     r["track"] = trk["id"]
     r["track_kind"] = trk["kind"]
+    r["subtitle"] = trk["id"] == "t_sub" or bool(re.search(r"subt[ií]tulo", trk.get("name", ""), re.I))
     r["z"] = trk.get("z", 10)
     if trk["kind"] == "audio":
         r["track_gain"] = float(trk.get("gain") or 0.0)

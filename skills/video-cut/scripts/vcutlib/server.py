@@ -252,11 +252,8 @@ def create_app(project_dir):
                 # Caché local: no modifica project.json ni entra al repositorio.
                 # El render final continúa usando el original de cámara.
                 hq_dir = project_dir / "cache" / "preview_hq"
-                hq = hq_dir / "proxy" / ("%s.mp4" % sid)
-                if not hq.exists() or hq.stat().st_size <= 1024:
-                    with hq_lock:
-                        if not hq.exists() or hq.stat().st_size <= 1024:
-                            media.build_proxy(src, hq_dir, height=1080)
+                with hq_lock:
+                    hq = media.build_proxy(src, hq_dir, height=1920)
                 path = str(hq)
             except Exception:
                 # Si el equipo no puede crear el HQ, el editor sigue siendo
@@ -368,7 +365,7 @@ def create_app(project_dir):
 
     # ---------------------------------------------------------- render
 
-    def _run_job(job_id, draft, range_, out):
+    def _run_job(job_id, draft, range_, out, options):
         job = jobs[job_id]
         try:
             project = load()
@@ -388,7 +385,7 @@ def create_app(project_dir):
 
             info = render.render(project, tl, project_dir, out, draft=draft,
                                  range_=range_, on_progress=prog,
-                                 on_stage=stage, on_start=started)
+                                 on_stage=stage, on_start=started, options=options)
             job.update(status="ok", progress=1.0, info=info,
                        stage="listo", ended=time.time())
         except Exception as exc:                      # noqa: BLE001
@@ -406,6 +403,10 @@ def create_app(project_dir):
     def start_render():
         b = body()
         draft = bool(b.get("draft"))
+        try:
+            options = render.export_options.validate(b.get("options"))
+        except ValueError as exc:
+            return jsonify({"ok": False, "error": str(exc)}), 400
         rng = b.get("range")
         range_ = None
         if isinstance(rng, (list, tuple)) and len(rng) == 2:
@@ -422,6 +423,10 @@ def create_app(project_dir):
         if range_:
             suffix += "-tramo"
         out = out_dir / ("%s%s.mp4" % (base, suffix))
+        number = 2
+        while out.exists():
+            out = out_dir / ("%s%s-%d.mp4" % (base, suffix, number))
+            number += 1
         job_id = uuid.uuid4().hex[:10]
         with jobs_lock:
             # Un render a la vez: dos ffmpeg pesados en paralelo tardan mas que
@@ -434,7 +439,7 @@ def create_app(project_dir):
                             "stage": "preparando", "out": str(out),
                             "draft": draft, "range": range_,
                             "started": time.time()}
-        threading.Thread(target=_run_job, args=(job_id, draft, range_, out),
+        threading.Thread(target=_run_job, args=(job_id, draft, range_, out, options),
                          daemon=True).start()
         return jsonify({"ok": True, "job": job_id, "out": str(out)})
 

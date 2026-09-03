@@ -15,6 +15,9 @@ sys.path.insert(0, str(ROOT / "desktop"))
 
 
 def configure_ffmpeg():
+    if all(os.environ.get(k) and Path(os.environ[k]).is_file()
+           for k in ("VCUT_FFMPEG", "VCUT_FFPROBE")):
+        return
     bins = [ROOT / "tools"]
     installed = Path(os.environ.get("LOCALAPPDATA", "")) / "Microsoft/WinGet/Packages"
     if installed.is_dir():
@@ -107,7 +110,7 @@ if __name__ == "__main__":
     except Exception:
         import traceback
         traceback.print_exc()
-        if getattr(sys, "frozen", False) and "--smoke-test" not in sys.argv:
+        if getattr(sys, "frozen", False) and not any(flag in sys.argv for flag in ("--smoke-test", "--window-test")):
             import ctypes
             ctypes.windll.user32.MessageBoxW(None,
                 "Videria no pudo iniciar. Revisa %LOCALAPPDATA%\\VideriaData\\app.log. "

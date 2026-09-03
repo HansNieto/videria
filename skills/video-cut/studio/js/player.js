@@ -15,7 +15,7 @@ ST.player = (() => {
   const OVL = Object.create(null);      // id -> {el, kind, ok}
   const AUD = Object.create(null);      // id -> HTMLAudioElement
   let cv, ctx, box, wrap, k = 1, dispW = 0, dispH = 0;
-  let raf = 0, activeSid = null, gapClock = null;
+  let raf = 0, lastTick = 0;
   let drag = null;
 
   const dbToLin = (db) => Math.pow(10, (+db || 0) / 20);
@@ -144,11 +144,12 @@ ST.player = (() => {
 
   /* ----------------------------------------------------------------- video */
 
-  function videoEl(sid) {
-    let v = VID[sid];
+  function videoEl(clip) {
+    const sid = clip.source, key = clip.seg;
+    let v = VID[key];
     if (v) {
-      const i = ORDER.indexOf(sid);
-      if (i >= 0) { ORDER.splice(i, 1); ORDER.push(sid); }
+      const i = ORDER.indexOf(key);
+      if (i >= 0) { ORDER.splice(i, 1); ORDER.push(key); }
       return v;
     }
     v = document.createElement('video');
@@ -167,67 +168,60 @@ ST.player = (() => {
       'No pude cargar ' + ((S.sources[sid] || {}).name || sid) +
       '. Generá proxies con: vcut.py media --project …', 'bad'));
     document.getElementById('vhost').appendChild(v);
-    VID[sid] = v; ORDER.push(sid);
+    VID[key] = v; ORDER.push(key);
     while (ORDER.length > MAX_VIDEOS) {
       const old = ORDER.shift();
-      if (old === activeSid) { ORDER.push(old); break; }
+      if (st.activeClips(S.t).some(c => c.seg === old)) { ORDER.push(old); break; }
       const ov = VID[old];
       if (ov) { ov.pause(); ov.removeAttribute('src'); ov.load(); ov.remove(); delete VID[old]; }
     }
     return v;
   }
 
-  function setActive(sid, clip) {
-    activeSid = sid;
-    for (const key of Object.keys(VID)) {
-      const v = VID[key];
-      if (key === sid) {
-        v.muted = !S.audio || !!(clip && (clip.cfg.mute));
-        v.volume = clamp(dbToLin(clip ? clip.cfg.volume : 0), 0, 1);
-      } else {
-        v.muted = true;
-        if (!v.paused) v.pause();
+  function syncVideos(hard = false) {
+    const active = st.activeClips(S.t), keys = new Set(active.map(c => c.seg));
+    let ready = true;
+    for (const c of active) {
+      const v = videoEl(c);
+      const want = c.in + (S.t-c.t0)*c.speed;
+      if (hard || Math.abs(v.currentTime-want) > 0.18) {
+        try { v.currentTime = want; } catch (e) { /* waiting for metadata */ }
       }
+      v.playbackRate = c.speed;
+      v.muted = !S.audio || !!c.cfg.mute;
+      v.volume = clamp(dbToLin(c.cfg.volume),0,1);
+      if (v.readyState < 2 || v.seeking) ready = false;
     }
-    const src = S.sources[sid];
-    const b = document.getElementById('badgeSrc');
-    if (b) b.textContent = src ? src.name : '';
-  }
-
-  function preloadNext(clip) {
-    const nxt = S.clips[clip.index + 1];
-    if (!nxt || nxt.source === clip.source) return;
-    const v = videoEl(nxt.source);
-    if (Math.abs(v.currentTime - nxt.in) > 0.6) {
-      try { v.currentTime = nxt.in; } catch (e) { /* aún sin metadata */ }
+    for (const [key,v] of Object.entries(VID)) {
+      if (keys.has(key) && S.playing && ready) {
+        if (v.paused) v.play().catch(() => {});
+      } else if (!v.paused) v.pause();
     }
+    const front = active.at(-1), badge = document.getElementById('badgeSrc');
+    if (badge) badge.textContent = front ? (S.sources[front.source]?.name || '') : '';
+    const next = S.clips.filter(c => !c.hidden && c.t0 > S.t).sort((a,b) => a.t0-b.t0)[0];
+    if (next && next.t0-S.t < 2) {
+      const v = videoEl(next);
+      if (Math.abs(v.currentTime-next.in) > 0.6) try { v.currentTime=next.in; } catch (e) { /* metadata */ }
+    }
+    return ready;
   }
 
   function seek(t, keepPlaying) {
     S.t = clamp(t, 0, S.total);
-    gapClock = null;
-    const clip = st.clipAt(S.t);
-    if (!clip) { paint(); ST.app.onTime(); return; }
-    const v = videoEl(clip.source);
-    setActive(clip.source, clip);
-    const local = clamp(clip.in + (S.t - clip.t0) * clip.speed, clip.in, clip.out);
-    try { v.currentTime = local; } catch (e) { /* se aplica al cargar metadata */ }
-    v.playbackRate = clamp(clip.speed, 0.25, 4);
-    preloadNext(clip);
-    if (S.playing && keepPlaying !== false) v.play().catch(() => {});
+    lastTick = performance.now();
+    syncVideos(true);
     syncAudio(true);
     ST.app.onTime();
     paint();
   }
 
   function play() {
-    if (!S.clips.length) return ST.app.toast('No hay clips activos', 'bad');
+    if (!S.total) return ST.app.toast('No hay contenido activo', 'bad');
     if (S.t >= S.total - 0.04) S.t = 0;
     S.playing = true;
     document.getElementById('btnPlay').textContent = '❚❚';
     seek(S.t, true);
-    const c = st.clipAt(S.t);
-    if (c) videoEl(c.source).play().catch(() => {});
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(tick);
   }
@@ -249,48 +243,11 @@ ST.player = (() => {
 
   function tick() {
     if (S.playing) {
-      const clip = st.clipAt(S.t);
-      const v = clip && VID[clip.source];
-      if (!clip) {
-        const nxt = S.clips.find((c) => c.t0 > S.t + 0.0005);
-        if (!nxt) { S.t = S.total; pause(); ST.app.onTime(); paint(); return; }
-        if (!gapClock) gapClock = { wall: performance.now(), t: S.t };
-        S.t = Math.min(nxt.t0, gapClock.t + (performance.now() - gapClock.wall) / 1000);
-        if (S.t >= nxt.t0 - 0.001) {
-          gapClock = null; S.t = nxt.t0;
-          const nv = videoEl(nxt.source); setActive(nxt.source, nxt);
-          try { nv.currentTime = nxt.in; } catch (e) { /* metadata */ }
-          nv.playbackRate = clamp(nxt.speed, 0.25, 4); nv.play().catch(() => {});
-          preloadNext(nxt);
-        }
-        syncAudio(false); ST.app.onTime(); paint();
-        if (S.playing) raf = requestAnimationFrame(tick);
-        return;
-      }
-      if (!v) { seek(S.t, true); if (S.playing) raf = requestAnimationFrame(tick); return; }
-      gapClock = null;
-      const localEnd = clip.out - 0.02;
-      if (v.currentTime >= localEnd || v.ended) {
-        const nxt = S.clips[clip.index + 1];
-        if (!nxt) { S.t = S.total; pause(); ST.app.onTime(); paint(); return; }
-        S.t = clip.t1;
-        if (nxt.t0 - clip.t1 > 0.001) {
-          v.pause(); gapClock = { wall: performance.now(), t: S.t };
-          ST.app.onTime(); paint();
-          if (S.playing) raf = requestAnimationFrame(tick);
-          return;
-        }
-        S.t = nxt.t0;
-        const nv = videoEl(nxt.source);
-        setActive(nxt.source, nxt);
-        try { nv.currentTime = nxt.in; } catch (e) { /* siguiente frame */ }
-        nv.playbackRate = clamp(nxt.speed, 0.25, 4);
-        nv.play().catch(() => {});
-        preloadNext(nxt);
-      } else {
-        S.t = clip.t0 + (v.currentTime - clip.in) / clip.speed;
-      }
-      syncAudio(false);
+      const now = performance.now(), ready = syncVideos();
+      if (ready) S.t = Math.min(S.total, S.t + Math.min(0.1,(now-lastTick)/1000));
+      lastTick = now;
+      if (S.t >= S.total) pause();
+      syncAudio(false,ready);
       ST.app.onTime();
     }
     paint();
@@ -310,8 +267,8 @@ ST.player = (() => {
     return a;
   }
 
-  function syncAudio(hard) {
-    const on = S.audio && S.playing;
+  function syncAudio(hard, ready = true) {
+    const on = S.audio && S.playing && ready;
     for (const it of S.items) {
       if (it.track_kind !== 'audio' || !it.src) continue;
       const inside = S.t >= it.t && S.t < it.t_end;
@@ -399,7 +356,7 @@ ST.player = (() => {
     px = clamp(zm.px + g.px, -1.4, 1.4);
     py = clamp(zm.py + g.py, -1.4, 1.4);
 
-    const v = VID[clip.source];
+    const v = VID[clip.seg];
     const vw = v && v.videoWidth, vh = v && v.videoHeight;
     if (v && vw && vh) {
       const fit = clip.cfg.fit || (S.tl.render && S.tl.render.fit) || 'cover';
@@ -731,7 +688,7 @@ ST.player = (() => {
   }
 
   function reloadQuality() {
-    activeSid = null;
+    lastTick = 0;
     ORDER.length = 0;
     for (const sid of Object.keys(VID)) {
       const v = VID[sid];

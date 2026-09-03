@@ -35,7 +35,7 @@ class DesktopTests(unittest.TestCase):
         client=host.app.test_client()
         try:
             info=client.get('/desktop/projects',base_url='http://127.0.0.1').get_json()
-            self.assertEqual(info['version'],'2.1.1')
+            self.assertEqual(info['version'],'2.2.0')
             self.assertEqual(client.post('/desktop/open',json={'id':info['projects'][0]['id']},base_url='http://127.0.0.1').status_code,403)
             self.assertEqual(client.get('/desktop/projects',base_url='http://malicious.example').status_code,403)
             for path in ('/','/help/instalar-app.html'):

@@ -62,7 +62,7 @@
         <label class="chk"><input type="checkbox" id="chkGuides"> guías</label>
         <label class="chk"><input type="checkbox" id="chkSafe"> zona segura</label>
         <label class="chk"><input type="checkbox" id="chkTikTok"> interfaz TikTok</label>
-        <label class="chk" title="Usa un proxy local de 1080 px; la primera carga puede tardar"><input type="checkbox" id="chkHQ" checked> HQ</label>
+        <label class="chk" title="Preview SDR de hasta 1080×1920 desde el original; la primera carga puede tardar. Sin originales, usa el proxy disponible."><input type="checkbox" id="chkHQ" checked> HQ</label>
         <span class="muted" id="stageInfo"></span>
       </div>
 
@@ -99,7 +99,7 @@
         <button class="icon" id="btnSplit" title="Dividir el clip en el cabezal (S)" aria-label="Dividir">✂</button>
         <button class="icon" id="btnCutRight" title="Eliminar desde el cabezal hasta el final del clip" aria-label="Recortar derecha">⫸</button>
       </span>
-      <button class="icon on" id="btnSnap" title="Ajuste magnético: alinear inicios y finales (M)" aria-label="Ajuste magnético">🧲</button>
+      <button class="icon on" id="btnSnap" title="Ajuste magnético (M) · Alt al arrastrar para mover sin imán" aria-label="Ajuste magnético">🧲</button>
       <button class="icon" id="btnAddLayer" title="Agregar una capa" aria-label="Agregar una capa">＋▱</button>
       <button class="icon" id="btnImport" title="Importar imagen, audio o video" aria-label="Importar archivo">⇧</button>
       <input class="hidden" id="fileImport" type="file" multiple accept="image/*,audio/*,video/*">
@@ -132,6 +132,39 @@
 
 <div id="toast"></div>
 <div id="menuHost"></div>
+
+<div class="modal hidden" id="exportModal">
+  <form class="modal-card export-card" id="exportForm">
+    <h3 id="exportTitle">Exportar vídeo</h3>
+    <p class="muted">MP4 · H.264 + AAC · SDR Rec.709. El HDR se convierte automáticamente.</p>
+    <label>Nombre del archivo<input type="text" id="exName" maxlength="100" required></label>
+    <div class="export-grid">
+      <label>Resolución<select id="exResolution">
+        <option value="0">Igual al proyecto</option><option value="720">720p</option>
+        <option value="1080">1080p · Full HD</option><option value="1440">1440p</option>
+        <option value="2160">2160p · 4K</option>
+      </select></label>
+      <label>Fotogramas por segundo<select id="exFps">
+        <option value="0">Igual al proyecto</option><option>23.976</option><option>24</option>
+        <option>25</option><option>29.97</option><option>30</option><option>50</option>
+        <option>59.94</option><option>60</option>
+      </select></label>
+      <label>Calidad<select id="exQuality">
+        <option value="16">Máxima · archivo más grande</option><option value="18">Alta</option>
+        <option value="20" selected>Equilibrada · recomendada</option>
+        <option value="23">Compacta</option><option value="28">Ligera</option>
+      </select></label>
+      <label>Codificador<select id="exEncoder">
+        <option value="auto">Automático</option><option value="x264">CPU · H.264</option>
+        <option value="nvenc">GPU NVIDIA · H.264</option>
+      </select></label>
+      <label>Audio<select id="exAudio"><option>128k</option><option selected>192k</option><option>320k</option></select></label>
+    </div>
+    <p id="exSummary"></p>
+    <p class="muted">Se conserva la proporción vertical/horizontal. Aumentar resolución o FPS no recupera detalle del original. No se sobrescriben exportaciones anteriores.</p>
+    <div class="modal-actions"><button type="button" id="exCancel">Cancelar</button><button class="primary" type="submit">Exportar</button></div>
+  </form>
+</div>
 
 <div class="modal hidden" id="renderModal">
   <div class="modal-card">

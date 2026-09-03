@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from . import util
+from . import color, util
 
 PEAKS_PER_SEC = 40
 THUMB_H = 48
@@ -44,14 +44,16 @@ def _proxy_cmd(source, out, height, encoder):
     cmd = [util.FFMPEG, "-hide_banner", "-loglevel", "error", "-y",
            "-i", str(source["path"])]
     if source.get("has_video"):
-        target_h = min(height, source["height"] or height)
+        info = color.metadata(source["path"])
+        target_h = min(height, info.get("display_height") or height)
+        quality = "18" if height >= 1080 else "24"
         if encoder == "nvenc":
             cmd += ["-c:v", "h264_nvenc", "-preset", "p4", "-rc", "vbr",
-                    "-cq", "30", "-b:v", "0"]
+                    "-cq", quality, "-b:v", "0"]
         else:
-            cmd += ["-c:v", "libx264", "-preset", "veryfast", "-crf", "27"]
+            cmd += ["-c:v", "libx264", "-preset", "veryfast", "-crf", quality]
         # GOP de 1 s: el scrub en el navegador es casi instantaneo.
-        cmd += ["-vf", "scale=-2:%d" % target_h, "-pix_fmt", "yuv420p",
+        cmd += ["-vf", color.to_sdr(info) + ",scale=-2:%d:flags=lanczos" % target_h, "-pix_fmt", "yuv420p",
                 "-force_key_frames", "expr:gte(t,n_forced*1)",
                 "-map", "0:v:0"]
     else:
@@ -62,13 +64,13 @@ def _proxy_cmd(source, out, height, encoder):
     else:
         cmd += ["-an"]
 
-    return cmd + ["-movflags", "+faststart", str(out)]
+    return cmd + color.SDR_TAGS + ["-movflags", "+faststart", str(out)]
 
 
 def build_proxy(source, cache_dir, height=540, force=False):
     """Copia ligera H.264 para que el navegador reproduzca y haga scrub fluido."""
     cache_dir = Path(cache_dir)
-    out = cache_dir / "proxy" / ("%s.mp4" % source["id"])
+    out = cache_dir / "proxy" / ("%s-%s.mp4" % (source["id"], color.CACHE_VERSION))
     if out.exists() and not force and out.stat().st_size > 1024:
         return out
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -149,7 +151,7 @@ def build_filmstrip(source, cache_dir, force=False):
         return meta
 
     out.parent.mkdir(parents=True, exist_ok=True)
-    vf = "fps=%.6f,scale=%d:%d,tile=%dx%d" % (1.0 / interval, tw, THUMB_H,
+    vf = color.input_filter(source["path"]) + ",fps=%.6f,scale=%d:%d,tile=%dx%d" % (1.0 / interval, tw, THUMB_H,
                                               THUMB_COLS, rows)
     try:
         util.run([

@@ -189,7 +189,36 @@ ST.app = (() => {
 
   /* --------------------------------------------------------------- render */
 
-  async function startRender(draft, range) {
+  function startRender(draft, range) {
+    ST.player.pause();
+    $('exportTitle').textContent = draft ? 'Exportar borrador (proxies)' : 'Exportar vídeo final (originales)';
+    $('exName').value = S.project.name || 'video';
+    $('exResolution').value = draft ? '720' : '0';
+    $('exFps').value = '0';
+    $('exEncoder').value = (S.tl.render || {}).encoder || 'auto';
+    const gpu = [...$('exEncoder').options].find(o => o.value === 'nvenc');
+    if (gpu) gpu.disabled = S.cat.nvenc === false;
+    if (gpu?.disabled && $('exEncoder').value === 'nvenc') $('exEncoder').value = 'auto';
+    const summary = () => {
+      const c = S.tl.canvas, short = +$('exResolution').value;
+      const k = short ? short / Math.min(c.width, c.height) : 1;
+      $('exSummary').textContent = `${Math.round(c.width*k/2)*2} × ${Math.round(c.height*k/2)*2} · ${+$('exFps').value || c.fps} FPS · ${draft ? 'Borrador: no usar como entrega final' : 'Color SDR compatible con redes sociales'}`;
+    };
+    $('exResolution').onchange = summary; $('exFps').onchange = summary; summary();
+    $('exCancel').onclick = () => $('exportModal').classList.add('hidden');
+    $('exportForm').onsubmit = (ev) => {
+      ev.preventDefault();
+      $('exportModal').classList.add('hidden');
+      runRender(draft, range, $('exName').value, {
+        resolution: +$('exResolution').value, fps: +$('exFps').value,
+        quality: +$('exQuality').value, encoder: $('exEncoder').value,
+        audio_bitrate: $('exAudio').value,
+      });
+    };
+    $('exportModal').classList.remove('hidden');
+  }
+
+  async function runRender(draft, range, name, options) {
     if (S.dirty) {
       try { await st.save(); } catch (e) {
         return toast('Guardá antes de renderizar: ' + e.message, 'bad');
@@ -205,7 +234,7 @@ ST.app = (() => {
     $('rmClose').classList.add('hidden');
     $('rmCancel').classList.remove('hidden');
     try {
-      const j = await post('/api/render', { draft, range });
+      const j = await post('/api/render', { draft, range, name, options });
       curJob = j.job;
       poll();
     } catch (e) {
@@ -262,16 +291,17 @@ ST.app = (() => {
   /* --------------------------------------------------------------- atajos */
 
   function gotoClip(dir) {
-    const clip = st.clipAt(S.t);
-    let i = clip ? clip.index : 0;
-    if (dir > 0) i = Math.min(S.clips.length - 1, i + 1);
-    else i = (clip && S.t - clip.t0 > 0.25) ? i : Math.max(0, i - 1);
-    const c = S.clips[i];
-    if (c) ST.player.seek(c.t0 + 0.001);
+    const starts = [...new Set(S.clips.filter(c => !c.hidden).map(c => c.t0))].sort((a,b) => a-b);
+    const t = dir > 0 ? starts.find(t => t > S.t+0.03)
+      : starts.filter(t => t < S.t-0.03).at(-1);
+    if (t != null) ST.player.seek(t+0.001);
   }
 
   function delSelected() {
     if (!S.sel) return;
+    const selectedTrack = S.sel.kind === 'clip' ? st.track(st.clipCfg(S.sel.id).track)
+      : S.sel.kind === 'item' ? st.findItem(S.sel.id).trk : null;
+    if (selectedTrack?.locked) return toast('La pista está bloqueada');
     if (S.sel.kind === 'item') {
       st.push(); st.delItem(S.sel.id); st.resolve(); renderAll();
     } else if (S.sel.kind === 'trans') {
@@ -287,7 +317,8 @@ ST.app = (() => {
   function addLayer(kind) {
     const n = (S.tl.tracks || []).filter((x) => x.kind === kind).length + 1;
     st.push();
-    const trk = st.addTrack(kind, (kind === 'text' ? 'Texto ' : kind === 'audio' ? 'Audio ' : 'Visual ') + n);
+    if (kind === 'video') st.pinClipPositions();
+    const trk = st.addTrack(kind, (kind === 'text' ? 'Texto ' : kind === 'audio' ? 'Audio ' : kind === 'video' ? 'Vídeo ' : 'Visual ') + n);
     st.resolve(); renderAll();
     toast('Capa “' + trk.name + '” agregada');
   }
@@ -297,11 +328,17 @@ ST.app = (() => {
     menu(r.left, r.bottom + 4, [
       ['T  Capa de texto', () => addLayer('text')],
       ['▣  Capa visual', () => addLayer('overlay')],
+      ['▶  Capa de vídeo', () => addLayer('video')],
       ['♪  Capa de audio', () => addLayer('audio')],
     ]);
   }
 
   function keys(ev) {
+    const modal = document.querySelector('.modal:not(.hidden)');
+    if (modal) {
+      if (ev.key === 'Escape' && modal.id === 'exportModal') modal.classList.add('hidden');
+      return;
+    }
     const tag = (ev.target.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select') {
       if (ev.key === 'Escape') ev.target.blur();

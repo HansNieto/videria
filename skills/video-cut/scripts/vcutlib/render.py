@@ -30,7 +30,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from . import assbuild, media, studio, textlayer, util
+from . import assbuild, color, export_options, media, studio, textlayer, util
 
 # ------------------------------------------------------------ transiciones
 
@@ -225,9 +225,10 @@ def clip_chain(clip, canvas, fit):
         parts.append("setpts=PTS/%.6f" % spd)
         parts.append("fps=%.4f" % fps)
     if zooming:
-        zexpr = piecewise(kfs, "scale", 1.0)
-        pxexpr = piecewise(kfs, "x", 0.0)
-        pyexpr = piecewise(kfs, "y", 0.0)
+        clock = "(it+%.6f)" % float(clip.get("effect_offset") or 0)
+        zexpr = piecewise(kfs, "scale", 1.0, clock)
+        pxexpr = piecewise(kfs, "x", 0.0, clock)
+        pyexpr = piecewise(kfs, "y", 0.0, clock)
         parts.append(
             "zoompan=z='clip(%s,1,%.3f)'"
             ":x='in_w/2-(in_w/zoom/2)+(%s)*(in_w/2-(in_w/zoom/2))'"
@@ -408,7 +409,7 @@ class Job:
     """Todo lo que hace falta para lanzar un render, ya resuelto."""
 
     def __init__(self, project, tl, project_dir, out_path, draft=False,
-                 use_proxy=None, range_=None):
+                 use_proxy=None, range_=None, options=None):
         self.project = project
         self.tl = tl
         self.dir = Path(project_dir)
@@ -418,21 +419,25 @@ class Job:
         self.canvas = dict(self.res["canvas"])
         self.rcfg = dict(studio.DEFAULT_RENDER)
         self.rcfg.update(tl.get("render") or {})
+        options = export_options.validate(options)
+        self.rcfg.update({k: v for k, v in options.items()
+                          if k in ("quality", "encoder", "audio_bitrate")})
         self.range = range_
         self.use_proxy = (draft if use_proxy is None else use_proxy)
-        if draft:
+        if draft and "resolution" not in options:
             h = int(self.rcfg.get("draft_height") or 720)
             if self.canvas["height"] > h:
                 k = h / float(self.canvas["height"])
                 self.canvas["width"] = int(self.canvas["width"] * k) // 2 * 2
                 self.canvas["height"] = h // 2 * 2
+        self.canvas = export_options.canvas_for(self.canvas, options)
         self.warnings = []
         self.clips = self._clips()
-        self.total = round(sum(c["dur"] + float(c.get("gap_before") or 0)
-                               for c in self.clips), 4)
+        self.total = round(max(0, min(self.res["total"], range_[1]) - range_[0])
+                           if range_ else self.res["total"], 4)
 
     def _clips(self):
-        clips = [dict(c) for c in self.res["clips"]]
+        clips = [dict(c) for c in self.res["clips"] if not c.get("hidden")]
         if not self.range:
             return clips
         a, b = self.range
@@ -443,6 +448,7 @@ class Job:
             c = dict(c)
             lo = max(a, c["t0"])
             hi = min(b, c["t1"])
+            c["effect_offset"] = lo - c["t0"]
             c["in"] = round(c["in"] + (lo - c["t0"]) * c["speed"], 4)
             c["out"] = round(c["out"] - (c["t1"] - hi) * c["speed"], 4)
             c["dur"] = round(hi - lo, 4)
@@ -465,28 +471,32 @@ class Job:
         W, H = int(self.canvas["width"]), int(self.canvas["height"])
         fps = float(self.canvas["fps"])
         fit = self.rcfg.get("fit") or "cover"
-        cmd = [util.FFMPEG, "-hide_banner", "-y", "-nostdin"]
+        cmd = [util.FFMPEG, "-hide_banner", "-y", "-nostdin", "-filter_complex_threads", "2"]
         graph = []
         vlabels, alabels = [], []
         idx = 0
 
-        for c in self.clips:
-            gap = float(c.get("gap_before") or 0.0)
-            if gap > 0.001:
-                gn = len(vlabels)
-                graph.append("color=c=black:s=%dx%d:r=%.6f:d=%.4f,format=yuv420p[vgap%d]"
-                             % (W, H, fps, gap, gn))
-                graph.append("aevalsrc=0:d=%.4f:s=48000:c=stereo,"
-                             "aformat=sample_fmts=fltp:channel_layouts=stereo[agap%d]"
-                             % (gap, gn))
-                vlabels.append("[vgap%d]" % gn)
-                alabels.append("[agap%d]" % gn)
+        if self.total <= 0:
+            raise RuntimeError("no hay contenido activo: nada que renderizar")
+        graph.append("color=c=black:s=%dx%d:r=%.6f:d=%.4f,format=yuv420p[base]"
+                     % (W, H, fps, self.total))
+        graph.append("anullsrc=r=48000:cl=stereo,atrim=duration=%.4f[silence]" % self.total)
+        vbase = "base"
+        alabels = ["[silence]"]
+        # Absolute positions preserve gaps and overlaps. Higher video tracks
+        # composite last; audio from simultaneous clips mixes independently.
+        for c in sorted(self.clips, key=lambda x: (x["z"], x["index"])):
             path, src = self.source_path(c["source"])
             if not Path(path).exists():
                 raise RuntimeError("no existe %s" % path)
             src_dur = c["dur"] * c["speed"]
             cmd += ["-ss", "%.4f" % c["in"], "-t", "%.4f" % src_dur, "-i", str(path)]
-            graph.append("[%d:v]%s[v%d]" % (idx, clip_chain(c, self.canvas, fit), idx))
+            graph.append("[%d:v]%s,%s,setpts=PTS+%.6f/TB[v%d]"
+                         % (idx, color.input_filter(path), clip_chain(c, self.canvas, fit), c["t0"], idx))
+            graph.append("[%s][v%d]overlay=eof_action=pass:repeatlast=0:"
+                         "enable='gte(t,%.6f)*lt(t,%.6f)'[stack%d]"
+                         % (vbase, idx, c["t0"], c["t1"], idx))
+            vbase = "stack%d" % idx
             has_a = bool(src.get("has_audio"))
             if has_a:
                 graph.append("[%d:a]%s[a%d]" % (idx, clip_audio_chain(c, True), idx))
@@ -496,20 +506,14 @@ class Job:
                 graph.append("aevalsrc=0:d=%.4f:s=48000:c=stereo,"
                              "aformat=sample_fmts=fltp:channel_layouts=stereo[a%d]"
                              % (c["dur"], idx))
-            vlabels.append("[v%d]" % idx)
-            alabels.append("[a%d]" % idx)
+            graph.append("[a%d]apad,atrim=duration=%.6f,adelay=%d:all=1[voice%d]"
+                         % (idx, c["dur"], round(c["t0"] * 1000), idx))
+            alabels.append("[voice%d]" % idx)
             idx += 1
 
-        if not vlabels:
-            raise RuntimeError("no hay clips activos: nada que renderizar")
-
-        if len(vlabels) == 1:
-            graph.append("%snull[vc]" % vlabels[0])
-            graph.append("%sanull[ac]" % alabels[0])
-        else:
-            pairs = "".join(v + a for v, a in zip(vlabels, alabels))
-            graph.append("%sconcat=n=%d:v=1:a=1[vc][ac]"
-                         % (pairs, len(vlabels)))
+        graph.append("[%s]null[vc]" % vbase)
+        graph.append("%samix=inputs=%d:normalize=0:duration=first[ac]"
+                     % ("".join(alabels), len(alabels)))
 
         vcur = "vc"
         trans = [t for t in self.res["transitions"]
@@ -560,7 +564,7 @@ class Job:
                             "-i", str(src)]
                 else:
                     cmd += ["-i", str(src)]
-            sc = float(it.get("scale") or 1.0)
+            sc = float(it.get("scale") or 1.0) * W / self.res["canvas"]["width"]
             chain = ["format=yuva420p", "setpts=PTS-STARTPTS+%.4f/TB" % max(0.0, t)]
             if abs(sc - 1.0) > 1e-3:
                 chain.append("scale=iw*%.4f:ih*%.4f:flags=lanczos" % (sc, sc))
@@ -589,7 +593,7 @@ class Job:
                          % (vcur, _esc_path(ass_path), _esc_path(fdir)))
             vcur = "vt"
 
-        graph.append("[%s]format=yuv420p[vout]" % vcur)
+        graph.append("[%s]format=yuv420p,%s[vout]" % (vcur, color.SDR_PARAMS))
 
         # ------------------------------------------------ audio
         acur = "ac"
@@ -653,6 +657,7 @@ class Job:
         cmd += ["-filter_complex", ";".join(graph),
                 "-map", "[vout]", "-map", "[aout]"]
         cmd += self.encoder_args()
+        cmd += color.SDR_TAGS
         cmd += ["-r", "%.4f" % fps, "-t", "%.4f" % self.total,
                 "-movflags", "+faststart", str(self.out)]
         return cmd, {"clips": len(self.clips), "total": self.total,
@@ -777,10 +782,10 @@ def _exigir_originales(project, draft):
 
 
 def render(project, tl, project_dir, out_path, draft=False, range_=None,
-           on_progress=None, on_stage=None, on_start=None):
+           on_progress=None, on_stage=None, on_start=None, options=None):
     """Render completo. Devuelve un dict con lo que se hizo."""
     pdir = Path(project_dir)
-    job = Job(project, tl, pdir, out_path, draft=draft, range_=range_)
+    job = Job(project, tl, pdir, out_path, draft=draft, range_=range_, options=options)
     if on_stage:
         on_stage("texto")
     ass = pdir / "cache" / "burn.ass"

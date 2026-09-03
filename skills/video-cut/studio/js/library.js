@@ -241,17 +241,17 @@ ST.library = (() => {
 
   function firstTrack(kind, preferred) {
     const hit = preferred && st.track(preferred);
-    if (hit && hit.kind === kind) return hit.id;
+    if (hit && hit.kind === kind && !hit.locked) return hit.id;
     const ordered = (S.tl.tracks || []).filter((x) => x.kind === kind && !x.locked)
       .sort((a, b) => (+b.z || 0) - (+a.z || 0));
-    return ordered[0] && ordered[0].id;
+    return ordered[0]?.id || st.addTrack(kind).id;
   }
 
   function addText(styleKey, t, trackId) {
     const style = S.tl.styles[styleKey] || {};
     st.push();
     const words = 'Texto nuevo'.split(' ').map((w, i) => ({ w, s: i * 0.25, e: i * 0.25 + 0.25 }));
-    const preferred = trackId || (styleKey === 'capcut' ? 't_sub' : 't_txt');
+    const preferred = trackId || 't_txt';
     const anchor = st.anchorAt(t);
     const it = st.addItem(firstTrack('text', preferred), {
       kind: 'text', style: styleKey, auto: false,
@@ -261,7 +261,7 @@ ST.library = (() => {
     });
     st.resolve();
     ST.app.renderAll();
-    if (it) ST.inspector.focusText(it.id);
+    if (it) { st.placeItem(it.id,t,null); st.resolve(); ST.app.renderAll(); ST.inspector.focusText(it.id); }
   }
 
   function addAsset(a, cat, t, trackId) {
@@ -297,6 +297,7 @@ ST.library = (() => {
       });
     }
     st.resolve();
+    if (it) { st.placeItem(it.id,t,null); st.resolve(); }
     ST.app.renderAll();
     if (it) st.select('item', it.id);
   }

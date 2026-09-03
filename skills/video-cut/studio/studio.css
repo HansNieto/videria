@@ -301,3 +301,11 @@ body.resizing-y{cursor:row-resize;user-select:none}
   :root{--w-lib:190px;--w-preview:38vw;--tl-name-w:104px}
   .stage-top{gap:6px}.stage-top .chk{font-size:0}.zoomctl{width:130px}
 }
+:root { --export-gap: 14px; }
+.export-card { max-height: 90vh; overflow: auto; }
+.export-card label { display: flex; flex-direction: column; gap: 6px; }
+.export-card input, .export-card select { width: 100%; padding: 8px; background: var(--bg2); color: var(--tx); border: 1px solid var(--line2); border-radius: 6px; }
+.export-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--export-gap); margin-top: 14px; }
+.export-card p { line-height: 1.5; }
+.trk.drop-new { background: #244364; }
+.trk.drop-new::after { content: '+ Nueva capa al soltar'; position: sticky; left: 12px; color: #b9e4ff; pointer-events: none; font-size: 11px; }

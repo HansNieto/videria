@@ -11,11 +11,12 @@ ST.timeline = (() => {
   function rows() {
     const ordered = (kind) => (S.tl.tracks || []).filter((x) => x.kind === kind)
       .sort((a, b) => (+b.z || 0) - (+a.z || 0))
-      .map((x) => ({ id: x.id, kind, h: kind === 'audio' ? 30 : 32, label: x.name }));
+      .map((x) => ({ id: x.id, kind, h: kind === 'video' ? 78 : kind === 'audio' ? 30 : 32, label: x.name }));
     // En pantalla, lo de arriba se compone encima. El vídeo base separa las
     // capas visuales de las pistas de sonido.
-    return [...ordered('text'), ...ordered('overlay'),
-      { id: '_video', kind: 'video', h: 78, label: 'Vídeo' }, ...ordered('audio')];
+    const video = ordered('video');
+    if (!video.some(r => r.id === '_video')) video.push({id:'_video',kind:'video',h:78,label:'Vídeo'});
+    return [...ordered('text'), ...ordered('overlay'), ...video, ...ordered('audio')];
   }
 
   const WAVES = Object.create(null);
@@ -147,11 +148,11 @@ ST.timeline = (() => {
   /* --------------------------------------------------------- construccion */
 
   function trackRow(row) {
-    const trk = row.id === '_video' ? null : st.track(row.id);
+    const trk = st.track(row.id);
     const node = el('div', 'trk');
     node.style.height = row.h + 'px';
     node.dataset.row = row.id;
-    if (row.id === '_video') {
+    if (row.kind === 'video') {
       buildClips(node, row);
     } else if (trk) {
       buildItems(node, trk, row);
@@ -161,6 +162,7 @@ ST.timeline = (() => {
 
   function buildClips(node, row) {
     for (const clip of S.clips) {
+      if (clip.track !== row.id) continue;
       const x = clip.t0 * S.pps;
       const w = Math.max(3, clip.dur * S.pps);
       const d = el('div', 'clip' + (S.sel && S.sel.kind === 'clip' && S.sel.id === clip.seg ? ' sel' : ''));
@@ -168,7 +170,7 @@ ST.timeline = (() => {
       d.style.width = w + 'px';
       d.style.height = (row.h - 6) + 'px';
       d.dataset.seg = clip.seg;
-      d.title = 'Arrastrá para crear espacio antes · Alt+arrastrar para reordenar';
+      d.title = 'Arrastrar libremente · Superponer crea una capa · Alt desactiva el imán';
       const cv = el('canvas');
       d.appendChild(cv);
       drawClip(cv, clip, w, row.h - 6);
@@ -235,7 +237,7 @@ ST.timeline = (() => {
     gutter.textContent = '';
     const visibleRows = rows();
     for (const row of visibleRows) {
-      const trk = row.id === '_video' ? null : st.track(row.id);
+      const trk = st.track(row.id);
       const n = el('div', 'trk-name');
       n.style.height = row.h + 'px';
       n.appendChild(el('b', null, (trk && trk.name) || row.label));
@@ -258,10 +260,11 @@ ST.timeline = (() => {
         lock.title = trk.locked ? 'Desbloquear' : 'Bloquear';
         lock.onclick = () => { st.push(); trk.locked = !trk.locked; ST.app.renderAll(); };
         n.appendChild(lock);
-        if (!['t_txt', 't_sub', 't_ovl', 't_mus', 't_sfx'].includes(trk.id)) {
+        if (!['_video', 't_txt', 't_sub', 't_ovl', 't_mus', 't_sfx'].includes(trk.id)) {
           const del = el('button', 'tbtn', '×');
-          del.title = (trk.items || []).length ? 'La capa debe estar vacía para borrarla' : 'Borrar capa vacía';
-          del.disabled = !!(trk.items || []).length;
+          const occupied = (trk.items || []).length || S.project.segments.some(s => st.clipCfg(s.id).track === trk.id);
+          del.title = occupied ? 'La capa debe estar vacía para borrarla' : 'Borrar capa vacía';
+          del.disabled = !!occupied;
           del.onclick = () => { st.push(); st.delTrack(trk.id); st.resolve(); ST.app.renderAll(); };
           n.appendChild(del);
         }
@@ -300,7 +303,7 @@ ST.timeline = (() => {
 
   const xToT = (ev) => {
     const r = inner.getBoundingClientRect();
-    return clamp((ev.clientX - r.left) / S.pps, 0, S.total);
+    return Math.max(0, (ev.clientX - r.left) / S.pps);
   };
 
   function onDown(ev) {
@@ -326,10 +329,13 @@ ST.timeline = (() => {
     if (clipNode) {
       const seg = clipNode.dataset.seg;
       const clip = st.clipOf(seg);
+      if (st.track(clip.track)?.locked) return ST.app.toast('La pista está bloqueada');
+      ST.player.pause();
       st.select('clip', seg);
       st.push();
       drag = { kind: edge ? 'trim' : 'move', side: edge, seg, t0: xToT(ev),
                in0: clip.in, out0: clip.out, pointerOffset: xToT(ev) - clip.t0,
+               start: clip.t0, target: clip.track, y0: ev.clientY,
                gap0: clip.gap_before || 0, node: clipNode, moved: false };
       render();
       ev.preventDefault();
@@ -340,11 +346,12 @@ ST.timeline = (() => {
       const { trk, it } = st.findItem(id);
       if (trk && trk.locked) return ST.app.toast('La pista está bloqueada');
       const r = S.items.find((x) => x.id === id);
+      ST.player.pause();
       st.select('item', id);
       st.push();
       drag = { kind: edge ? 'iresize' : 'imove', side: edge, id, t0: xToT(ev),
                start: r ? r.t : +it.t || 0, dur: r ? r.dur : +it.dur || 0,
-               moved: false };
+               target: trk.id, y0: ev.clientY, lines: structuredClone(it.lines || []), moved: false };
       render();
       ev.preventDefault();
       return;
@@ -358,10 +365,18 @@ ST.timeline = (() => {
   function onMove(ev) {
     if (!drag) return;
     showSnap(null);
+    if (drag.kind !== 'scrub') {
+      const rect = scroll.getBoundingClientRect();
+      if (ev.clientX > rect.right - 35) scroll.scrollLeft += 14;
+      else if (ev.clientX < rect.left + 170) scroll.scrollLeft = Math.max(0, scroll.scrollLeft - 14);
+    }
     const t = xToT(ev);
     if (drag.kind === 'scrub') { ST.player.seek(t); movePlayhead(); return; }
     const dt = t - drag.t0;
-    if (Math.abs(dt) > 0.01) drag.moved = true;
+    if (!drag.moved && Math.abs(dt)*S.pps < 3 && Math.abs(ev.clientY-drag.y0) < 4) return;
+    if (!drag.moved && ['move','trim'].includes(drag.kind)) st.pinClipPositions();
+    drag.moved = true;
+    drag.noSnap = ev.altKey;
 
     if (drag.kind === 'trim') {
       const seg = st.segOf(drag.seg);
@@ -369,6 +384,7 @@ ST.timeline = (() => {
       const spd = st.clipCfg(seg.id).speed || 1;
       if (drag.side === 'l') {
         seg.in = clamp(drag.in0 + dt * spd, 0, seg.out - 0.1);
+        st.setClip(seg.id, {start:Math.max(0,drag.start+(seg.in-drag.in0)/spd)});
       } else {
         seg.out = clamp(drag.out0 + dt * spd, seg.in + 0.1, src.duration || 1e6);
       }
@@ -377,17 +393,17 @@ ST.timeline = (() => {
     } else if (drag.kind === 'move') {
       const cur = st.clipOf(drag.seg);
       if (cur) {
-        if (ev.altKey) {
-          const target = clipIndexAt(t);
-          if (target != null && target !== cur.index) moveClip(drag.seg, target);
-          st.resolve(); render(); return;
-        }
-        const prevEnd = cur.index ? S.clips[cur.index - 1].t1 : 0;
-        let wanted = Math.max(prevEnd, t - drag.pointerOffset);
-        wanted = snapClipStart(cur.seg, wanted);
-        st.setClip(cur.seg, { gap_before: +Math.max(0, wanted - prevEnd).toFixed(3) });
+        const targetNode = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('.trk');
+        const target = targetNode && st.track(targetNode.dataset.row);
+        if (target?.kind === 'video' && !target.locked) drag.target = target.id;
+        const snapped = st.snapTime(cur.seg, Math.max(0,t-drag.pointerOffset), cur.dur, S.snap && !ev.altKey);
+        showSnap(snapped.edge);
+        st.placeClip(cur.seg, snapped.time, drag.target, false);
         st.resolve();
         render();
+        if (S.clips.some(c => c.seg !== cur.seg && c.track === drag.target && st.overlaps(snapped.time,snapped.time+cur.dur,c.t0,c.t1))) {
+          tracks.querySelector(`[data-row="${drag.target}"]`)?.classList.add('drop-new');
+        }
       }
     } else if (drag.kind === 'imove') {
       let { trk, it } = st.findItem(drag.id);
@@ -398,16 +414,15 @@ ST.timeline = (() => {
         st.moveItemToTrack(drag.id, target.id);
         trk = target;
       }
+      drag.target = trk.id;
       const snapped = snapItemTime(drag.id, Math.max(0, drag.start + dt), drag.dur);
       const nt = nonOverlappingStart(drag.id, snapped, drag.dur);
-      if (it.anchor) {
-        const a = st.anchorAt(nt);
-        if (a) it.anchor = Object.assign({}, it.anchor, a);
-      } else {
-        it.t = +nt.toFixed(3);
-      }
+      st.placeItem(drag.id, nt, drag.target, false);
       st.resolve();
       render();
+      if (!subtitleRanges(drag.id) && S.items.some(x => x.id !== drag.id && x.track === drag.target && st.overlaps(nt,nt+drag.dur,x.t,x.t_end))) {
+        tracks.querySelector(`[data-row="${drag.target}"]`)?.classList.add('drop-new');
+      }
     } else if (drag.kind === 'iresize') {
       const { it } = st.findItem(drag.id);
       if (!it) return;
@@ -421,11 +436,9 @@ ST.timeline = (() => {
                                  subtitleLeftLimit(drag.id, drag.start + drag.dur));
         const shift = snapped - drag.start;
         it.dur = +Math.max(0.1, drag.dur - shift).toFixed(3);
-        if (it.anchor) {
-          it.anchor.offset = +((+it.anchor.offset || 0) + shift).toFixed(3);
-        } else {
-          it.t = +Math.max(0, drag.start + shift).toFixed(3);
-        }
+        delete it.anchor;
+        it.t = +Math.max(0, drag.start + shift).toFixed(3);
+        it.lines = structuredClone(drag.lines);
         shiftWordTimes(it, -shift);
       }
       st.resolve();
@@ -447,7 +460,6 @@ ST.timeline = (() => {
 
   // Ajuste magnético global: al acercar un borde a cualquier inicio/final del
   // panel se alinea. No agrupa objetos ni bloquea el movimiento.
-  const SNAP_PX = 10;
   function showSnap(t) {
     if (t == null) {
       if (snapGuide) snapGuide.remove();
@@ -458,39 +470,15 @@ ST.timeline = (() => {
   }
 
   function snapItemEdge(id, value) {
-    if (!S.snap) return value;
-    const edges = [0, S.total];
-    for (const c of S.clips) edges.push(c.t0, c.t1);
-    for (const r of S.items) if (r.id !== id && !r.hidden) edges.push(r.t, r.t_end);
-    let best = value, dist = SNAP_PX / Math.max(1, S.pps);
-    for (const edge of edges) {
-      const d = Math.abs(edge - value);
-      if (d < dist) { best = edge; dist = d; }
-    }
-    const snapped = +best.toFixed(3);
-    if (snapped !== +value.toFixed(3)) showSnap(snapped);
-    return snapped;
-  }
-
-  function snapClipStart(segId, value) {
-    if (!S.snap) return value;
-    const edges = [0];
-    for (const c of S.clips) if (c.seg !== segId) edges.push(c.t0, c.t1);
-    for (const r of S.items) edges.push(r.t, r.t_end);
-    let best = value, dist = SNAP_PX / Math.max(1, S.pps);
-    for (const edge of edges) {
-      const d = Math.abs(edge - value);
-      if (d < dist) { best = edge; dist = d; }
-    }
-    if (best !== value) showSnap(best);
-    return best;
+    const result = st.snapTime(id,value,0,S.snap && !drag?.noSnap);
+    showSnap(result.edge);
+    return result.time;
   }
 
   function snapItemTime(id, start, dur) {
-    const a = snapItemEdge(id, start);
-    const b = snapItemEdge(id, start + dur);
-    // Si ambos bordes encuentran candidatos, gana el que este mas cerca.
-    return Math.abs(a - start) <= Math.abs(b - (start + dur)) ? a : +(b - dur).toFixed(3);
+    const result = st.snapTime(id,start,dur,S.snap && !drag?.noSnap);
+    showSnap(result.edge);
+    return result.time;
   }
 
   function subtitleRanges(id) {
@@ -511,7 +499,7 @@ ST.timeline = (() => {
       if (r.t - from >= dur) gaps.push([from, r.t - dur]);
       from = Math.max(from, r.end);
     }
-    if (S.total - from >= dur) gaps.push([from, S.total - dur]);
+    gaps.push([from, Infinity]);
     if (!gaps.length) return wanted;
     let best = gaps[0][0], dist = Infinity;
     for (const [a, b] of gaps) {
@@ -543,42 +531,33 @@ ST.timeline = (() => {
     drag = null;
     showSnap(null);
     if (d.kind !== 'scrub' && d.moved) {
+      if (d.kind === 'move') {
+        const c = st.clipOf(d.seg);
+        st.placeClip(d.seg, c.t0, d.target);
+      } else if (d.kind === 'imove') {
+        const r = S.items.find(x => x.id === d.id);
+        if (r) st.placeItem(d.id, r.t, d.target);
+      }
+      st.resolve();
       st.markDirty(true);
       ST.inspector.render();
+      if (d.kind === 'trim') ST.app.regenSubs([d.seg]);
     } else if (d.kind !== 'scrub') {
       S.undo.pop();                        // un clic no es una edicion
       st.markDirty(S.dirty);
       ST.inspector.render();
     }
     render();
-  }
-
-  function clipIndexAt(t) {
-    for (const c of S.clips) if (t >= c.t0 && t < c.t1) return c.index;
-    return t <= 0 ? 0 : S.clips.length - 1;
-  }
-
-  /* Reordena dentro de project.segments, que incluye los apagados: hay que
-     buscar la posicion real del clip destino, no el indice visible. */
-  function moveClip(segId, toIndex) {
-    const segs = S.project.segments;
-    const cur = st.clipOf(segId);
-    if (!cur) return;
-    const target = S.clips[clamp(toIndex, 0, S.clips.length - 1)];
-    if (!target || target.seg === segId) return;
-    const from = segs.findIndex((s) => s.id === segId);
-    if (from < 0) return;
-    const [moved] = segs.splice(from, 1);
-    let to = segs.findIndex((s) => s.id === target.seg);
-    if (to < 0) to = segs.length;
-    segs.splice(toIndex > cur.index ? to + 1 : to, 0, moved);
+    ST.player.seek(S.t, false);
   }
 
   function onDblClick(ev) {
     const clipNode = ev.target.closest('.clip');
     if (clipNode) {
       const seg = st.segOf(clipNode.dataset.seg);
+      if (st.track(st.clipCfg(seg.id).track)?.locked) return;
       st.push();
+      if (seg.enabled) st.detachAnchors(seg.id);
       seg.enabled = !seg.enabled;
       st.resolve();
       ST.app.renderAll();
@@ -645,10 +624,12 @@ ST.timeline = (() => {
 
   async function splitAtPlayhead(segId) {
     const clip = st.clipOf(segId);
+    if (clip && st.track(clip.track)?.locked) return ST.app.toast('La pista está bloqueada');
     if (!clip || S.t <= clip.t0 + 0.06 || S.t >= clip.t1 - 0.06) {
       return ST.app.toast('Poné el cabezal dentro del clip', 'bad');
     }
     st.push();
+    st.pinClipPositions();
     const segs = S.project.segments;
     const i = segs.findIndex((s) => s.id === segId);
     const seg = segs[i];
@@ -663,8 +644,14 @@ ST.timeline = (() => {
     seg.text = seg.words.map((w) => w.w).join(' ');
     b.group = null; b.locked = true; seg.locked = true;
     segs.splice(i + 1, 0, b);
-    // Los ajustes de zoom/velocidad del original valen para la primera mitad;
-    // la segunda arranca limpia para no heredar un zoom a medias.
+    const second = structuredClone(st.clipCfg(segId));
+    second.start = S.t;
+    const splitOffset = S.t - clip.t0;
+    const kfs = st.zoomKfs(second);
+    if (kfs.length) second.zoom = {kf:[{t:0, scale:ST.player.pw(kfs,'scale',1,splitOffset),
+      x:ST.player.pw(kfs,'x',0,splitOffset), y:ST.player.pw(kfs,'y',0,splitOffset)},
+      ...kfs.filter(k => k.t > splitOffset).map(k => ({...k,t:k.t-splitOffset}))]};
+    st.setClip(b.id, second);
     st.resolve();
     ST.app.renderAll();
     // Las tarjetas automaticas se derivan de las palabras de cada mitad. Se
@@ -674,13 +661,15 @@ ST.timeline = (() => {
 
   function trimAtPlayhead(side) {
     const clip = st.clipAt(S.t);
+    if (clip && st.track(clip.track)?.locked) return ST.app.toast('La pista está bloqueada');
     if (!clip || S.t <= clip.t0 + 0.06 || S.t >= clip.t1 - 0.06) {
       return ST.app.toast('Poné el cabezal dentro del clip', 'bad');
     }
     st.push();
+    st.pinClipPositions();
     const seg = st.segOf(clip.seg);
     const cutSrc = seg.in + (S.t - clip.t0) * clip.speed;
-    if (side === 'left') seg.in = cutSrc;
+    if (side === 'left') { seg.in = cutSrc; st.setClip(clip.seg, {start:S.t}); }
     else seg.out = cutSrc;
     seg.words = (seg.words || []).filter((w) => side === 'left' ? w.e > cutSrc : w.s < cutSrc);
     seg.text = seg.words.map((w) => w.w).join(' ');
