@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from . import util
+
 AUDIO_EXT = {".wav", ".mp3", ".m4a", ".aac", ".flac", ".ogg", ".opus"}
 VIDEO_EXT = {".webm", ".mov", ".mp4", ".mkv"}
 IMAGE_EXT = {".png", ".webp", ".gif", ".jpg", ".jpeg"}
@@ -35,7 +37,7 @@ MAX_PER_CAT = 300
 MAX_DEPTH = 3
 
 
-SKILL_ASSETS = Path(__file__).resolve().parent.parent.parent / "assets"
+SKILL_ASSETS = util.skill_root() / "assets"
 
 
 def roots(project_dir):

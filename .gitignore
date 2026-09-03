@@ -23,3 +23,10 @@ config.toml
 # Ejemplos con guiones de videos reales: no viajan al repo.
 skills/motion-overlays/examples/
 credenciales.json
+
+# Compilación del ejecutable; no incluye proyectos ni credenciales.
+/.venv-desktop/
+/build/
+/dist/
+/desktop/vendor/
+/*.spec

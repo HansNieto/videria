@@ -389,12 +389,15 @@ ST.player = (() => {
       S.t >= it.t && S.t < it.t_end);
     document.getElementById('canvasEmpty').classList.toggle('hidden', !!clip || hasLayer);
     const g = clip ? transGeom(S.t) : { z: 0, px: 0, py: 0, flash: 0, blur: 0, pix: 0, glitch: 0, fade: 0 };
+    // También existen en un hueco sin vídeo: drawGuides se ejecuta fuera del
+    // bloque del clip. Declararlas dentro detenía main() antes de bindear botones.
+    let z = 1, px = 0, py = 0;
     if (clip) {
     const rel = S.t - clip.t0;
     const zm = zoomAt(clip, rel);
-    const z = clamp(zm.z + g.z, 1, 3);
-    const px = clamp(zm.px + g.px, -1.4, 1.4);
-    const py = clamp(zm.py + g.py, -1.4, 1.4);
+    z = clamp(zm.z + g.z, 1, 3);
+    px = clamp(zm.px + g.px, -1.4, 1.4);
+    py = clamp(zm.py + g.py, -1.4, 1.4);
 
     const v = VID[clip.source];
     const vw = v && v.videoWidth, vh = v && v.videoHeight;

@@ -729,7 +729,9 @@ def run(cmd, total, on_progress=None, log_path=None, on_start=None):
     errf = open(log, "w", encoding="utf-8", errors="replace") if log \
         else subprocess.PIPE
     proc = subprocess.Popen(full, stdout=subprocess.PIPE, stderr=errf,
-                            encoding="utf-8", errors="replace", bufsize=1)
+                            encoding="utf-8", errors="replace", bufsize=1,
+                            stdin=subprocess.DEVNULL,
+                            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     if on_start:
         on_start(proc)
     last = 0.0

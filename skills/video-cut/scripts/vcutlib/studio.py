@@ -16,6 +16,7 @@ usuario coloca a mano puede estar suelto.
 from __future__ import annotations
 
 import os
+import copy
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -287,12 +288,59 @@ def load(project_dir, project, create=True):
         if not create:
             return None
         tl = new_timeline(project)
-    return migrate(tl, project)
+    migrate(tl, project)
+    for _track, item in all_items(tl):
+        if item.get("src"):
+            item["src"] = resolve_asset(item["src"], project_dir)
+    return tl
 
 
 def save(project_dir, tl):
     tl["updated_at"] = _now()
-    return util.write_json(path_of(project_dir), tl, backup=True)
+    portable = copy.deepcopy(tl)
+    for _track, item in all_items(portable):
+        if item.get("src"):
+            item["src"] = portable_asset(item["src"], project_dir)
+    return util.write_json(path_of(project_dir), portable, backup=True)
+
+
+def resolve_asset(value, project_dir):
+    """Abre recursos relativos y proyectos antiguos sin depender del usuario Hans."""
+    normalized = str(value).replace("\\", "/")
+    root = util.skill_root()
+    if normalized.startswith("@skill/"):
+        candidate = (root / normalized[7:]).resolve()
+        if candidate.is_relative_to(root.resolve() / "assets"):
+            return str(candidate)
+        raise ValueError("Ruta de recurso de la app no válida")
+    if "video-cut/assets/" in normalized:
+        suffix = normalized.split("video-cut/assets/", 1)[1]
+        candidate = (root / "assets" / suffix).resolve()
+        if candidate.is_relative_to(root.resolve() / "assets") and candidate.is_file():
+            return str(candidate)
+    p = Path(value)
+    if p.is_absolute() and p.exists():
+        return str(p)
+    # Compatibilidad con rutas absolutas guardadas en la otra computadora.
+    for folder in ("assets", "broll", "fonts", "musica", "sfx"):
+        marker = "/" + folder + "/"
+        if marker in normalized:
+            candidate = (Path(project_dir) / folder / normalized.rsplit(marker, 1)[1]).resolve()
+            if candidate.is_relative_to(Path(project_dir).resolve()) and candidate.is_file():
+                return str(candidate)
+    return _abs(value, project_dir)
+
+
+def portable_asset(value, project_dir):
+    resolved = Path(resolve_asset(value, project_dir))
+    try:
+        return resolved.relative_to(Path(project_dir).resolve()).as_posix()
+    except ValueError:
+        pass
+    try:
+        return "@skill/" + resolved.relative_to(util.skill_root().resolve()).as_posix()
+    except ValueError:
+        return str(value)
 
 
 def migrate(tl, project):

@@ -26,8 +26,8 @@ from werkzeug.utils import secure_filename
 from . import (assbuild, exporters, library, media, plan, render, studio, subs,
                textlayer, util)
 
-EDITOR_DIR = Path(__file__).resolve().parent.parent.parent / "editor"
-STUDIO_DIR = Path(__file__).resolve().parent.parent.parent / "studio"
+EDITOR_DIR = util.skill_root() / "editor"
+STUDIO_DIR = util.skill_root() / "studio"
 
 
 def create_app(project_dir):
@@ -39,6 +39,24 @@ def create_app(project_dir):
     hq_lock = threading.Lock()
     jobs = {}
     jobs_lock = threading.Lock()
+
+    def cancel_jobs():
+        with jobs_lock:
+            for job in jobs.values():
+                if job.get("status") == "corriendo":
+                    job["cancelled"] = True
+                    proc = job.get("_proc")
+                    if proc and proc.poll() is None:
+                        proc.terminate()
+
+    app.extensions["vcut_cancel_jobs"] = cancel_jobs
+
+    @app.after_request
+    def fresh_interface(response):
+        # HTML y JS deben pertenecer siempre a la misma versión de la app.
+        if request.path.startswith('/studio') or request.path == '/':
+            response.headers['Cache-Control'] = 'no-store'
+        return response
 
     def load():
         data = util.read_json(project_file)
@@ -365,6 +383,8 @@ def create_app(project_dir):
 
             def started(proc):
                 job["_proc"] = proc
+                if job.get("cancelled"):
+                    proc.terminate()
 
             info = render.render(project, tl, project_dir, out, draft=draft,
                                  range_=range_, on_progress=prog,

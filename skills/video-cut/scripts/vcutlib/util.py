@@ -26,6 +26,13 @@ BROWSER_AUDIO = {"aac", "mp3", "opus", "vorbis", "flac"}
 BROWSER_PIXFMT = {"yuv420p", "yuvj420p", "yuv420p10le"}
 
 
+def skill_root():
+    """Recursos idénticos en el checkout y en el ejecutable de escritorio."""
+    if getattr(sys, "frozen", False):
+        return Path(sys._MEIPASS) / "skills/video-cut"
+    return Path(__file__).resolve().parent.parent.parent
+
+
 def eprint(*args):
     print(*args, file=sys.stderr, flush=True)
 
@@ -39,6 +46,8 @@ def run(cmd, check=True, capture=True):
         stderr=subprocess.PIPE,
         encoding="utf-8",
         errors="replace",
+        stdin=subprocess.DEVNULL,
+        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
     )
     if check and proc.returncode != 0:
         tail = (proc.stderr or "").strip().splitlines()[-12:]
@@ -52,7 +61,8 @@ def run(cmd, check=True, capture=True):
 def run_bytes(cmd):
     """Ejecuta un proceso y devuelve stdout crudo en bytes."""
     proc = subprocess.run([str(c) for c in cmd], stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE)
+                          stderr=subprocess.PIPE, stdin=subprocess.DEVNULL,
+                          creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     if proc.returncode != 0:
         tail = proc.stderr.decode("utf-8", "replace").strip().splitlines()[-12:]
         raise RuntimeError("Fallo el comando:\n%s" % "\n".join(tail))

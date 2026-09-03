@@ -375,10 +375,6 @@ ST.app = (() => {
     ST.timeline.bind();
     ST.library.bind();
     ST.inspector.render();
-    renderAll();
-    if (!S.clips.length) toast('No hay clips encendidos. Encendé alguno en el editor de cortes.', 'bad');
-    else if (warns.length) toast(warns[0], 'bad');
-
     $('btnPlay').onclick = () => ST.player.toggle();
     $('btnHome').onclick = () => ST.player.seek(0);
     $('btnEnd').onclick = () => ST.player.seek(S.total);
@@ -404,6 +400,18 @@ ST.app = (() => {
       ev.target.value = '';
     };
     $('btnSave').onclick = save;
+    // Disponible sólo dentro de la aplicación: conserva la edición al cambiar.
+    fetch('/api/desktop').then(r => r.ok ? r.json() : null).then(desktop => {
+      if (!desktop) return;
+      $('btnProjects').classList.remove('hidden');
+      $('btnProjects').onclick = async () => {
+        try {
+          ST.player.pause();
+          if (S.dirty) await st.save();
+          location.href = desktop.home;
+        } catch (e) { toast('No se cambió de proyecto: ' + e.message, 'bad'); }
+      };
+    }).catch(() => {});
     $('btnUndo').onclick = () => st.undo();
     $('btnRedo').onclick = () => st.redo();
     $('btnRender').onclick = () => startRender(false);
@@ -430,10 +438,19 @@ ST.app = (() => {
     window.addEventListener('beforeunload', (ev) => {
       if (S.dirty) { ev.preventDefault(); ev.returnValue = ''; }
     });
+    renderAll();
+    ST.player.seek(S.t);
+    if (!S.clips.length) toast('No hay clips encendidos. Encendé alguno en el editor de cortes.', 'bad');
+    else if (warns.length) toast(warns[0], 'bad');
   }
 
   return { main, toast, menu, renderAll, onTime, onSelect, setMode, save,
            reload, rewrap, regenSubs, relayout, startRender, post };
 })();
 
-document.addEventListener('DOMContentLoaded', ST.app.main);
+document.addEventListener('DOMContentLoaded', () => ST.app.main().catch((error) => {
+  console.error('No pudo iniciar Studio', error);
+  const message = 'No pudo iniciar el editor: ' + error.message + '. Cierra y vuelve a abrir Videria.';
+  document.getElementById('bootMsg').textContent = message;
+  document.getElementById('boot').classList.remove('hidden');
+}));

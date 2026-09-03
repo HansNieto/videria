@@ -24,7 +24,7 @@ def font_dirs(project_dir=None):
     if env:
         dirs += [Path(p) for p in env.split(os.pathsep) if p]
     dirs += [
-        Path(__file__).resolve().parent.parent.parent / "assets" / "fonts",
+        util.skill_root() / "assets" / "fonts",
         Path.home() / "MoneyPrinterTurbo" / "resource" / "fonts",
         Path(os.environ.get("WINDIR", "C:/Windows")) / "Fonts",
         Path.home() / "AppData" / "Local" / "Microsoft" / "Windows" / "Fonts",

@@ -22,7 +22,7 @@ from pathlib import Path
 
 from . import util
 
-SKILL = Path(__file__).resolve().parent.parent.parent
+SKILL = util.skill_root()
 SRC_DIR = SKILL / "stickers"
 OUT_DIR = SKILL / "assets" / "stickers"
 

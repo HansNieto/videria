@@ -5,11 +5,18 @@ grabaciones crudas y sale un MP4 vertical listo para subir: ordenado,
 transcrito, sin silencios, sin tomas repetidas, con subtítulos estilo CapCut,
 zooms con keyframes, transiciones con sonido y música con ducking.
 
-No es una app que se instala. Son **skills para [Claude Code](https://claude.com/claude-code)**
-más una herramienta de línea de comandos en Python (`vcut`) y un editor que se
-abre en el navegador. Podés usarlo de dos maneras:
+**Ahora también es una app de escritorio para Windows.** Descarga el ZIP de
+[Releases](https://github.com/HansNieto/videria/releases/latest), extrae todo y
+ejecuta `Instalar-Videria.cmd`. Se abre desde el icono Videria, con un selector
+de proyectos. No necesitas Python ni configurar FFmpeg para editar/renderizar.
+La app se actualiza por Releases; los repositorios de videos llevan solamente
+los proyectos. [Tutorial para Hans y MaykNE](docs/instalar-app.html).
 
-- **Hablándole a Claude Code** — «limpiá estas grabaciones y armá un TikTok».
+La preedición automática sigue usando las **skills** y la CLI Python (`vcut`)
+en la computadora de procesamiento; todavía no se inicia desde un botón de la
+app. Puedes prepararla de dos maneras:
+
+- **Hablándole al agente que utiliza las skills** — «limpia estas grabaciones y arma un TikTok».
   Él lee las skills y sabe qué comandos correr y en qué orden.
 - **A mano**, con los comandos de `vcut` que están más abajo. No hace falta
   Claude Code para esto: es Python y ffmpeg.

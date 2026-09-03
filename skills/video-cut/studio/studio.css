@@ -291,7 +291,7 @@ kbd{background:var(--panel3);border:1px solid var(--line2);border-radius:4px;
 /* Los tres divisores guardan el tamaño elegido. Doble clic restaura. */
 .resize-handle{position:fixed;z-index:45;background:transparent;touch-action:none}
 .resize-handle:hover,.resize-handle.active{background:var(--accent)}
-.resize-lib{left:calc(var(--w-lib) - 3px);top:var(--h-top);bottom:0;width:6px;cursor:col-resize}
+.resize-lib{left:calc(var(--w-lib) - 3px);top:var(--h-top);bottom:var(--h-tl);width:6px;cursor:col-resize}
 .resize-preview{right:calc(var(--w-preview) - 3px);top:var(--h-top);bottom:0;width:6px;cursor:col-resize}
 .resize-timeline{left:0;right:var(--w-preview);bottom:calc(var(--h-tl) - 3px);height:6px;cursor:row-resize}
 body.resizing{cursor:col-resize;user-select:none}

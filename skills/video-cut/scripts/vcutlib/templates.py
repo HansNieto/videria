@@ -19,7 +19,7 @@ from pathlib import Path
 
 from . import studio, util
 
-DIR = Path(__file__).resolve().parent.parent.parent / "templates"
+DIR = util.skill_root() / "templates"
 VERSION = 1
 
 
