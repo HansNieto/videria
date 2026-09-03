@@ -21,6 +21,7 @@ from pathlib import Path
 
 from flask import (Flask, abort, jsonify, request, send_file,
                    send_from_directory)
+from werkzeug.utils import secure_filename
 
 from . import (assbuild, exporters, library, media, plan, render, studio, subs,
                textlayer, util)
@@ -35,6 +36,7 @@ def create_app(project_dir):
     app = Flask(__name__, static_folder=None)
     app.config["JSON_AS_ASCII"] = False
     lock = threading.Lock()
+    hq_lock = threading.Lock()
     jobs = {}
     jobs_lock = threading.Lock()
 
@@ -181,6 +183,43 @@ def create_app(project_dir):
         resp.headers["Cache-Control"] = "public, max-age=3600"
         return resp
 
+    @app.route("/api/assets/import", methods=["POST"])
+    def import_asset():
+        """Copia un archivo soltado en el navegador dentro del proyecto."""
+        upload = request.files.get("file")
+        if not upload or not upload.filename:
+            abort(400, "falta el archivo")
+        original = Path(upload.filename).name
+        ext = Path(original).suffix.lower()
+        valid = library.AUDIO_EXT | library.VIDEO_EXT | library.IMAGE_EXT
+        if ext not in valid:
+            abort(415, "formato no compatible: %s" % (ext or "sin extension"))
+        name = secure_filename(original) or ("recurso" + ext)
+        dest_dir = project_dir / "assets" / "importados"
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        dest = dest_dir / name
+        if dest.exists():
+            dest = dest_dir / (dest.stem + "-" + uuid.uuid4().hex[:7] + dest.suffix)
+        upload.save(str(dest))
+        size = dest.stat().st_size
+        if size > 750 * 1024 * 1024:
+            dest.unlink(missing_ok=True)
+            abort(413, "el archivo supera 750 MB")
+        kind = ("audio" if ext in library.AUDIO_EXT else
+                "video" if ext in library.VIDEO_EXT else "image")
+        duration = 0.0
+        if kind != "image":
+            try:
+                duration = float(util.probe(dest).get("duration") or 0)
+            except Exception:
+                duration = 0.0
+        category = "musica" if kind == "audio" else "overlay"
+        asset = {"name": dest.name, "path": str(dest), "kind": kind,
+                 "size": size, "dir": "importados"}
+        if duration:
+            asset["dur"] = round(duration, 3)
+        return jsonify({"ok": True, "asset": asset, "category": category})
+
     # ---------------------------------------------------------- media
 
     @app.route("/api/media/<sid>")
@@ -190,6 +229,21 @@ def create_app(project_dir):
         project = load()
         src = find_source(project, sid)
         path = src.get("proxy") or src["path"]
+        if request.args.get("quality") == "hq" and src.get("has_video"):
+            try:
+                # Caché local: no modifica project.json ni entra al repositorio.
+                # El render final continúa usando el original de cámara.
+                hq_dir = project_dir / "cache" / "preview_hq"
+                hq = hq_dir / "proxy" / ("%s.mp4" % sid)
+                if not hq.exists() or hq.stat().st_size <= 1024:
+                    with hq_lock:
+                        if not hq.exists() or hq.stat().st_size <= 1024:
+                            media.build_proxy(src, hq_dir, height=1080)
+                path = str(hq)
+            except Exception:
+                # Si el equipo no puede crear el HQ, el editor sigue siendo
+                # utilizable con el proxy ligero que ya existía.
+                path = src.get("proxy") or src["path"]
         if not Path(path).exists():
             path = src["path"]
         if not Path(path).exists():

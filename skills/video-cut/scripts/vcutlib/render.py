@@ -428,7 +428,8 @@ class Job:
                 self.canvas["height"] = h // 2 * 2
         self.warnings = []
         self.clips = self._clips()
-        self.total = round(sum(c["dur"] for c in self.clips), 4)
+        self.total = round(sum(c["dur"] + float(c.get("gap_before") or 0)
+                               for c in self.clips), 4)
 
     def _clips(self):
         clips = [dict(c) for c in self.res["clips"]]
@@ -470,6 +471,16 @@ class Job:
         idx = 0
 
         for c in self.clips:
+            gap = float(c.get("gap_before") or 0.0)
+            if gap > 0.001:
+                gn = len(vlabels)
+                graph.append("color=c=black:s=%dx%d:r=%.6f:d=%.4f,format=yuv420p[vgap%d]"
+                             % (W, H, fps, gap, gn))
+                graph.append("aevalsrc=0:d=%.4f:s=48000:c=stereo,"
+                             "aformat=sample_fmts=fltp:channel_layouts=stereo[agap%d]"
+                             % (gap, gn))
+                vlabels.append("[vgap%d]" % gn)
+                alabels.append("[agap%d]" % gn)
             path, src = self.source_path(c["source"])
             if not Path(path).exists():
                 raise RuntimeError("no existe %s" % path)
@@ -805,7 +816,10 @@ def render(project, tl, project_dir, out_path, draft=False, range_=None,
         if len(cmd[i + 1]) > 16000:
             fg = pdir / "cache" / "filtergraph.txt"
             fg.write_text(cmd[i + 1], encoding="utf-8")
-            cmd[i:i + 2] = ["-filter_complex_script", str(fg)]
+            # FFmpeg 8/9 retiro `-filter_complex_script`. La sintaxis generica
+            # `-/opcion archivo` hace exactamente lo mismo y es la forma
+            # soportada por las versiones actuales.
+            cmd[i:i + 2] = ["-/filter_complex", str(fg)]
     (pdir / "cache" / "last_render_cmd.txt").write_text(
         "\n".join(str(c) for c in cmd), encoding="utf-8")
     run(cmd, job.total, on_progress,

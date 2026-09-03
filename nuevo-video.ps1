@@ -82,7 +82,7 @@ Write-Host "Plantilla: $(if ($SoloCortes) { '(ninguna)' } else { $Plantilla })"
 #    material con el modelo medium.
 Paso 1 "Transcribiendo y cortando (lo lento; podes ir a por un cafe)"
 python $VCUT run $Videos --project $Proyecto --sort $Orden --model $Modelo `
-    --lang $Idioma --proxy-all --height 640
+    --lang $Idioma --proxy-all --height 1080
 if ($LASTEXITCODE -ne 0) { Morir "fallo el paso run" }
 
 # 2. Contrastar los cortes con el audio real y recortar el aire que sobra.

@@ -61,6 +61,7 @@
         <label class="chk"><input type="checkbox" id="chkGuides"> guías</label>
         <label class="chk"><input type="checkbox" id="chkSafe"> zona segura</label>
         <label class="chk"><input type="checkbox" id="chkTikTok"> interfaz TikTok</label>
+        <label class="chk" title="Usa un proxy local de 1080 px; la primera carga puede tardar"><input type="checkbox" id="chkHQ" checked> HQ</label>
         <span class="muted" id="stageInfo"></span>
       </div>
 
@@ -73,26 +74,6 @@
         </div>
       </div>
 
-      <div class="transport">
-        <button class="icon" id="btnHome" title="Inicio (Home)">⏮</button>
-        <button class="icon" id="btnPrev" title="Clip anterior (,)">◀◀</button>
-        <button class="icon" id="btnBackFrame" title="Retroceder un fotograma (←)">◀</button>
-        <button class="icon big primary" id="btnPlay" title="Reproducir (Espacio)">▶</button>
-        <button class="icon" id="btnForwardFrame" title="Avanzar un fotograma (→)">▶</button>
-        <button class="icon" id="btnNext" title="Clip siguiente (.)">▶▶</button>
-        <button class="icon" id="btnEnd" title="Final (End)">⏭</button>
-        <span class="cut-actions" aria-label="Opciones de corte">
-          <button id="btnCutLeft" title="Elimina la parte izquierda del clip hasta el cabezal">recortar izquierda</button>
-          <button id="btnSplit" title="Divide el clip en el cabezal (S)">dividir</button>
-          <button id="btnCutRight" title="Elimina la parte derecha del clip desde el cabezal">recortar derecha</button>
-        </span>
-        <span class="tc"><b id="tCur">00:00.00</b><span class="muted"> / </span><span id="tTot" class="muted">00:00.00</span></span>
-        <div class="spacer"></div>
-        <label class="chk"><input type="checkbox" id="chkAudio" checked> audio</label>
-        <label class="zoomctl">zoom
-          <input type="range" id="tlZoom" min="8" max="400" step="1" value="70">
-        </label>
-      </div>
     </section>
 
     <!-- inspector -->
@@ -104,6 +85,30 @@
 
   <!-- ---------------------------------------------------------- timeline -->
   <footer class="tl">
+    <div class="tl-toolbar" aria-label="Controles rápidos de la línea de tiempo">
+      <button class="icon" id="btnHome" title="Ir al inicio (Home)" aria-label="Ir al inicio">⏮</button>
+      <button class="icon" id="btnPrev" title="Clip anterior (,)" aria-label="Clip anterior">◀◀</button>
+      <button class="icon" id="btnBackFrame" title="Retroceder un fotograma (←)" aria-label="Retroceder un fotograma">◀</button>
+      <button class="icon big primary" id="btnPlay" title="Reproducir o pausar (Espacio)" aria-label="Reproducir o pausar">▶</button>
+      <button class="icon" id="btnForwardFrame" title="Avanzar un fotograma (→)" aria-label="Avanzar un fotograma">▶</button>
+      <button class="icon" id="btnNext" title="Clip siguiente (.)" aria-label="Clip siguiente">▶▶</button>
+      <button class="icon" id="btnEnd" title="Ir al final (End)" aria-label="Ir al final">⏭</button>
+      <span class="cut-actions" aria-label="Opciones de corte">
+        <button class="icon" id="btnCutLeft" title="Eliminar desde el inicio del clip hasta el cabezal" aria-label="Recortar izquierda">⫷</button>
+        <button class="icon" id="btnSplit" title="Dividir el clip en el cabezal (S)" aria-label="Dividir">✂</button>
+        <button class="icon" id="btnCutRight" title="Eliminar desde el cabezal hasta el final del clip" aria-label="Recortar derecha">⫸</button>
+      </span>
+      <button class="icon on" id="btnSnap" title="Ajuste magnético: alinear inicios y finales (M)" aria-label="Ajuste magnético">🧲</button>
+      <button class="icon" id="btnAddLayer" title="Agregar una capa" aria-label="Agregar una capa">＋▱</button>
+      <button class="icon" id="btnImport" title="Importar imagen, audio o video" aria-label="Importar archivo">⇧</button>
+      <input class="hidden" id="fileImport" type="file" multiple accept="image/*,audio/*,video/*">
+      <span class="tc"><b id="tCur">00:00.00</b><span class="muted"> / </span><span id="tTot" class="muted">00:00.00</span></span>
+      <div class="spacer"></div>
+      <label class="chk"><input type="checkbox" id="chkAudio" checked> audio</label>
+      <label class="zoomctl" title="Zoom horizontal de la línea de tiempo">zoom
+        <input type="range" id="tlZoom" min="8" max="400" step="1" value="70">
+      </label>
+    </div>
     <div class="tl-head">
       <div class="tl-names" id="tlNames"></div>
       <div class="tl-ruler-wrap">
@@ -118,6 +123,10 @@
       </div>
     </div>
   </footer>
+
+  <div class="resize-handle resize-lib" data-resize="lib" title="Arrastrá para cambiar el ancho de la biblioteca"></div>
+  <div class="resize-handle resize-preview" data-resize="preview" title="Arrastrá para cambiar el tamaño de la previsualización"></div>
+  <div class="resize-handle resize-timeline" data-resize="timeline" title="Arrastrá para cambiar la altura de la línea de tiempo"></div>
 </div>
 
 <div id="toast"></div>
@@ -143,6 +152,7 @@
 <script src="/studio/js/timeline.js"></script>
 <script src="/studio/js/inspector.js"></script>
 <script src="/studio/js/library.js"></script>
+<script src="/studio/js/layout.js"></script>
 <script src="/studio/js/app.js"></script>
 </body>
 </html>

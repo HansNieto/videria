@@ -151,10 +151,25 @@ ST.library = (() => {
         : a.dir + ' · ' + (a.size / 1024 > 999
           ? (a.size / 1048576).toFixed(1) + ' MB'
           : Math.round(a.size / 1024) + ' kB');
-      f.appendChild(card(a.name, meta,
+      const c = card(a.name, meta,
         { type: 'asset', path: a.path, kind: a.kind, cat,
           seq: a.seq || null, dur: a.dur || null },
-        () => addAsset(a, cat, S.t), extra));
+        () => addAsset(a, cat, S.t), extra);
+      if (a.kind === 'image' || a.kind === 'video') {
+        const preview = document.createElement(a.kind === 'video' ? 'video' : 'img');
+        preview.className = 'asset-preview';
+        preview.src = '/api/asset?path=' + encodeURIComponent(a.path);
+        preview.alt = '';
+        if (a.kind === 'video') {
+          preview.muted = true; preview.loop = true; preview.playsInline = true;
+          preview.preload = 'metadata';
+          c.onmouseenter = () => preview.play().catch(() => {});
+          c.onmouseleave = () => { preview.pause(); preview.currentTime = 0; };
+        }
+        c.classList.add('has-preview');
+        c.prepend(preview);
+      }
+      f.appendChild(c);
     }
     return f;
   }
@@ -224,13 +239,23 @@ ST.library = (() => {
     ST.app.toast(spec.label + ' en ' + Math.max(0, S.clips.length - 1) + ' cortes');
   }
 
-  function addText(styleKey, t) {
+  function firstTrack(kind, preferred) {
+    const hit = preferred && st.track(preferred);
+    if (hit && hit.kind === kind) return hit.id;
+    const ordered = (S.tl.tracks || []).filter((x) => x.kind === kind && !x.locked)
+      .sort((a, b) => (+b.z || 0) - (+a.z || 0));
+    return ordered[0] && ordered[0].id;
+  }
+
+  function addText(styleKey, t, trackId) {
     const style = S.tl.styles[styleKey] || {};
     st.push();
     const words = 'Texto nuevo'.split(' ').map((w, i) => ({ w, s: i * 0.25, e: i * 0.25 + 0.25 }));
-    const it = st.addItem(styleKey === 'capcut' ? 't_sub' : 't_txt', {
+    const preferred = trackId || (styleKey === 'capcut' ? 't_sub' : 't_txt');
+    const anchor = st.anchorAt(t);
+    const it = st.addItem(firstTrack('text', preferred), {
       kind: 'text', style: styleKey, auto: false,
-      anchor: st.anchorAt(t), dur: 2.2,
+      anchor, t: anchor ? undefined : +t.toFixed(3), dur: 2.2,
       lines: ST.text.wrap(words, style, S.tl.canvas.width, null),
       text: 'Texto nuevo', x: null, y: null,
     });
@@ -239,16 +264,16 @@ ST.library = (() => {
     if (it) ST.inspector.focusText(it.id);
   }
 
-  function addAsset(a, cat, t) {
+  function addAsset(a, cat, t, trackId) {
     st.push();
     let it;
     if (a.kind === 'audio') {
-      const trackId = cat === 'sfx' ? 't_sfx' : 't_mus';
-      it = st.addItem(trackId, {
+      const targetId = firstTrack('audio', trackId || (cat === 'sfx' ? 't_sfx' : 't_mus'));
+      const anchor = cat === 'sfx' ? st.anchorAt(t) : null;
+      it = st.addItem(targetId, {
         kind: 'audio', src: a.path, in: 0,
         gain: cat === 'sfx' ? -3 : 0,
-        anchor: cat === 'sfx' ? st.anchorAt(t) : null,
-        t: cat === 'sfx' ? undefined : +t.toFixed(3),
+        anchor, t: anchor ? undefined : +t.toFixed(3),
         dur: cat === 'sfx' ? 1.2 : Math.max(4, S.total - t),
         fade_in: cat === 'sfx' ? 0 : 1.2,
         fade_out: cat === 'sfx' ? 0 : 1.8,
@@ -256,8 +281,9 @@ ST.library = (() => {
       });
     } else {
       const esVideo = /\.(webm|mp4|mkv|mov|gif)$/i.test(a.name);
-      it = st.addItem('t_ovl', {
-        kind: 'overlay', src: a.path, anchor: st.anchorAt(t),
+      const anchor = st.anchorAt(t);
+      it = st.addItem(firstTrack('overlay', trackId || 't_ovl'), {
+        kind: 'overlay', src: a.path, anchor, t: anchor ? undefined : +t.toFixed(3),
         // Un motion graphic dura lo que dura su animación; un sticker, lo que
         // le pongas.
         dur: a.dur ? +a.dur.toFixed(2) : (esVideo ? 2.5 : 1.8),
@@ -293,15 +319,17 @@ ST.library = (() => {
       return applyTrans(clip && clip.seg, payload.id);
     }
     if (payload.type === 'text') {
-      return addText(payload.style, t);
+      const trk = st.track(rowId);
+      if (trk && trk.kind !== 'text') return ST.app.toast('Ese texto necesita una capa de texto', 'bad');
+      return addText(payload.style, t, trk && trk.id);
     }
     if (payload.type === 'asset') {
       // La pista decide la categoría, salvo los stickers: ésos van a la pista
       // de overlays pero conservan su tamaño y su fundido de sticker.
       let cat = payload.cat;
-      if (rowId === 't_sfx') cat = 'sfx';
-      else if (rowId === 't_mus') cat = 'musica';
-      else if (rowId === 't_ovl' && cat !== 'sticker') cat = 'overlay';
+      const trk = st.track(rowId);
+      if (trk && trk.kind === 'audio') cat = trk.id === 't_sfx' ? 'sfx' : 'musica';
+      else if (trk && trk.kind === 'overlay' && cat !== 'sticker') cat = 'overlay';
       if ((cat === 'sfx' || cat === 'musica') && payload.kind !== 'audio') {
         return ST.app.toast('Eso no es un audio', 'bad');
       }
@@ -310,8 +338,38 @@ ST.library = (() => {
       }
       return addAsset({ path: payload.path, kind: payload.kind,
                         seq: payload.seq, dur: payload.dur,
-                        name: payload.path.split(/[\\/]/).pop() }, cat, t);
+                        name: payload.path.split(/[\\/]/).pop() }, cat, t, trk && trk.id);
     }
+  }
+
+  async function importFiles(files, rowId, t) {
+    const list = Array.from(files || []);
+    if (!list.length) return;
+    let at = t;
+    for (const file of list) {
+      const form = new FormData(); form.append('file', file);
+      try {
+        const r = await fetch('/api/assets/import', { method: 'POST', body: form });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(j.error || j.description || ('HTTP ' + r.status));
+        const trk = st.track(rowId);
+        if (trk && ((j.asset.kind === 'audio') !== (trk.kind === 'audio'))) {
+          ST.app.toast('El archivo se importó, pero esa capa no acepta ese tipo', 'bad');
+          continue;
+        }
+        const cat = j.asset.kind === 'audio' ? (trk && trk.id === 't_sfx' ? 'sfx' : 'musica') : 'overlay';
+        addAsset(j.asset, cat, at, trk && trk.id);
+        at += 0.08;
+        // El catálogo se refresca para que el archivo también aparezca en la biblioteca.
+        if (!S.cat.library[j.category]) S.cat.library[j.category] = [];
+        if (!S.cat.library[j.category].some((x) => x.path === j.asset.path)) {
+          S.cat.library[j.category].push(j.asset);
+        }
+      } catch (e) {
+        ST.app.toast('No pude importar “' + file.name + '”: ' + e.message, 'bad');
+      }
+    }
+    render();
   }
 
   /* El corte mas cercano al punto donde se solto, no el clip: una transicion
@@ -365,5 +423,5 @@ ST.library = (() => {
     render();
   }
 
-  return { bind, render, dropOn, addText, applyZoom, applyTrans };
+  return { bind, render, dropOn, importFiles, addText, applyZoom, applyTrans };
 })();

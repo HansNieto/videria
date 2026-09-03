@@ -460,6 +460,7 @@ DEFAULT_CLIP = {
     "flip": False,
     "fit": None,            # hereda de render.fit
     "mute": False,
+    "gap_before": 0.0,     # espacio negro/silencioso antes del clip
 }
 
 
@@ -516,6 +517,8 @@ def resolve(project, tl):
         cfg = clip_cfg(tl, seg["id"])
         spd = min(max(float(cfg.get("speed") or 1.0), 0.25), 4.0)
         out_dur = src_dur / spd
+        gap = max(0.0, float(cfg.get("gap_before") or 0.0))
+        t += gap
         clips.append({
             "seg": seg["id"],
             "source": seg["source"],
@@ -525,6 +528,7 @@ def resolve(project, tl):
             "src_dur": round(src_dur, 4),
             "speed": spd,
             "dur": round(out_dur, 4),
+            "gap_before": round(gap, 4),
             "t0": round(t, 4),
             "t1": round(t + out_dur, 4),
             "text": seg.get("text", ""),

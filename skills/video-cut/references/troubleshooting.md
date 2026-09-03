@@ -90,7 +90,7 @@ autoguarda cada 90 s si hay cambios pendientes, y avisa al cerrar la pestaña.
 
 **El preview va a tirones o el vídeo sale negro**
 El compositor dibuja cada fotograma en un canvas, y desde un original 4K eso no
-da. `vcut media --proxy-all --height 640` y va fluido. Si el clip sigue negro,
+da. `vcut media --proxy-all --height 1080` y va fluido. Si el clip sigue negro,
 el navegador no puede con ese codec: el badge de arriba a la izquierda dice de
 qué archivo se trata.
 

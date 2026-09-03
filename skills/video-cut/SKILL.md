@@ -69,7 +69,8 @@ python $VCUT render --project "C:/ruta/proyecto"
 
 **`media` no es opcional para el studio**: el preview compone cada fotograma en
 un canvas, y hacerlo desde un original 4K va a tirones. Con proxies va fluido.
-Para material vertical de móvil: `media --proxy-all --height 640`.
+Para material vertical de móvil: `media --proxy-all --height 1080`. El Studio
+también puede crear un proxy HQ local bajo demanda sin modificar el proyecto.
 
 ## Paso 2: qa — el titubeo no está en la transcripción
 
@@ -655,7 +656,7 @@ Al abrirlo, los vídeos se **vuelven a enlazar buscándolos por nombre**:
 
 ```bash
 python $VCUT unpack algo.vcutpack --project "proj-nuevo" --media "C:/ruta/videos"
-python $VCUT media  --project "proj-nuevo" --proxy-all --height 640
+python $VCUT media  --project "proj-nuevo" --proxy-all --height 1080
 python $VCUT studio --project "proj-nuevo"
 ```
 

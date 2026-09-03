@@ -8,20 +8,21 @@ ST.timeline = (() => {
   const st = ST.state;
   const clamp = st.clamp;
 
-  const ROWS = [
-    { id: 't_txt', kind: 'text', h: 30, label: 'Títulos' },
-    { id: 't_sub', kind: 'text', h: 30, label: 'Subtítulos' },
-    { id: 't_ovl', kind: 'overlay', h: 30, label: 'Overlays' },
-    { id: '_video', kind: 'video', h: 78, label: 'Vídeo' },
-    { id: 't_mus', kind: 'audio', h: 30, label: 'Música' },
-    { id: 't_sfx', kind: 'audio', h: 28, label: 'SFX' },
-  ];
+  function rows() {
+    const ordered = (kind) => (S.tl.tracks || []).filter((x) => x.kind === kind)
+      .sort((a, b) => (+b.z || 0) - (+a.z || 0))
+      .map((x) => ({ id: x.id, kind, h: kind === 'audio' ? 30 : 32, label: x.name }));
+    // En pantalla, lo de arriba se compone encima. El vídeo base separa las
+    // capas visuales de las pistas de sonido.
+    return [...ordered('text'), ...ordered('overlay'),
+      { id: '_video', kind: 'video', h: 78, label: 'Vídeo' }, ...ordered('audio')];
+  }
 
   const WAVES = Object.create(null);
   const STRIPS = Object.create(null);
   const PEAKS_PER_SEC = 40;
   let scroll, inner, tracks, gutter, ruler, rctx, playhead;
-  let drag = null, dropTrack = null;
+  let drag = null, dropTrack = null, snapGuide = null;
 
   const el = (tag, cls, txt) => {
     const n = document.createElement(tag);
@@ -167,6 +168,7 @@ ST.timeline = (() => {
       d.style.width = w + 'px';
       d.style.height = (row.h - 6) + 'px';
       d.dataset.seg = clip.seg;
+      d.title = 'Arrastrá para crear espacio antes · Alt+arrastrar para reordenar';
       const cv = el('canvas');
       d.appendChild(cv);
       drawClip(cv, clip, w, row.h - 6);
@@ -231,7 +233,8 @@ ST.timeline = (() => {
 
   function buildGutter() {
     gutter.textContent = '';
-    for (const row of ROWS) {
+    const visibleRows = rows();
+    for (const row of visibleRows) {
       const trk = row.id === '_video' ? null : st.track(row.id);
       const n = el('div', 'trk-name');
       n.style.height = row.h + 'px';
@@ -239,6 +242,14 @@ ST.timeline = (() => {
       const sp = el('div', 'spacer');
       n.appendChild(sp);
       if (trk) {
+        const order = el('span', 'order');
+        const up = el('button', 'tbtn', '▲');
+        up.title = 'Subir capa (se verá por encima)';
+        up.onclick = () => { st.push(); if (!st.moveTrack(trk.id, -1)) S.undo.pop(); st.resolve(); ST.app.renderAll(); };
+        const down = el('button', 'tbtn', '▼');
+        down.title = 'Bajar capa';
+        down.onclick = () => { st.push(); if (!st.moveTrack(trk.id, 1)) S.undo.pop(); st.resolve(); ST.app.renderAll(); };
+        order.append(up, down); n.appendChild(order);
         const eye = el('button', 'tbtn' + (trk.hidden ? ' off' : ''), trk.hidden ? '◌' : '◉');
         eye.title = trk.hidden ? 'Mostrar pista' : 'Ocultar pista';
         eye.onclick = () => { st.push(); trk.hidden = !trk.hidden; st.resolve(); ST.app.renderAll(); };
@@ -247,6 +258,13 @@ ST.timeline = (() => {
         lock.title = trk.locked ? 'Desbloquear' : 'Bloquear';
         lock.onclick = () => { st.push(); trk.locked = !trk.locked; ST.app.renderAll(); };
         n.appendChild(lock);
+        if (!['t_txt', 't_sub', 't_ovl', 't_mus', 't_sfx'].includes(trk.id)) {
+          const del = el('button', 'tbtn', '×');
+          del.title = (trk.items || []).length ? 'La capa debe estar vacía para borrarla' : 'Borrar capa vacía';
+          del.disabled = !!(trk.items || []).length;
+          del.onclick = () => { st.push(); st.delTrack(trk.id); st.resolve(); ST.app.renderAll(); };
+          n.appendChild(del);
+        }
       }
       gutter.appendChild(n);
     }
@@ -256,7 +274,7 @@ ST.timeline = (() => {
     if (!tracks) return;
     const sc = scroll.scrollLeft;
     tracks.textContent = '';
-    for (const row of ROWS) tracks.appendChild(trackRow(row));
+    for (const row of rows()) tracks.appendChild(trackRow(row));
     inner.style.width = Math.max(S.total * S.pps + 260, scroll.clientWidth) + 'px';
     buildGutter();
     drawRuler();
@@ -311,7 +329,8 @@ ST.timeline = (() => {
       st.select('clip', seg);
       st.push();
       drag = { kind: edge ? 'trim' : 'move', side: edge, seg, t0: xToT(ev),
-               in0: clip.in, out0: clip.out, node: clipNode, moved: false };
+               in0: clip.in, out0: clip.out, pointerOffset: xToT(ev) - clip.t0,
+               gap0: clip.gap_before || 0, node: clipNode, moved: false };
       render();
       ev.preventDefault();
       return;
@@ -338,6 +357,7 @@ ST.timeline = (() => {
 
   function onMove(ev) {
     if (!drag) return;
+    showSnap(null);
     const t = xToT(ev);
     if (drag.kind === 'scrub') { ST.player.seek(t); movePlayhead(); return; }
     const dt = t - drag.t0;
@@ -355,16 +375,29 @@ ST.timeline = (() => {
       st.resolve();
       render();
     } else if (drag.kind === 'move') {
-      const target = clipIndexAt(t);
       const cur = st.clipOf(drag.seg);
-      if (cur && target != null && target !== cur.index) {
-        moveClip(drag.seg, target);
+      if (cur) {
+        if (ev.altKey) {
+          const target = clipIndexAt(t);
+          if (target != null && target !== cur.index) moveClip(drag.seg, target);
+          st.resolve(); render(); return;
+        }
+        const prevEnd = cur.index ? S.clips[cur.index - 1].t1 : 0;
+        let wanted = Math.max(prevEnd, t - drag.pointerOffset);
+        wanted = snapClipStart(cur.seg, wanted);
+        st.setClip(cur.seg, { gap_before: +Math.max(0, wanted - prevEnd).toFixed(3) });
         st.resolve();
         render();
       }
     } else if (drag.kind === 'imove') {
-      const { it } = st.findItem(drag.id);
+      let { trk, it } = st.findItem(drag.id);
       if (!it) return;
+      const targetNode = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('.trk');
+      const target = targetNode && st.track(targetNode.dataset.row);
+      if (target && target.kind === trk.kind && !target.locked && target.id !== trk.id) {
+        st.moveItemToTrack(drag.id, target.id);
+        trk = target;
+      }
       const snapped = snapItemTime(drag.id, Math.max(0, drag.start + dt), drag.dur);
       const nt = nonOverlappingStart(drag.id, snapped, drag.dur);
       if (it.anchor) {
@@ -412,25 +445,45 @@ ST.timeline = (() => {
     }
   }
 
-  // Ajuste magnetico: al acercar un borde a otro objeto de la misma pista,
-  // se alinea. No crea grupos ni cambia la duracion de nadie mas.
-  const SNAP_PX = 8;
-  function snapItemEdge(id, value) {
-    const { trk } = st.findItem(id);
-    if (!trk) return value;
-    const edges = [];
-    for (const other of trk.items || []) {
-      if (other.id === id || other.hidden) continue;
-      const r = S.items.find((x) => x.id === other.id);
-      if (!r) continue;
-      edges.push(r.t, r.t_end);
+  // Ajuste magnético global: al acercar un borde a cualquier inicio/final del
+  // panel se alinea. No agrupa objetos ni bloquea el movimiento.
+  const SNAP_PX = 10;
+  function showSnap(t) {
+    if (t == null) {
+      if (snapGuide) snapGuide.remove();
+      snapGuide = null; return;
     }
+    if (!snapGuide) { snapGuide = el('div', 'snap-guide'); inner.appendChild(snapGuide); }
+    snapGuide.style.left = (t * S.pps) + 'px';
+  }
+
+  function snapItemEdge(id, value) {
+    if (!S.snap) return value;
+    const edges = [0, S.total];
+    for (const c of S.clips) edges.push(c.t0, c.t1);
+    for (const r of S.items) if (r.id !== id && !r.hidden) edges.push(r.t, r.t_end);
     let best = value, dist = SNAP_PX / Math.max(1, S.pps);
     for (const edge of edges) {
       const d = Math.abs(edge - value);
       if (d < dist) { best = edge; dist = d; }
     }
-    return +best.toFixed(3);
+    const snapped = +best.toFixed(3);
+    if (snapped !== +value.toFixed(3)) showSnap(snapped);
+    return snapped;
+  }
+
+  function snapClipStart(segId, value) {
+    if (!S.snap) return value;
+    const edges = [0];
+    for (const c of S.clips) if (c.seg !== segId) edges.push(c.t0, c.t1);
+    for (const r of S.items) edges.push(r.t, r.t_end);
+    let best = value, dist = SNAP_PX / Math.max(1, S.pps);
+    for (const edge of edges) {
+      const d = Math.abs(edge - value);
+      if (d < dist) { best = edge; dist = d; }
+    }
+    if (best !== value) showSnap(best);
+    return best;
   }
 
   function snapItemTime(id, start, dur) {
@@ -442,7 +495,7 @@ ST.timeline = (() => {
 
   function subtitleRanges(id) {
     const { trk } = st.findItem(id);
-    if (!trk || trk.id !== 't_sub') return null;
+    if (!trk || !(trk.id === 't_sub' || /subt[ií]tulo/i.test(trk.name || ''))) return null;
     return S.items.filter((x) => x.track === trk.id && x.id !== id)
       .map((x) => ({ t: x.t, end: x.t_end })).sort((a, b) => a.t - b.t);
   }
@@ -488,6 +541,7 @@ ST.timeline = (() => {
     if (!drag) return;
     const d = drag;
     drag = null;
+    showSnap(null);
     if (d.kind !== 'scrub' && d.moved) {
       st.markDirty(true);
       ST.inspector.render();
@@ -550,10 +604,15 @@ ST.timeline = (() => {
     } else if (clipNode) {
       const seg = clipNode.dataset.seg;
       const s = st.segOf(seg);
-      items.push([s.enabled ? 'Apagar clip' : 'Encender clip', () => {
-        st.push(); s.enabled = !s.enabled; st.resolve(); ST.app.renderAll();
+      items.push([s.enabled ? 'Borrar solo este clip' : 'Encender clip', () => {
+        st.push();
+        if (s.enabled) st.detachAnchors(seg);
+        s.enabled = !s.enabled; st.resolve(); ST.app.renderAll();
       }]);
       items.push(['Cortar en el cabezal', () => splitAtPlayhead(seg)]);
+      if ((st.clipCfg(seg).gap_before || 0) > 0) items.push(['Quitar espacio anterior', () => {
+        st.push(); st.setClip(seg, { gap_before: 0 }); st.resolve(); ST.app.renderAll();
+      }]);
       items.push(['Quitar zoom', () => {
         st.push(); st.setClip(seg, { zoom: null }); st.resolve(); ST.app.renderAll();
       }]);
@@ -642,12 +701,16 @@ ST.timeline = (() => {
     row.classList.add('drop');
   }
 
-  function onDrop(ev) {
+  async function onDrop(ev) {
     const row = ev.target.closest('.trk');
     if (dropTrack) dropTrack.classList.remove('drop');
     dropTrack = null;
     if (!row) return;
     ev.preventDefault();
+    if (ev.dataTransfer.files && ev.dataTransfer.files.length) {
+      await ST.library.importFiles(ev.dataTransfer.files, row.dataset.row, xToT(ev));
+      return;
+    }
     let payload;
     try { payload = JSON.parse(ev.dataTransfer.getData('text/plain')); } catch (e) { return; }
     ST.library.dropOn(row.dataset.row, xToT(ev), payload);
@@ -683,5 +746,5 @@ ST.timeline = (() => {
     render();
   }
 
-  return { bind, render, movePlayhead, autoScroll, setZoom, splitAtPlayhead, trimAtPlayhead, ROWS };
+  return { bind, render, movePlayhead, autoScroll, setZoom, splitAtPlayhead, trimAtPlayhead, rows };
 })();

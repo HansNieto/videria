@@ -242,7 +242,7 @@ Paquete de vcut studio (v%d), creado el %s.
 
 ```bash
 python vcut.py unpack "este-archivo.vcutpack" --project "C:/ruta/proyecto-nuevo" %s
-python vcut.py media  --project "C:/ruta/proyecto-nuevo" --proxy-all --height 640
+python vcut.py media  --project "C:/ruta/proyecto-nuevo" --proxy-all --height 1080
 python vcut.py studio --project "C:/ruta/proyecto-nuevo"
 ```
 
@@ -411,7 +411,7 @@ def unpack_project(zip_path, project_dir, media_dir=None, on_step=None):
         util.write_json(studio.path_of(pdir), tl)
 
     rep["proyecto"] = str(pdir)
-    rep["siguiente"] = ("vcut media --project \"%s\" --proxy-all --height 640  "
+    rep["siguiente"] = ("vcut media --project \"%s\" --proxy-all --height 1080  "
                         "y luego  vcut studio --project \"%s\"" % (pdir, pdir))
     return rep
 

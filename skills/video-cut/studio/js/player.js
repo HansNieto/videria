@@ -15,7 +15,7 @@ ST.player = (() => {
   const OVL = Object.create(null);      // id -> {el, kind, ok}
   const AUD = Object.create(null);      // id -> HTMLAudioElement
   let cv, ctx, box, wrap, k = 1, dispW = 0, dispH = 0;
-  let raf = 0, activeSid = null;
+  let raf = 0, activeSid = null, gapClock = null;
   let drag = null;
 
   const dbToLin = (db) => Math.pow(10, (+db || 0) / 20);
@@ -152,7 +152,7 @@ ST.player = (() => {
       return v;
     }
     v = document.createElement('video');
-    v.src = '/api/media/' + sid;
+    v.src = '/api/media/' + sid + (S.previewHQ ? '?quality=hq' : '');
     v.preload = 'auto';
     v.playsInline = true;
     v.muted = true;
@@ -205,6 +205,7 @@ ST.player = (() => {
 
   function seek(t, keepPlaying) {
     S.t = clamp(t, 0, S.total);
+    gapClock = null;
     const clip = st.clipAt(S.t);
     if (!clip) { paint(); ST.app.onTime(); return; }
     const v = videoEl(clip.source);
@@ -250,11 +251,35 @@ ST.player = (() => {
     if (S.playing) {
       const clip = st.clipAt(S.t);
       const v = clip && VID[clip.source];
-      if (!clip || !v) { pause(); return; }
+      if (!clip) {
+        const nxt = S.clips.find((c) => c.t0 > S.t + 0.0005);
+        if (!nxt) { S.t = S.total; pause(); ST.app.onTime(); paint(); return; }
+        if (!gapClock) gapClock = { wall: performance.now(), t: S.t };
+        S.t = Math.min(nxt.t0, gapClock.t + (performance.now() - gapClock.wall) / 1000);
+        if (S.t >= nxt.t0 - 0.001) {
+          gapClock = null; S.t = nxt.t0;
+          const nv = videoEl(nxt.source); setActive(nxt.source, nxt);
+          try { nv.currentTime = nxt.in; } catch (e) { /* metadata */ }
+          nv.playbackRate = clamp(nxt.speed, 0.25, 4); nv.play().catch(() => {});
+          preloadNext(nxt);
+        }
+        syncAudio(false); ST.app.onTime(); paint();
+        if (S.playing) raf = requestAnimationFrame(tick);
+        return;
+      }
+      if (!v) { seek(S.t, true); if (S.playing) raf = requestAnimationFrame(tick); return; }
+      gapClock = null;
       const localEnd = clip.out - 0.02;
       if (v.currentTime >= localEnd || v.ended) {
         const nxt = S.clips[clip.index + 1];
         if (!nxt) { S.t = S.total; pause(); ST.app.onTime(); paint(); return; }
+        S.t = clip.t1;
+        if (nxt.t0 - clip.t1 > 0.001) {
+          v.pause(); gapClock = { wall: performance.now(), t: S.t };
+          ST.app.onTime(); paint();
+          if (S.playing) raf = requestAnimationFrame(tick);
+          return;
+        }
         S.t = nxt.t0;
         const nv = videoEl(nxt.source);
         setActive(nxt.source, nxt);
@@ -360,9 +385,11 @@ ST.player = (() => {
     ctx.setTransform(k, 0, 0, k, 0, 0);
 
     const clip = st.clipAt(S.t);
-    document.getElementById('canvasEmpty').classList.toggle('hidden', !!clip);
-    if (!clip) return;
-    const g = transGeom(S.t);
+    const hasLayer = S.items.some((it) => (it.track_kind === 'overlay' || it.track_kind === 'text') &&
+      S.t >= it.t && S.t < it.t_end);
+    document.getElementById('canvasEmpty').classList.toggle('hidden', !!clip || hasLayer);
+    const g = clip ? transGeom(S.t) : { z: 0, px: 0, py: 0, flash: 0, blur: 0, pix: 0, glitch: 0, fade: 0 };
+    if (clip) {
     const rel = S.t - clip.t0;
     const zm = zoomAt(clip, rel);
     const z = clamp(zm.z + g.z, 1, 3);
@@ -414,6 +441,7 @@ ST.player = (() => {
       }
       ctx.restore();
       ctx.filter = 'none';
+    }
     }
 
     // overlays
@@ -699,7 +727,17 @@ ST.player = (() => {
     raf = requestAnimationFrame(tick);
   }
 
-  return { bind, layout, paint, seek, play, pause, toggle, zoomAt, pw, ease,
+  function reloadQuality() {
+    activeSid = null;
+    ORDER.length = 0;
+    for (const sid of Object.keys(VID)) {
+      const v = VID[sid];
+      v.pause(); v.removeAttribute('src'); v.load(); v.remove(); delete VID[sid];
+    }
+    seek(S.t);
+  }
+
+  return { bind, layout, resize: layout, paint, seek, play, pause, toggle, reloadQuality, zoomAt, pw, ease,
     bezOf, bez1,
            setFrame, videoEl };
 })();

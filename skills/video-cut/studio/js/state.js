@@ -10,7 +10,8 @@ ST.S = {
   clips: [], items: [], trans: [], total: 0,
   t: 0, playing: false, sel: null,
   pps: 70, dirty: false, undo: [], redo: [],
-  mode: 'select', guides: false, safe: false, tiktokUi: false, audio: true,
+  mode: 'select', guides: false, safe: false, tiktokUi: false, audio: true, snap: true,
+  previewHQ: true,
   sources: {},
 };
 
@@ -79,9 +80,11 @@ ST.state = (() => {
       const cfg = clipCfg(seg.id);
       const spd = clamp(+cfg.speed || 1, 0.25, 4);
       const dur = srcDur / spd;
+      const gap = Math.max(0, +cfg.gap_before || 0);
+      t += gap;
       clips.push({
         seg: seg.id, source: seg.source, in: seg.in, out: seg.out,
-        srcDur, speed: spd, dur, t0: t, t1: t + dur,
+        srcDur, speed: spd, dur, gap_before: gap, t0: t, t1: t + dur,
         text: seg.text || '', cfg, index: clips.length,
       });
       t += dur;
@@ -154,7 +157,7 @@ ST.state = (() => {
     if (!c.length) return null;
     let lo = 0, hi = c.length - 1;
     while (lo < hi) { const m = (lo + hi + 1) >> 1; if (c[m].t0 <= t) lo = m; else hi = m - 1; }
-    return c[lo];
+    return c[lo] && c[lo].t0 <= t && t < c[lo].t1 ? c[lo] : null;
   };
 
   const clipOf = (segId) => S.clips.find((c) => c.seg === segId) || null;
@@ -162,8 +165,7 @@ ST.state = (() => {
 
   function anchorAt(t) {
     for (const c of S.clips) if (c.t0 <= t && t < c.t1) return { seg: c.seg, offset: +(t - c.t0).toFixed(4) };
-    const last = S.clips[S.clips.length - 1];
-    return last ? { seg: last.seg, offset: +Math.max(0, t - last.t0).toFixed(4) } : null;
+    return null;
   }
 
   /* ------------------------------------------------------------- historial */
@@ -262,6 +264,60 @@ ST.state = (() => {
     return true;
   }
 
+  function addTrack(kind, name) {
+    const same = (S.tl.tracks || []).filter((x) => x.kind === kind);
+    const top = same.reduce((m, x) => Math.max(m, +x.z || 0), 0);
+    const trk = {
+      id: nextId(kind === 'text' ? 'tx' : (kind === 'audio' ? 'au' : 'ov')),
+      kind, name: name || (kind === 'text' ? 'Texto' : kind === 'audio' ? 'Audio' : 'Visual'),
+      z: top + 10, hidden: false, locked: false, items: [],
+    };
+    if (kind === 'audio') { trk.gain = 0; trk.duck = false; }
+    S.tl.tracks.push(trk);
+    return trk;
+  }
+
+  function moveTrack(id, dir) {
+    const trk = track(id);
+    if (!trk) return false;
+    const ordered = S.tl.tracks.filter((x) => x.kind === trk.kind)
+      .sort((a, b) => (+b.z || 0) - (+a.z || 0));
+    const i = ordered.indexOf(trk), j = i + dir;
+    if (i < 0 || j < 0 || j >= ordered.length) return false;
+    const z = +trk.z || 0;
+    trk.z = +ordered[j].z || 0;
+    ordered[j].z = z;
+    return true;
+  }
+
+  function delTrack(id) {
+    const trk = track(id);
+    if (!trk || (trk.items || []).length) return false;
+    S.tl.tracks = S.tl.tracks.filter((x) => x.id !== id);
+    return true;
+  }
+
+  function moveItemToTrack(id, trackId) {
+    const found = findItem(id), dst = track(trackId);
+    if (!found.it || !dst || dst.kind !== found.trk.kind || dst === found.trk) return false;
+    found.trk.items = found.trk.items.filter((x) => x.id !== id);
+    dst.items = dst.items || [];
+    dst.items.push(found.it);
+    return true;
+  }
+
+  // Al borrar un clip, las capas paralelas dejan de estar ancladas al clip y
+  // conservan su tiempo. Así Delete afecta solo al objeto seleccionado.
+  function detachAnchors(segId) {
+    const times = new Map(S.items.filter((x) => x.anchor && x.anchor.seg === segId)
+      .map((x) => [x.id, x.t]));
+    for (const trk of S.tl.tracks || []) for (const it of trk.items || []) {
+      if (!it.anchor || it.anchor.seg !== segId) continue;
+      it.t = +(times.get(it.id) || 0).toFixed(3);
+      delete it.anchor;
+    }
+  }
+
   function setClip(segId, patch) {
     const slot = clipSlot(segId);
     Object.assign(slot, patch);
@@ -305,7 +361,8 @@ ST.state = (() => {
   return {
     boot, resolve, clipCfg, clipSlot, zoomKfs, zoomFlat, clipAt, clipOf, segOf,
     anchorAt, push, undo, redo, markDirty, save, nextId, track, findItem,
-    addItem, delItem, setClip, transOf, setTransition, delTransition, styleOf,
+    addItem, delItem, addTrack, moveTrack, delTrack, moveItemToTrack, detachAnchors,
+    setClip, transOf, setTransition, delTransition, styleOf,
     select, clamp,
   };
 })();

@@ -41,7 +41,9 @@ ST.app = (() => {
     m.style.left = Math.min(x, window.innerWidth - 210) + 'px';
     m.style.top = Math.min(y, window.innerHeight - 40 - items.length * 30) + 'px';
     $('menuHost').appendChild(m);
-    setTimeout(() => document.addEventListener('mousedown', closeMenu, { once: true }), 0);
+    setTimeout(() => document.addEventListener('mousedown', (ev) => {
+      if (!ev.target.closest('.menu')) closeMenu();
+    }, { once: true }), 0);
   }
   const closeMenu = () => { $('menuHost').textContent = ''; };
 
@@ -276,9 +278,27 @@ ST.app = (() => {
       st.push(); st.delTransition(S.sel.id); st.resolve(); renderAll();
     } else if (S.sel.kind === 'clip') {
       st.push();
+      st.detachAnchors(S.sel.id);
       st.segOf(S.sel.id).enabled = false;
       st.resolve(); renderAll();
     }
+  }
+
+  function addLayer(kind) {
+    const n = (S.tl.tracks || []).filter((x) => x.kind === kind).length + 1;
+    st.push();
+    const trk = st.addTrack(kind, (kind === 'text' ? 'Texto ' : kind === 'audio' ? 'Audio ' : 'Visual ') + n);
+    st.resolve(); renderAll();
+    toast('Capa “' + trk.name + '” agregada');
+  }
+
+  function layerMenu(ev) {
+    const r = ev.currentTarget.getBoundingClientRect();
+    menu(r.left, r.bottom + 4, [
+      ['T  Capa de texto', () => addLayer('text')],
+      ['▣  Capa visual', () => addLayer('overlay')],
+      ['♪  Capa de audio', () => addLayer('audio')],
+    ]);
   }
 
   function keys(ev) {
@@ -315,6 +335,11 @@ ST.app = (() => {
     const k = ev.key.toLowerCase();
     if (k === 'v') setMode('select');
     else if (k === 'z') setMode('frame');
+    else if (k === 'm') {
+      S.snap = !S.snap;
+      $('btnSnap').classList.toggle('on', S.snap);
+      toast(S.snap ? 'Ajuste magnético activado' : 'Ajuste magnético desactivado');
+    }
     else if (k === 's') {
       const clip = st.clipAt(S.t);
       if (clip) ST.timeline.splitAtPlayhead(clip.seg);
@@ -322,6 +347,7 @@ ST.app = (() => {
       const clip = st.clipAt(S.t);
       if (clip) {
         st.push();
+        st.detachAnchors(clip.seg);
         st.segOf(clip.seg).enabled = false;
         st.resolve(); renderAll();
       }
@@ -366,6 +392,17 @@ ST.app = (() => {
       if (clip) ST.timeline.splitAtPlayhead(clip.seg);
     };
     $('btnCutRight').onclick = () => ST.timeline.trimAtPlayhead('right');
+    $('btnSnap').onclick = () => {
+      S.snap = !S.snap;
+      $('btnSnap').classList.toggle('on', S.snap);
+      toast(S.snap ? 'Ajuste magnético activado' : 'Ajuste magnético desactivado');
+    };
+    $('btnAddLayer').onclick = layerMenu;
+    $('btnImport').onclick = () => $('fileImport').click();
+    $('fileImport').onchange = async (ev) => {
+      await ST.library.importFiles(ev.target.files, null, S.t);
+      ev.target.value = '';
+    };
     $('btnSave').onclick = save;
     $('btnUndo').onclick = () => st.undo();
     $('btnRedo').onclick = () => st.redo();
@@ -375,6 +412,11 @@ ST.app = (() => {
     $('chkGuides').onchange = (ev) => { S.guides = ev.target.checked; ST.player.paint(); };
     $('chkSafe').onchange = (ev) => { S.safe = ev.target.checked; ST.player.paint(); };
     $('chkTikTok').onchange = (ev) => { S.tiktokUi = ev.target.checked; ST.player.paint(); };
+    $('chkHQ').onchange = (ev) => {
+      S.previewHQ = ev.target.checked;
+      ST.player.reloadQuality();
+      toast(S.previewHQ ? 'Preview HQ: se genera una vez y queda en caché' : 'Preview ligero activado');
+    };
     $('chkAudio').onchange = (ev) => { S.audio = ev.target.checked; ST.player.seek(S.t); };
     for (const b of document.querySelectorAll('#modeSeg button')) {
       b.onclick = () => setMode(b.dataset.mode);

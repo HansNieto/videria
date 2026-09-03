@@ -418,7 +418,10 @@ def text_events(doc, item, style, project_dir):
         first_of[li] = n
         n += len(ln)
 
-    layer = 1 if sh_op > 0 else 0
+    # Tres niveles por pista: fondo, sombra y texto. Así el orden vertical de
+    # las capas del Studio coincide con el render final.
+    base_layer = max(0, int(float(item.get("z") or 0)) * 3)
+    layer = base_layer + 2
 
     for li, ln in enumerate(lines):
         cy = ys[li]
@@ -455,7 +458,7 @@ def text_events(doc, item, style, project_dir):
                 sbody = _line_text(ln, shown, s0, size, ratio, bfam, kfam,
                                    sh_col, sh_col, reveal,
                                    force_alpha=ass_alpha(sh_op))
-                doc.add(0, t_abs + s0, t_abs + s1, base_name,
+                doc.add(base_layer + 1, t_abs + s0, t_abs + s1, base_name,
                         "{\\an%d%s\\bord0\\shad0\\blur%.1f\\1c%s}%s"
                         % (an, sgeo, sh_blur, sh_col, sbody))
             geo = _geo_for(s0 - base_t, s1 - base_t, dur - base_t,
@@ -498,7 +501,8 @@ def bg_events(doc, item, style, project_dir):
     y0 = ys[0] - pad
     name = doc.style_for(style, project_dir)
     draw = "m 0 0 l %.0f 0 l %.0f %.0f l 0 %.0f" % (bw, bw, bh, bh)
-    doc.add(0, float(item["t"]), float(item["t"]) + float(item["dur"]), name,
+    base_layer = max(0, int(float(item.get("z") or 0)) * 3)
+    doc.add(base_layer, float(item["t"]), float(item["t"]) + float(item["dur"]), name,
             "{\\an7\\pos(%.1f,%.1f)\\bord0\\shad0\\1c%s\\1a%s\\p1}%s{\\p0}"
             % (x0, y0, ass_color(bg.get("color"), "#FFFFFF"),
                ass_alpha(int(bg.get("opacity") or 255)), draw))
