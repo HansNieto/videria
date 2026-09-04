@@ -36,23 +36,23 @@ gh auth login</pre></article>
         <article class="step"><h3>Clona e instala Videria</h3><pre>git clone https://github.com/HansNieto/videria.git
 cd videria
 .\instalar.ps1</pre></article>
-        <article class="step"><h3>Acepta la invitación</h3><p>El propietario debe agregarte como colaborador de cada repositorio privado.</p></article>
+        <article class="step"><h3>Acepta dos invitaciones</h3><p><b>HansNieto/videria</b> instala la app y <b>HansNieto/videos</b> contiene todos los proyectos.</p></article>
       </div>
     </section>
 
     <section id="recibir">
       <h2>Recibir un proyecto</h2>
-      <p>La primera vez, clona la URL que te envíen:</p>
+      <p>La primera vez, clona el único repositorio de proyectos:</p>
       <pre>cd C:\Videria\revisiones
-git clone URL-DEL-REPOSITORIO
-cd videria-V021-precio-servicio</pre>
+git clone https://github.com/HansNieto/videos.git
+cd videos</pre>
       <p>Si ya lo habías descargado, no lo clones otra vez:</p>
-      <pre>cd C:\Videria\revisiones\videria-V021-precio-servicio
+      <pre>cd C:\Videria\revisiones\videos
 git status
 git pull</pre>
       <div class="warning"><b>Antes de editar:</b> <code>git status</code> debe estar limpio y <code>git pull</code> debe terminar correctamente.</div>
       <pre>$VCUT = "$env:USERPROFILE\.claude\skills\video-cut\scripts\vcut.py"
-python $VCUT studio --project .</pre>
+python $VCUT studio --project .\video17-proyecto</pre>
     </section>
 
     <section id="editar">

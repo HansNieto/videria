@@ -16,7 +16,7 @@ from werkzeug.serving import make_server
 
 from vcutlib import server as studio_server
 
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 RELEASES_URL = "https://github.com/HansNieto/videria/releases"
 GITHUB_REPO = re.compile(r"https://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+?)(?:\.git)?/?$")
 
@@ -69,6 +69,20 @@ class ProjectLibrary:
             temp.replace(self.file)
         return key
 
+    def register_all(self, path):
+        """Registra un proyecto o todos los proyectos dentro de un repo contenedor."""
+        path = Path(path).expanduser().resolve()
+        candidates = [path] if (path / "project.json").is_file() else [
+            child for child in sorted(path.iterdir())
+            if child.is_dir() and (child / "project.json").is_file()
+        ] if path.is_dir() else []
+        if not candidates:
+            raise ValueError(
+                "Selecciona un proyecto o un repositorio que contenga carpetas "
+                "como video17-proyecto."
+            )
+        return [self.register(candidate) for candidate in candidates]
+
     def get(self, key):
         with self.lock:
             path = self.paths.get(key)
@@ -85,7 +99,7 @@ class ProjectLibrary:
                 project = json.loads((path / "project.json").read_text(encoding="utf-8-sig"))
                 out.append({"id": key, "path": str(path), "name": project.get("name") or path.name,
                             "clips": sum(bool(s.get("enabled")) for s in project.get("segments", [])),
-                            "git": (path / ".git").exists(), "available": True})
+                            "git": project_git_root(path) is not None, "available": True})
             except (OSError, ValueError, TypeError):
                 out.append({"id": key, "path": str(path), "name": path.name, "available": False})
         return out
@@ -99,6 +113,15 @@ def git_executable():
     if candidate.is_file():
         return str(candidate)
     raise ValueError("Para descargar/recibir proyectos instala Git para Windows y entra a GitHub Desktop. También puedes agregar una carpeta ya descargada.")
+
+
+def project_git_root(path):
+    """Encuentra el repo aunque el proyecto sea una subcarpeta de `videos`."""
+    path = Path(path).resolve()
+    for candidate in (path, *path.parents):
+        if (candidate / ".git").exists():
+            return candidate
+    return None
 
 
 def git_run(args, cwd, timeout=120):
@@ -176,7 +199,8 @@ class DesktopHost:
                 path = self.pick_folder()
             if not path:
                 return jsonify(cancelled=True)
-            return jsonify(id=self.library.register(path))
+            ids = self.library.register_all(path)
+            return jsonify(id=ids[0], ids=ids)
 
         @app.post("/desktop/open")
         def open_project():
@@ -199,16 +223,18 @@ class DesktopHost:
             if dest.exists():
                 raise ValueError("Esa carpeta ya existe. Usa Agregar carpeta o Recibir cambios; no se sobreescribió nada.")
             git_run(["clone", "--", url, str(dest)], self.projects_dir, timeout=600)
-            return jsonify(id=self.library.register(dest))
+            ids = self.library.register_all(dest)
+            return jsonify(id=ids[0], ids=ids, projects=len(ids))
 
         @app.post("/desktop/pull")
         def pull():
             path = self.library.get((request.get_json() or {}).get("id"))
-            if not (path / ".git").exists():
+            repo_root = project_git_root(path)
+            if repo_root is None:
                 raise ValueError("No es un clon Git. Descarga el proyecto con GitHub Desktop o con Descargar de GitHub.")
-            if git_run(["status", "--porcelain"], path):
+            if git_run(["status", "--porcelain"], repo_root):
                 raise ValueError("Hay cambios locales. Publícalos primero con GitHub Desktop. No se tocó tu edición.")
-            return jsonify(message=git_run(["pull", "--ff-only"], path))
+            return jsonify(message=git_run(["pull", "--ff-only"], repo_root))
 
         return app
 

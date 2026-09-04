@@ -64,12 +64,9 @@ Usa la plantilla tiktok. Además, revisa el plan de B-roll, descarga recursos de
 
     <section id="enviar">
       <h2>Subir el proyecto para tu amigo</h2>
-      <pre>$VCUT = "$env:USERPROFILE\.claude\skills\video-cut\scripts\vcut.py"
-python $VCUT repo init &#96;
-  --project "C:\Users\Hans\Documents\videria2.0\videria\videos\video17-proyecto" &#96;
-  --usuario HansNieto &#96;
-  --nombre "videria-video17"</pre>
-      <p>Abre el repositorio privado en GitHub y añade a tu amigo como colaborador. Envíale la URL y el tutorial del revisor.</p>
+      <p>Todos los proyectos editables viven en un único repositorio privado:</p>
+      <pre>https://github.com/HansNieto/videos</pre>
+      <p>Mueve el nuevo <code>videoNN-proyecto</code> dentro de tu clon local de <code>videos</code>. En GitHub Desktop selecciona ese repositorio, revisa los cambios y pulsa <b>Commit to main → Push origin</b>. Añade a tu amigo como colaborador una sola vez.</p>
       <table><thead><tr><th>Sí viaja</th><th>No viaja</th></tr></thead><tbody><tr><td>Proxies, cortes, subtítulos, transcripciones, assets y timeline.</td><td>Originales, <code>local.json</code>, caché, credenciales y renders.</td></tr></tbody></table>
     </section>
 
@@ -77,11 +74,11 @@ python $VCUT repo init &#96;
       <h2>Recibir la revisión y renderizar</h2>
       <label class="check"><input type="checkbox"><span>Esperar el aviso “revisión lista”. No editen los dos al mismo tiempo.</span></label>
       <label class="check"><input type="checkbox"><span>Traer la edición en la misma carpeta local; no volver a clonar.</span></label>
-      <pre>git -C "C:\Users\Hans\Documents\videria2.0\videria\videos\video17-proyecto" pull</pre>
+      <pre>git -C "C:\Users\Hans\Documents\videria2.0\videos" pull</pre>
       <label class="check"><input type="checkbox"><span>Abrir Studio y comprobar cortes, subtítulos, música y overlays.</span></label>
-      <pre>python $VCUT studio --project "C:\Users\Hans\Documents\videria2.0\videria\videos\video17-proyecto"</pre>
+      <pre>python $VCUT studio --project "C:\Users\Hans\Documents\videria2.0\videos\video17-proyecto"</pre>
       <label class="check"><input type="checkbox"><span>Renderizar desde los originales.</span></label>
-      <pre>python $VCUT render --project "C:\Users\Hans\Documents\videria2.0\videria\videos\video17-proyecto"</pre>
+      <pre>python $VCUT render --project "C:\Users\Hans\Documents\videria2.0\videos\video17-proyecto"</pre>
       <div class="success">El MP4 final queda en <code>videos\video17-proyecto\exports\</code>.</div>
     </section>
 

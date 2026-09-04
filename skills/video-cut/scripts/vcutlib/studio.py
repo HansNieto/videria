@@ -293,6 +293,11 @@ def load(project_dir, project, create=True):
     for _track, item in all_items(tl):
         if item.get("src"):
             item["src"] = resolve_asset(item["src"], project_dir)
+        if isinstance(item.get("seq"), dict) and item["seq"].get("dir"):
+            item["seq"]["dir"] = resolve_asset(item["seq"]["dir"], project_dir)
+    for transition in tl.get("transitions", []):
+        if transition.get("sfx"):
+            transition["sfx"] = resolve_asset(transition["sfx"], project_dir)
     return tl
 
 
@@ -302,6 +307,11 @@ def save(project_dir, tl):
     for _track, item in all_items(portable):
         if item.get("src"):
             item["src"] = portable_asset(item["src"], project_dir)
+        if isinstance(item.get("seq"), dict) and item["seq"].get("dir"):
+            item["seq"]["dir"] = portable_asset(item["seq"]["dir"], project_dir)
+    for transition in portable.get("transitions", []):
+        if transition.get("sfx"):
+            transition["sfx"] = portable_asset(transition["sfx"], project_dir)
     return util.write_json(path_of(project_dir), portable, backup=True)
 
 
@@ -323,11 +333,12 @@ def resolve_asset(value, project_dir):
     if p.is_absolute() and p.exists():
         return str(p)
     # Compatibilidad con rutas absolutas guardadas en la otra computadora.
-    for folder in ("assets", "broll", "fonts", "musica", "sfx"):
+    for folder in ("assets", "broll", "fonts", "musica", "sfx",
+                   "motion-overlays", "preview"):
         marker = "/" + folder + "/"
         if marker in normalized:
             candidate = (Path(project_dir) / folder / normalized.rsplit(marker, 1)[1]).resolve()
-            if candidate.is_relative_to(Path(project_dir).resolve()) and candidate.is_file():
+            if candidate.is_relative_to(Path(project_dir).resolve()) and candidate.exists():
                 return str(candidate)
     return _abs(value, project_dir)
 
@@ -441,6 +452,8 @@ def resolve_paths(project, pdir):
     """
     pdir = Path(pdir)
     local = util.read_json(pdir / LOCAL_FILE, {}) or {}
+    if local.get("input_paths"):
+        project.setdefault("input", {})["paths"] = local["input_paths"]
     mios = local.get("sources") or {}
     for s in project.get("sources", []):
         mio = mios.get(s.get("id")) or {}
@@ -470,6 +483,11 @@ def save_project(pdir, project, backup=False):
     pdir = Path(pdir)
     fuera = {}
     salida = dict(project)
+    input_data = dict(salida.get("input") or {})
+    input_paths = [str(path) for path in input_data.get("paths", []) if path]
+    if input_paths:
+        input_data["paths"] = []
+        salida["input"] = input_data
     fuentes = []
     for s in project.get("sources", []):
         c = dict(s)
@@ -491,9 +509,11 @@ def save_project(pdir, project, backup=False):
         fuentes.append(c)
     salida["sources"] = fuentes
 
-    if fuera:
+    if fuera or input_paths:
         local = util.read_json(pdir / LOCAL_FILE, {}) or {}
         local.setdefault("sources", {}).update(fuera)
+        if input_paths:
+            local["input_paths"] = input_paths
         local["maquina"] = local.get("maquina") or os.environ.get("COMPUTERNAME")             or os.environ.get("HOSTNAME") or "?"
         util.write_json(pdir / LOCAL_FILE, local)
 

@@ -9,8 +9,10 @@ zooms con keyframes, transiciones con sonido y música con ducking.
 [Releases](https://github.com/HansNieto/videria/releases/latest), extrae todo y
 ejecuta `Instalar-Videria.cmd`. Se abre desde el icono Videria, con un selector
 de proyectos. No necesitas Python ni configurar FFmpeg para editar/renderizar.
-La app se actualiza por Releases; los repositorios de videos llevan solamente
-los proyectos. [Tutorial para Hans y MaykNE](docs/instalar-app.html).
+La app se actualiza por Releases. El repositorio privado
+[`HansNieto/videos`](https://github.com/HansNieto/videos) lleva solamente los
+proyectos editables; no contiene la aplicación, originales, cachés ni renders.
+[Tutorial para Hans y MaykNE](docs/instalar-app.html).
 
 La preedición automática sigue usando las **skills** y la CLI Python (`vcut`)
 en la computadora de procesamiento; todavía no se inicia desde un botón de la
@@ -94,6 +96,15 @@ se detectan probando; no hay nada que configurar.
 ---
 
 ## Instalar
+
+### Aplicación de escritorio
+
+La descarga instalable está en **Releases** de este mismo repositorio. Descarga
+`Videria-VERSION-Windows-x64.zip`, extrae todo y ejecuta
+`Instalar-Videria.cmd`; se crea el icono Videria en el Escritorio y en Inicio.
+El ZIP «Source code» es solo para desarrollar y no contiene el ejecutable.
+
+### Skills y herramientas de preedición
 
 Clonás y corrés el instalador, que copia las tres skills a `~/.claude/skills/`.
 Si ya tenés una skill con ese nombre, la guarda con un sufijo de fecha antes de

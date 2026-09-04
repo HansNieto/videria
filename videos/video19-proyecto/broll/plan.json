@@ -1,7 +1,0 @@
-{
-  "plan": [
-    { "seg": "u0005", "query": "person using multiple mobile apps smartphone", "locale": "en-US", "dur": 2.6, "offset": 1.5, "texto": "Las aplicaciones cotidianas usan APIs." },
-    { "seg": "u0006", "query": "restaurant waiter taking customer order", "locale": "en-US", "dur": 1.3, "offset": 0.1, "texto": "Imagina que estás en un restaurante." },
-    { "seg": "u0025", "query": "student learning software technology laptop", "locale": "en-US", "dur": 2.6, "offset": 1.0, "texto": "Aprender tecnología de forma sencilla." }
-  ]
-}

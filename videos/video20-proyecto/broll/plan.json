@@ -1,9 +1,0 @@
-{
-  "plan": [
-    { "seg": "u0001", "query": "freelancer calculating service price calculator", "locale": "en-US", "dur": 2.6, "offset": 0.4, "texto": "Cuánto cobrar por un servicio." },
-    { "seg": "u0008", "query": "professional project team meeting planning", "locale": "en-US", "dur": 2.6, "offset": 1.0, "texto": "Preparación reuniones ejecución correcciones y entrega." },
-    { "seg": "u0013", "query": "small business office operating expenses", "locale": "en-US", "dur": 2.6, "offset": 0.5, "texto": "Gastos generales del negocio." },
-    { "seg": "u0029", "query": "client signing professional services contract", "locale": "en-US", "dur": 2.6, "offset": 0.8, "texto": "Definir alcance sin negociar cada tarea." },
-    { "seg": "u0033", "query": "experienced creative professional delivering project", "locale": "en-US", "dur": 2.6, "offset": 1.2, "texto": "Experiencia capacidad y resultado entregado." }
-  ]
-}

@@ -49,7 +49,10 @@ def main():
     from host import DesktopHost
     from vcutlib import util
     roots = [ROOT / "videos", Path.home() / "Documents/videria2.0/videria/videos",
-             Path.home() / "Documents/Videria/Proyectos", *options.projects_root]
+             Path.home() / "Documents/videria2.0/videos",
+             Path.home() / "Documents/Videria/Proyectos",
+             Path.home() / "Documents/Videria/Proyectos/videos",
+             *options.projects_root]
     app = DesktopHost(data, ROOT / "desktop/ui", roots=roots, port=options.port)
     if options.smoke_test:
         response = app.app.test_client().get('/desktop/projects', base_url=app.url)

@@ -54,5 +54,5 @@ $('clone').onclick=()=>$('cloneDialog').showModal();
 $('refresh').onclick=()=>busy($('refresh'),refresh);
 for(const b of document.querySelectorAll('[data-close]'))b.onclick=()=>b.closest('dialog').close();
 $('folderForm').onsubmit=e=>{e.preventDefault();$('folderDialog').close();busy($('add'),async()=>{await post('register',{path:$('folderPath').value});await refresh();message('Proyecto agregado.');});};
-$('cloneForm').onsubmit=e=>{e.preventDefault();$('cloneDialog').close();busy($('clone'),async()=>{message('Descargando proyecto. Los videos pueden tardar unos minutos…');await post('clone',{url:$('repoUrl').value});await refresh();message('Descarga completa. Pulsa Editar.');});};
+$('cloneForm').onsubmit=e=>{e.preventDefault();$('cloneDialog').close();busy($('clone'),async()=>{message('Descargando proyectos. Los recursos pueden tardar unos minutos…');const d=await post('clone',{url:$('repoUrl').value});await refresh();message('Descarga completa: ' + d.projects + ' proyecto(s). Pulsa Editar.');});};
 refresh().catch(e=>message(e.message,true));

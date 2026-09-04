@@ -198,6 +198,24 @@ def preparar(project_dir, duenio, nombre=None, url=None):
 
     hechos = {"avisos": []}
 
+    # Recupera cachés locales cuando un proyecto fue renombrado o movido antes
+    # de convertirlo a formato compartible. El nombre del archivo por fuente es
+    # estable y evita guardar la ruta absoluta de la máquina que hizo la preedición.
+    for s in project.get("sources", []):
+        for key, sub in (("proxy", "proxy"), ("waveform", "waveform")):
+            value = s.get(key)
+            if value and not Path(value).exists():
+                candidate = pdir / "cache" / sub / Path(value).name
+                if candidate.is_file():
+                    s[key] = str(candidate)
+        filmstrip = s.get("filmstrip")
+        value = filmstrip.get("url") if isinstance(filmstrip, dict) else filmstrip
+        if value and not Path(value).exists():
+            candidate = pdir / "cache" / "filmstrip" / Path(value).name
+            if candidate.is_file():
+                s["filmstrip"] = (dict(filmstrip, url=str(candidate))
+                                  if isinstance(filmstrip, dict) else str(candidate))
+
     # Sin proxies no hay nada que compartir: el otro veria clips en negro.
     sin_proxy = [s.get("name") for s in project.get("sources", [])
                  if not (s.get("proxy") and Path(s["proxy"]).exists())]
@@ -246,6 +264,17 @@ def preparar(project_dir, duenio, nombre=None, url=None):
     # Esto separa las rutas: lo de dentro queda relativo en project.json y los
     # originales se van a local.json.
     studio.save_project(pdir, project, backup=True)
+    timeline = studio.load(pdir, project, create=False)
+    if timeline is not None:
+        studio.save(pdir, timeline)
+    overlay_index_path = pdir / "assets" / "overlays" / "index.json"
+    overlay_index = util.read_json(overlay_index_path)
+    if isinstance(overlay_index, dict):
+        for entry in overlay_index.values():
+            seq = entry.get("seq") if isinstance(entry, dict) else None
+            if isinstance(seq, dict) and seq.get("dir"):
+                seq["dir"] = studio.portable_asset(seq["dir"], pdir)
+        util.write_json(overlay_index_path, overlay_index)
 
     # Estos tres archivos siempre con LF. El workflow corre en un runner de
     # Linux: un retorno de carro al final de cada linea le cambiaria el

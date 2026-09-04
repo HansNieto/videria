@@ -1,8 +1,0 @@
-{
-  "plan": [
-    { "seg": "u0001", "query": "overwhelmed small business owner paperwork", "locale": "en-US", "dur": 2.6, "offset": 0.8, "texto": "Señales de crecimiento descontrolado." },
-    { "seg": "u0007", "query": "busy sales team packing customer orders", "locale": "en-US", "dur": 2.6, "offset": 1.1, "texto": "Más ventas terminan generando retrasos." },
-    { "seg": "u0012", "query": "stressed office team urgent tasks", "locale": "en-US", "dur": 2.6, "offset": 0.4, "texto": "Todo se resuelve con urgencia." },
-    { "seg": "u0023", "query": "business team organizing workflow whiteboard", "locale": "en-US", "dur": 2.6, "offset": 0.45, "texto": "Definir una forma clara de trabajar." }
-  ]
-}

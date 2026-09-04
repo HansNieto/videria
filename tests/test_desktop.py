@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'desktop'), str(ROOT/'skills/video-cut/scripts')]
-from host import DesktopHost, ProjectLibrary, github_url
+from host import DesktopHost, ProjectLibrary, github_url, project_git_root
 from vcutlib import studio, util
 
 
@@ -30,12 +30,24 @@ class DesktopTests(unittest.TestCase):
         self.assertEqual(ProjectLibrary(self.root/'settings').get(key),self.project.resolve())
         with self.assertRaises(ValueError): lib.register(self.root)
 
+    def test_register_container_repo_and_find_shared_git_root(self):
+        second = self.root/'video18-proyecto'
+        second.mkdir()
+        (second/'project.json').write_text(
+            json.dumps({'name':'QA 18','sources':[], 'segments':[]}), encoding='utf-8')
+        (self.root/'.git').mkdir()
+        lib = ProjectLibrary(self.root/'settings')
+        keys = lib.register_all(self.root)
+        self.assertEqual(len(keys), 2)
+        self.assertEqual(project_git_root(self.project), self.root)
+        self.assertTrue(all(project['git'] for project in lib.list()))
+
     def test_local_host_token_validation_and_dirty_pull(self):
         host=DesktopHost(self.root/'settings',ROOT/'desktop/ui',roots=[self.root],projects_dir=self.root/'clones')
         client=host.app.test_client()
         try:
             info=client.get('/desktop/projects',base_url='http://127.0.0.1').get_json()
-            self.assertEqual(info['version'],'2.3.0')
+            self.assertEqual(info['version'],'2.4.0')
             self.assertEqual(client.post('/desktop/open',json={'id':info['projects'][0]['id']},base_url='http://127.0.0.1').status_code,403)
             self.assertEqual(client.get('/desktop/projects',base_url='http://malicious.example').status_code,403)
             for path in ('/','/help/instalar-app.html'):
@@ -81,6 +93,33 @@ class DesktopTests(unittest.TestCase):
         self.assertEqual(studio.portable_asset(str(sticker),self.project),'@skill/assets/sfx/3_impacto.wav')
         self.assertEqual(studio.resolve_asset('@skill/assets/sfx/3_impacto.wav',self.project),str(sticker))
         with self.assertRaises(ValueError): studio.resolve_asset('@skill/../../secret',self.project)
+
+    def test_frame_sequence_directory_is_portable(self):
+        frames = self.project/'motion-overlays/frames/intro'
+        frames.mkdir(parents=True)
+        (frames/'0000.png').write_bytes(b'frame')
+        tl=studio.new_timeline({'sources':[],'segments':[]})
+        tl['tracks'][0]['items']=[{'id':'x','src':'assets/missing.webm',
+                                  'seq':{'dir':str(frames),'fps':30,'frames':1}}]
+        studio.save(self.project,tl)
+        raw=json.loads((self.project/'timeline.json').read_text(encoding='utf-8'))
+        self.assertEqual(raw['tracks'][0]['items'][0]['seq']['dir'],
+                         'motion-overlays/frames/intro')
+
+    def test_transition_sfx_and_input_paths_are_portable(self):
+        sfx=util.skill_root()/'assets/sfx/3_impacto.wav'
+        tl=studio.new_timeline({'sources':[],'segments':[]})
+        tl['transitions']=[{'id':'tr1','sfx':str(sfx)}]
+        studio.save(self.project,tl)
+        raw=json.loads((self.project/'timeline.json').read_text(encoding='utf-8'))
+        self.assertEqual(raw['transitions'][0]['sfx'],'@skill/assets/sfx/3_impacto.wav')
+        project={'name':'QA','input':{'paths':[str(self.root/'originales')]},
+                 'sources':[], 'segments':[]}
+        studio.save_project(self.project,project)
+        shared=json.loads((self.project/'project.json').read_text(encoding='utf-8'))
+        local=json.loads((self.project/'local.json').read_text(encoding='utf-8'))
+        self.assertEqual(shared['input']['paths'],[])
+        self.assertEqual(local['input_paths'],[str(self.root/'originales')])
 
     @unittest.skipUnless(sys.platform == 'win32', 'Windows short paths')
     def test_windows_short_asset_path_is_saved_relative(self):
