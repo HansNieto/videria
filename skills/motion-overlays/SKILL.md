@@ -13,13 +13,16 @@ transparente, listos para renderizar y montar encima del video.
 
 1. **Confirma el estilo visual** (§3, paso 1). Si hay una captura de referencia, úsala
    como contrato de acabado y no vuelvas a preguntar. Para Videria vertical, el estilo
-   por defecto es `s-neon`.
+   por defecto es `s-sticker3d`.
 2. Carga las skills **gsap-core**, **gsap-timeline** y **gsap-plugins** (y **gsap-performance**
    si la escena tiene muchos elementos). Este skill asume su API correcta.
 3. Lee `references/motion-language.md` y `references/design-system.md`.
 4. Lee `references/visual-styles.md` para el estilo elegido.
-5. Si el resultado es vertical o `s-neon`, lee `references/neon-vertical.md`.
-6. Lee `references/svg-assets.md` cuando la escena necesite un objeto concreto
+5. Si el resultado es vertical, `s-neon` o `s-sticker3d`, lee
+   `references/neon-vertical.md`.
+6. Si la escena explica una secuencia o usa `s-sticker3d`, lee
+   `references/constructed-motion.md`.
+7. Lee `references/svg-assets.md` cuando la escena necesite un objeto concreto
    (persona, moneda, caja, celular, carpeta, reloj…). No inventes iconos genéricos
    si ya hay un recurso base que puedes componer y variar.
 
@@ -70,6 +73,7 @@ Cada overlay se escribe partiendo de `assets/overlay-template.html`.
 | 11 | **Colocación fuera, animación dentro** (ver §3, «Estructura del SVG»). Nunca animes `x`/`y` sobre un grupo que lleva `transform="translate(…)"`. |
 | 12 | **Una relación, no un clipart.** En el clímax debe haber 3–5 nodos con jerarquía y, cuando el concepto sea causal, al menos 2 conexiones curvas. Prohibido resolver una idea compleja con un teléfono genérico, una línea recta y una X. |
 | 13 | **Neón con frente nítido.** El glow es un aura secundaria; el icono, número o ruta conserva un borde definido. Máximo un filtro de glow por nodo importante y nunca un velo oscuro de fotograma completo. |
+| 14 | **Construir, no insertar.** Un objeto complejo se divide en profundidad, borde, cara, símbolo y brillo. Esas piezas entran según la narración. Prohibido hacer aparecer el `.o` completo con un único fade, pop o transición. Lee `constructed-motion.md`. |
 
 ## 3. Flujo de trabajo
 
@@ -83,20 +87,20 @@ Guía para elegir qué ofrecer:
 
 | Si el guion va de… | Ofrece |
 |--------------------|--------|
-| procesos, decisiones, cifras en Videria vertical | **Neón editorial premium** *(recomendado)*, Trazo grueso, 3D suave |
+| procesos, decisiones, cifras en Videria vertical | **Sticker 3D construido** *(recomendado)*, Neón editorial, Trazo grueso |
 | procesos, decisiones, cifras en 16:9 | **Línea mínima** *(recomendado)*, Editorial técnico, Trazo grueso |
 | datos, métricas, precisión, análisis | Editorial técnico *(recomendado)*, Línea mínima, 3D suave |
 | consejo cercano, docente, personal | Dibujado a mano, Línea mínima *(recomendado)*, Flat humanista |
 | infraestructura, áreas, "el sistema" | Isométrico, Línea mínima *(recomendado)*, Editorial técnico |
 | producto, dinero, algo tangible | 3D suave, Trazo grueso, Línea mínima *(recomendado)* |
 | equipos, personas, cultura | Flat humanista, Línea mínima *(recomendado)*, Dibujado a mano |
-| se verá en móvil / metraje ruidoso | Neón editorial premium *(recomendado)*, Trazo grueso, Flat humanista |
+| se verá en móvil / metraje ruidoso | Sticker 3D construido *(recomendado)*, Neón editorial, Trazo grueso |
 
 Si el usuario ya indicó estilo en su mensaje, no preguntes: confírmalo en una línea y sigue.
 Si el proyecto ya tiene overlays hechos, tampoco: mantén el estilo existente salvo que
 pida cambiarlo.
 
-La respuesta se aplica como clase en `#stage` (`s-neon`, `s-tech`, `s-bold`, `s-hand`,
+La respuesta se aplica como clase en `#stage` (`s-sticker3d`, `s-neon`, `s-tech`, `s-bold`, `s-hand`,
 `s-iso`, `s-soft3d`, `s-flat`; sin clase = línea mínima) y **se anota en el README**.
 
 ### Paso 2 — Leer el guion completo antes de escribir nada
@@ -157,7 +161,8 @@ const BEATS = {
 ### Paso 6 — Programar
 
 Un archivo por overlay, desde `assets/overlay-template.html`. La plantilla ya es vertical,
-animada, transparente y `s-neon`; sustituye su metáfora sin degradar su riqueza visual.
+animada, transparente y `s-sticker3d`; sustituye su metáfora sin degradar su riqueza ni
+convertir sus objetos en imágenes terminadas que solo entran con una transición.
 Contrato:
 
 ```js
@@ -226,6 +231,10 @@ también la forma de construir los objetos.
   o cian definido, una aura controlada y rutas curvas. Construye una mini-historia visual:
   solicitud → actor → decisión → consecuencia. No copies literalmente esa secuencia si
   el guion dice otra cosa; conserva la densidad, la profundidad y la causalidad.
+- **Sticker 3D construido (`s-sticker3d`):** ilustración azul/cian/blanca con profundidad,
+  borde claro y sombra local. Cada elemento sigue siendo SVG por capas: profundidad →
+  borde → cara → símbolo → brillo. El acabado parece una ilustración 3D, pero su entrada
+  revela cómo se construye y no muestra un sticker terminado.
 
 ## 5. Lenguaje de movimiento (resumen)
 
@@ -253,6 +262,8 @@ Abre cada archivo en Chrome y verifica:
       región útil, no una esquina diminuta.
 - [ ] En el clímax se entiende la relación sin leer la narración: 3–5 nodos y conexiones
       con dirección, no iconos genéricos repartidos.
+- [ ] A velocidad 0.5×, cada objeto complejo se construye por capas y en orden semántico;
+      ningún `.o` completo entra con un único fade/pop.
 - [ ] SVG alineados: `viewBox` correcto, trazos en la misma escala, sin medio píxel borroso.
 - [ ] El loop no salta (start y end limpios → el bucle es continuo).
 - [ ] `?bg=light`, `?bg=dark` y `?bg=photo`: legible en los tres.
@@ -304,6 +315,7 @@ Y debajo, 2–4 líneas por archivo explicando qué ocurre en la animación.
 
 - ❌ Convertir cada párrafo en una tarjeta con texto.
 - ❌ Fade in / fade out como toda la animación.
+- ❌ Sticker o ilustración ya terminada que entra completa con `scale + autoAlpha`.
 - ❌ Un panel de fondo oscuro que cubre el video "para que se lea".
 - ❌ Iconos de librería genéricos pegados en fila.
 - ❌ Todos los elementos moviéndose al mismo tiempo con el mismo ease.
@@ -343,9 +355,11 @@ PNG con alfa reproducible frame a frame.
 ## Referencias
 
 - `references/pitfalls.md` — **léelo antes de depurar**: ocho fallos que se ven como "está mal dibujado" y no dan error.
-- `references/visual-styles.md` — los 8 estilos, cuándo usar cada uno y cómo se construyen.
+- `references/visual-styles.md` — los 9 estilos, cuándo usar cada uno y cómo se construyen.
 - `references/neon-vertical.md` — composición, capas, movimiento y criterios de rechazo
   para el acabado premium de Videria.
+- `references/constructed-motion.md` — cómo fabricar cada elemento por capas siguiendo
+  la secuencia de la narración.
 - `references/design-system.md` — tokens, paleta, trazo, tipografía, layout, temas.
 - `references/motion-language.md` — eases, tiempos, coreografía, recetas por tipo de escena.
 - `references/svg-assets.md` — biblioteca de recursos vectoriales listos para componer.

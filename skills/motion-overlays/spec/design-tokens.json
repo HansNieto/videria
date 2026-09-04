@@ -1,6 +1,6 @@
 {
   "$comment": "Tokens del sistema visual de motion-overlays. Espejo legible por máquina de assets/overlay.css y references/design-system.md. Fuente de verdad para agentes que generen o validen escenas.",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "canvas": {
     "width": 1080,
     "height": 1920,
@@ -97,6 +97,17 @@
       "glassBottom": "rgba(3,16,31,.62)",
       "rule": "El frente permanece nitido; el glow es una aura secundaria y local."
     },
+    "sticker3d": {
+      "blueTop": "#2F86FF",
+      "blueBottom": "#0847B1",
+      "cyanTop": "#43D9FF",
+      "cyanBottom": "#079DDF",
+      "redTop": "#FF5963",
+      "redBottom": "#C9142B",
+      "depth": "#073783",
+      "rim": "#FFFFFF",
+      "rule": "Cada color pertenece a una pieza SVG separada; el texto se dibuja como vector/HTML, no dentro de un raster generado."
+    },
     "semantics": {
       "accent": "el actor central o el flujo normal",
       "ok": "resuelto, funcionando",
@@ -118,6 +129,12 @@
         "thin": 4,
         "base": 6,
         "hero": 8
+      },
+      "s-sticker3d": {
+        "thin": 7,
+        "base": 10,
+        "hero": 14,
+        "rail": 18
       },
       "s-neon": {
         "thin": 7,
@@ -260,6 +277,11 @@
       "desarrollo 1.5-4s",
       "salida 0.3-0.6s"
     ],
+    "constructedSequence": {
+      "requiredFor": ["s-sticker3d", "complex causal scenes"],
+      "layers": ["depth", "rim", "face", "symbol", "shine", "connection"],
+      "rule": "Animate .piece children in semantic order; never reveal a finished complex .o with one fade or pop."
+    },
     "climaxWindow": [
       0.55,
       0.75

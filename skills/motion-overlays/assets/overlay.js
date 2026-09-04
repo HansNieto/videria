@@ -168,7 +168,26 @@
       '<feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>' +
       '<feFlood flood-color="#FF4353" flood-opacity=".86" result="color"/>' +
       '<feComposite in="color" in2="blur" operator="in" result="glow"/>' +
-      '<feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+      '<feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+    '<linearGradient id="ovStickerBlue" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#2F86FF"/><stop offset=".58" stop-color="#1262DC"/>' +
+      '<stop offset="1" stop-color="#0847B1"/></linearGradient>' +
+    '<linearGradient id="ovStickerCyan" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#43D9FF"/><stop offset="1" stop-color="#079DDF"/></linearGradient>' +
+    '<linearGradient id="ovStickerRed" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#FF5963"/><stop offset=".62" stop-color="#F32F3C"/>' +
+      '<stop offset="1" stop-color="#C9142B"/></linearGradient>' +
+    '<linearGradient id="ovStickerWhite" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9EEF7"/></linearGradient>' +
+    '<linearGradient id="ovStickerShine" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="#FFFFFF" stop-opacity=".64"/>' +
+      '<stop offset=".42" stop-color="#FFFFFF" stop-opacity=".12"/>' +
+      '<stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>' +
+    '<filter id="ovStickerShadow" x="-55%" y="-55%" width="230%" height="245%" color-interpolation-filters="sRGB">' +
+      '<feGaussianBlur in="SourceAlpha" stdDeviation="10" result="blur"/>' +
+      '<feOffset in="blur" dx="0" dy="16" result="offset"/>' +
+      '<feColorMatrix in="offset" type="matrix" values="0 0 0 0 0.01 0 0 0 0 0.07 0 0 0 0 0.19 0 0 0 .62 0" result="shadow"/>' +
+      '<feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
 
   function injectDefs(root) {
     var svg = root.querySelector('svg.canvas') || root.querySelector('svg');

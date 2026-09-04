@@ -3,91 +3,95 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NN — flujo visual</title>
+<title>NN — secuencia construida</title>
 <link rel="stylesheet" href="./lib/overlay.css">
 </head>
 <body>
 
-<!-- Plantilla Videria: 1080×1920 vertical, fondo transparente.
-     Cambia los actores y la metáfora, no reduzcas esta escena a un icono aislado.
+<!-- Plantilla Videria 1080×1920, fondo transparente.
+     Cada objeto está desarmado en profundidad, borde, cara, símbolo y brillo.
+     Esas piezas se construyen por separado: NO hagas fade/pop del sticker completo.
 
      .module → colocación global; NO se anima.
      .at     → colocación local; NO se anima.
-     .o      → objeto animado; no lleva transform de colocación.
-
-     No escribas stroke-width: usa .st / .thin / .hero. -->
-<div id="stage" class="s-neon">
+     .o      → unidad semántica auditada; sus hijos .piece se animan por capas. -->
+<div id="stage" class="s-sticker3d">
   <svg class="canvas" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
     <g class="frame pos-center">
-      <!-- El gráfico ocupa el tercio superior y deja libre al presentador. -->
       <g class="module" transform="translate(540,500)">
 
-        <!-- Rutas causales: curvas, cercanas y con dirección. -->
-        <g class="o route-top">
-          <path id="routeTop" class="route" d="M-190,-120 C-85,-285,85,-300,155,-226"/>
-          <path class="st hero c-accent" d="M130,-242 L160,-224 L143,-194"/>
+        <!-- Conexiones: profundidad → carril → flecha → pulso. -->
+        <g class="o route-a">
+          <path id="routeA" class="piece route-a-depth sticker-route-depth" d="M-180,-190 C-70,-285,80,-292,157,-220"/>
+          <path class="piece route-a-main sticker-route" d="M-180,-190 C-70,-285,80,-292,157,-220"/>
+          <path class="piece route-a-arrow sticker-cyan" d="M139,-242 L177,-219 L145,-187 Z"/>
         </g>
-        <g class="o route-right">
-          <path id="routeRight" class="route dash" d="M270,-115 C330,-26,331,74,278,132"/>
-          <path class="st c-accent" d="M296,116 L276,140 L252,119"/>
+        <g class="o route-b">
+          <path id="routeB" class="piece route-b-depth sticker-route-depth" d="M270,-117 C335,-12,333,85,278,145"/>
+          <path class="piece route-b-main sticker-route dash" d="M270,-117 C335,-12,333,85,278,145"/>
+          <path class="piece route-b-arrow sticker-cyan" d="M300,127 L273,163 L251,125 Z"/>
         </g>
-        <g class="o route-bottom">
-          <path id="routeBottom" class="route" d="M152,222 C30,318,-124,303,-190,231"/>
-          <path class="st hero c-accent" d="M-164,246 L-198,226 L-177,197"/>
-        </g>
-        <g class="o route-left">
-          <path id="routeLeft" class="route dash" d="M-292,137 C-341,54,-331,-35,-282,-94"/>
-          <path class="st c-accent" d="M-304,-76 L-278,-101 L-257,-75"/>
+        <g class="o route-c">
+          <path id="routeC" class="piece route-c-depth sticker-route-depth" d="M153,228 C48,315,-102,311,-175,242"/>
+          <path class="piece route-c-main sticker-route" d="M153,228 C48,315,-102,311,-175,242"/>
+          <path class="piece route-c-arrow sticker-cyan" d="M-151,225 L-190,239 L-169,273 Z"/>
         </g>
 
-        <!-- 1. Mensaje / solicitud -->
-        <g class="at" transform="translate(-285,-145)">
-          <g class="o node-message neon-cyan">
-            <path class="glass-panel" d="M-142,-72 H118 Q146,-72 146,-44 V39 Q146,67 118,67 H-44 L-83,103 L-77,67 H-142 Q-170,67 -170,39 V-44 Q-170,-72 -142,-72 Z"/>
-            <path class="st thin" d="M-118,-25 H86 M-118,11 H58"/>
+        <!-- Persona: se arma desde la profundidad hasta el símbolo. -->
+        <g class="at" transform="translate(-265,-150)">
+          <g class="o node-person sticker-object">
+            <circle class="piece actor-depth sticker-depth" cy="16" r="111"/>
+            <circle class="piece actor-rim sticker-rim" r="108"/>
+            <circle class="piece actor-face sticker-blue" r="95"/>
+            <path class="piece actor-shine sticker-shine" d="M-68,-64 A92,92 0 0 1 62,-69 A78,78 0 0 0 -68,-64 Z"/>
+            <circle class="piece actor-head sticker-white" cy="-30" r="29"/>
+            <path class="piece actor-body sticker-white" d="M-57,57 V37 Q-57,-2 0,-2 Q57,-2 57,37 V57 Q0,76 -57,57 Z"/>
           </g>
         </g>
 
-        <!-- 2. Persona / cliente con duda -->
-        <g class="at" transform="translate(228,-190)">
-          <g class="o node-person neon-blue">
-            <circle class="soft-halo" r="128"/>
-            <circle class="st hero c-accent f-accent" r="92"/>
-            <circle class="st" cy="-24" r="27"/>
-            <path class="st" d="M-49,53 V38 Q-49,4 0,4 Q49,4 49,38 V53 Z"/>
-          </g>
-        </g>
-        <g class="at" transform="translate(338,-276)">
-          <g class="o node-question neon-cyan">
-            <path class="glass-panel" d="M-44,-52 H28 Q55,-52 55,-25 V18 Q55,45 28,45 H4 L-17,69 L-14,45 H-44 Q-69,45 -69,18 V-25 Q-69,-52 -44,-52 Z"/>
-            <text class="num sm t-accent" x="-7" y="20" text-anchor="middle">?</text>
+        <!-- Pregunta: primero globo, luego signo. -->
+        <g class="at" transform="translate(235,-196)">
+          <g class="o node-question sticker-object">
+            <path class="piece question-depth sticker-depth" d="M-88,-58 H68 Q99,-58 99,-27 V49 Q99,80 68,80 H20 L-24,118 L-18,80 H-88 Q-119,80 -119,49 V-27 Q-119,-58 -88,-58 Z"/>
+            <path class="piece question-rim sticker-rim" d="M-88,-72 H68 Q99,-72 99,-41 V35 Q99,66 68,66 H20 L-24,104 L-18,66 H-88 Q-119,66 -119,35 V-41 Q-119,-72 -88,-72 Z"/>
+            <path class="piece question-face sticker-blue" d="M-78,-59 H58 Q84,-59 84,-33 V27 Q84,53 58,53 H12 L-8,71 L-4,53 H-78 Q-104,53 -104,27 V-33 Q-104,-59 -78,-59 Z"/>
+            <path class="piece question-shine sticker-shine" d="M-77,-49 H51 Q70,-49 73,-31 H-91 Q-88,-49 -77,-49 Z"/>
+            <text class="piece piece-text question-mark num" x="-9" y="32" text-anchor="middle">?</text>
           </g>
         </g>
 
-        <!-- 3. Precio / decisión -->
-        <g class="at" transform="translate(-250,190)">
-          <g class="o node-price neon-blue">
-            <rect class="glass-panel" x="-128" y="-70" width="256" height="140" rx="36"/>
-            <rect class="st hero c-accent f-accent" x="-115" y="-57" width="230" height="114" rx="29"/>
-            <text class="num sm" x="-12" y="20" text-anchor="middle">S/</text>
-            <text class="num sm t-accent" x="71" y="20" text-anchor="middle">?</text>
+        <!-- Precio: placa → frente → brillo → caracteres individuales. -->
+        <g class="at" transform="translate(-245,205)">
+          <g class="o node-price sticker-object">
+            <path class="piece price-depth sticker-depth" d="M-128,-54 H77 L137,8 L78,86 H-128 Q-154,86 -154,60 V-28 Q-154,-54 -128,-54 Z"/>
+            <path class="piece price-rim sticker-rim" d="M-128,-70 H77 L137,-8 L78,70 H-128 Q-154,70 -154,44 V-44 Q-154,-70 -128,-70 Z"/>
+            <path class="piece price-face sticker-blue" d="M-121,-56 H70 L118,-7 L69,56 H-121 Q-139,56 -139,38 V-38 Q-139,-56 -121,-56 Z"/>
+            <path class="piece price-shine sticker-shine" d="M-113,-46 H59 L86,-18 H-128 V-31 Q-128,-46 -113,-46 Z"/>
+            <circle class="piece price-hole sticker-rim" cx="78" cy="-8" r="13"/>
+            <text class="piece piece-text price-s num sm" x="-66" y="21" text-anchor="middle">S</text>
+            <text class="piece piece-text price-slash num sm" x="-16" y="21" text-anchor="middle">/</text>
+            <text class="piece piece-text price-dot num sm" x="28" y="21" text-anchor="middle">.</text>
           </g>
         </g>
 
-        <!-- 4. Resultado negativo -->
-        <g class="at" transform="translate(238,190)">
-          <g class="o node-error neon-red">
-            <circle class="soft-danger" r="132"/>
-            <circle class="ring-dash" r="105"/>
-            <circle class="st hero c-bad f-bad" r="84"/>
-            <path class="st hero c-bad" d="M-34,-34 L34,34 M34,-34 L-34,34"/>
+        <!-- Error: el significado aparece solo al dibujarse los dos trazos de la X. -->
+        <g class="at" transform="translate(245,194)">
+          <g class="o node-error sticker-object">
+            <circle class="piece error-depth sticker-depth" cy="16" r="111"/>
+            <circle class="piece error-rim sticker-rim" r="108"/>
+            <circle class="piece error-face sticker-red" r="94"/>
+            <path class="piece error-shine sticker-shine" d="M-65,-63 A91,91 0 0 1 63,-66 A77,77 0 0 0 -65,-63 Z"/>
+            <path class="piece error-cross-a st hero" d="M-39,-39 L39,39"/>
+            <path class="piece error-cross-b st hero" d="M39,-39 L-39,39"/>
+            <g class="piece error-rays">
+              <path class="st c-bad" d="M93,-73 L121,-96 M112,-44 L145,-51 M82,-98 L94,-130"/>
+            </g>
           </g>
         </g>
 
-        <!-- Pulsos: movimiento que explica la relación, no decoración. -->
         <g class="o pulses">
-          <circle class="dot accent pulse-top" r="11"/>
-          <circle class="dot accent pulse-bottom" r="11"/>
+          <circle class="piece dot accent pulse-a" r="12"/>
+          <circle class="piece dot accent pulse-c" r="12"/>
         </g>
       </g>
     </g>
@@ -101,57 +105,88 @@
 <script src="./lib/MorphSVGPlugin.min.js"></script>
 <script src="./lib/overlay.js"></script>
 <script>
-/* Sustituye las palabras ancla por las de la narración real. */
 const BEATS = {
-  in:       0.00, // palabra: "…"
-  actor:    0.48, // palabra: "…"
-  decision: 1.18, // palabra: "…"
-  result:   2.02, // palabra: "…"
-  hold:     3.25,
-  exit:     3.88
+  actor:    0.00, // palabra: "…"
+  question: 0.66, // palabra: "…"
+  price:    1.48, // palabra: "…"
+  result:   2.54, // palabra: "…"
+  hold:     3.72,
+  exit:     4.12
 };
 
 Overlay.scene({
-  id: 'NN_flujo_visual',
-  style: 's-neon',
+  id: 'NN_secuencia_construida',
+  style: 's-sticker3d',
   BEATS,
   build(tl) {
+    const show = (selector, at) => tl.set(selector, { autoAlpha: 1 }, at);
     gsap.set('.o', { autoAlpha: 0 });
-    gsap.set('.route-top path:first-child, .route-bottom path:first-child', { drawSVG: '0%' });
+    gsap.set('.piece', { transformOrigin: '50% 50%' });
 
-    tl.fromTo('.node-message',
-        { autoAlpha: 0, scale: .82, y: 22 },
-        { autoAlpha: 1, scale: 1, y: 0, duration: .58, ease: 'settle' }, BEATS.in)
-      .fromTo('.node-person',
-        { autoAlpha: 0, scale: .74, x: 22 },
-        { autoAlpha: 1, scale: 1, x: 0, duration: .55, ease: 'settle' }, BEATS.actor)
-      .fromTo('.node-question',
-        { autoAlpha: 0, scale: .45, y: 12 },
-        { autoAlpha: 1, scale: 1, y: 0, duration: .42, ease: 'settle' }, BEATS.actor + .18)
-      .to('.route-top', { autoAlpha: 1, duration: .01 }, BEATS.actor - .08)
-      .to('.route-top path:first-child', { drawSVG: '100%', duration: .58, ease: 'power2.inOut' }, BEATS.actor - .08)
-      .fromTo('.node-price',
-        { autoAlpha: 0, scale: .78, x: -18 },
-        { autoAlpha: 1, scale: 1, x: 0, duration: .52, ease: 'settle' }, BEATS.decision)
-      .fromTo('.route-left',
-        { autoAlpha: 0 },
-        { autoAlpha: 1, duration: .38, ease: 'brand' }, BEATS.decision + .12)
-      .fromTo('.node-error',
-        { autoAlpha: 0, scale: .52, rotation: -8 },
-        { autoAlpha: 1, scale: 1, rotation: 0, duration: .52, ease: 'settle' }, BEATS.result)
-      .to('.route-right', { autoAlpha: 1, duration: .35, ease: 'brand' }, BEATS.result - .20)
-      .to('.route-bottom', { autoAlpha: 1, duration: .01 }, BEATS.result + .06)
-      .to('.route-bottom path:first-child', { drawSVG: '100%', duration: .62, ease: 'power2.inOut' }, BEATS.result + .06)
-      .fromTo('.pulses', { autoAlpha: 0 }, { autoAlpha: 1, duration: .15 }, BEATS.result + .14)
-      .fromTo('.pulse-top',
-        { motionPath: { path: '#routeTop', align: '#routeTop', alignOrigin: [0.5, 0.5], start: 0, end: 0 } },
-        { motionPath: { path: '#routeTop', align: '#routeTop', alignOrigin: [0.5, 0.5], start: 0, end: 1 }, duration: .9, ease: 'power2.inOut' }, BEATS.result + .15)
-      .fromTo('.pulse-bottom',
-        { motionPath: { path: '#routeBottom', align: '#routeBottom', alignOrigin: [0.5, 0.5], start: 0, end: 0 } },
-        { motionPath: { path: '#routeBottom', align: '#routeBottom', alignOrigin: [0.5, 0.5], start: 0, end: 1 }, duration: .9, ease: 'power2.inOut' }, BEATS.result + .35)
-      .to('.node-error', { scale: 1.07, duration: .18, yoyo: true, repeat: 1, ease: 'power2.out' }, BEATS.result + .52)
-      .to({}, { duration: .01 }, BEATS.hold)
-      .to('.o', { autoAlpha: 0, scale: .96, duration: .36, stagger: .025, ease: 'swift' }, BEATS.exit);
+    /* 1 · Persona: seis piezas, ninguna entrada del grupo completo. */
+    show('.node-person', BEATS.actor)
+      .fromTo('.actor-depth', { autoAlpha: 0, scale: .35, y: -18 }, { autoAlpha: 1, scale: 1, y: 0, duration: .32, ease: 'brand' }, BEATS.actor)
+      .fromTo('.actor-rim', { autoAlpha: 0, scale: .28 }, { autoAlpha: 1, scale: 1, duration: .34, ease: 'settle' }, BEATS.actor + .08)
+      .fromTo('.actor-face', { autoAlpha: 0, scale: .45 }, { autoAlpha: 1, scale: 1, duration: .30, ease: 'brand' }, BEATS.actor + .19)
+      .fromTo('.actor-head', { autoAlpha: 0, scale: .2, y: 12 }, { autoAlpha: 1, scale: 1, y: 0, duration: .24, ease: 'settle' }, BEATS.actor + .31)
+      .fromTo('.actor-body', { autoAlpha: 0, scaleY: .15 }, { autoAlpha: 1, scaleY: 1, duration: .28, ease: 'brand', transformOrigin: '50% 100%' }, BEATS.actor + .39)
+      .fromTo('.actor-shine', { autoAlpha: 0, x: -35 }, { autoAlpha: .65, x: 0, duration: .32, ease: 'power2.out' }, BEATS.actor + .48);
+
+    /* 2 · La pregunta se fabrica y recién después aparece su símbolo. */
+    show('.node-question', BEATS.question)
+      .fromTo('.question-depth', { autoAlpha: 0, scale: .35, y: -12 }, { autoAlpha: 1, scale: 1, y: 0, duration: .28, ease: 'brand' }, BEATS.question)
+      .fromTo('.question-rim', { autoAlpha: 0, scaleX: .16 }, { autoAlpha: 1, scaleX: 1, duration: .32, ease: 'settle' }, BEATS.question + .08)
+      .fromTo('.question-face', { autoAlpha: 0, scale: .55 }, { autoAlpha: 1, scale: 1, duration: .26, ease: 'brand' }, BEATS.question + .20)
+      .fromTo('.question-shine', { autoAlpha: 0, x: -28 }, { autoAlpha: .58, x: 0, duration: .24 }, BEATS.question + .28)
+      .fromTo('.question-mark', { autoAlpha: 0, scaleY: 0 }, { autoAlpha: 1, scaleY: 1, duration: .25, ease: 'settle', transformOrigin: '50% 100%' }, BEATS.question + .34);
+
+    /* La conexión se dibuja después de existir ambos extremos. */
+    show('.route-a', BEATS.question + .12)
+      .fromTo('.route-a-depth', { drawSVG: '0%' }, { drawSVG: '100%', duration: .46, ease: 'power2.inOut' }, BEATS.question + .12)
+      .fromTo('.route-a-main', { drawSVG: '0%' }, { drawSVG: '100%', duration: .42, ease: 'power2.inOut' }, BEATS.question + .17)
+      .fromTo('.route-a-arrow', { autoAlpha: 0, scale: .2 }, { autoAlpha: 1, scale: 1, duration: .18, ease: 'settle' }, BEATS.question + .51);
+
+    /* 3 · Precio: la placa crece y S / . se escriben uno por uno. */
+    show('.node-price', BEATS.price)
+      .fromTo('.price-depth', { autoAlpha: 0, scaleX: .08 }, { autoAlpha: 1, scaleX: 1, duration: .32, ease: 'brand', transformOrigin: '0% 50%' }, BEATS.price)
+      .fromTo('.price-rim', { autoAlpha: 0, scaleX: .10 }, { autoAlpha: 1, scaleX: 1, duration: .34, ease: 'settle', transformOrigin: '0% 50%' }, BEATS.price + .08)
+      .fromTo('.price-face', { autoAlpha: 0, scaleX: .16 }, { autoAlpha: 1, scaleX: 1, duration: .28, ease: 'brand', transformOrigin: '0% 50%' }, BEATS.price + .20)
+      .fromTo('.price-hole', { autoAlpha: 0, scale: .1 }, { autoAlpha: 1, scale: 1, duration: .20, ease: 'settle' }, BEATS.price + .31)
+      .fromTo('.price-s, .price-slash, .price-dot', { autoAlpha: 0, y: 18, scale: .55 }, { autoAlpha: 1, y: 0, scale: 1, duration: .22, stagger: .09, ease: 'settle' }, BEATS.price + .33)
+      .fromTo('.price-shine', { autoAlpha: 0, x: -55 }, { autoAlpha: .62, x: 0, duration: .34, ease: 'power2.out' }, BEATS.price + .47);
+
+    show('.route-b', BEATS.price + .24)
+      .fromTo('.route-b-depth, .route-b-main', { autoAlpha: 0 }, { autoAlpha: 1, duration: .18 }, BEATS.price + .24)
+      .fromTo('.route-b-arrow', { autoAlpha: 0, scale: .2 }, { autoAlpha: 1, scale: 1, duration: .18, ease: 'settle' }, BEATS.price + .58);
+
+    /* 4 · Resultado: aro, rojo, X en dos trazos y rayos de impacto. */
+    show('.node-error', BEATS.result)
+      .fromTo('.error-depth', { autoAlpha: 0, scale: .25 }, { autoAlpha: 1, scale: 1, duration: .28, ease: 'brand' }, BEATS.result)
+      .fromTo('.error-rim', { autoAlpha: 0, scale: .32 }, { autoAlpha: 1, scale: 1, duration: .30, ease: 'settle' }, BEATS.result + .07)
+      .fromTo('.error-face', { autoAlpha: 0, scale: .45 }, { autoAlpha: 1, scale: 1, duration: .26, ease: 'brand' }, BEATS.result + .18)
+      .fromTo('.error-cross-a', { drawSVG: '0%' }, { drawSVG: '100%', duration: .22, ease: 'power2.out' }, BEATS.result + .34)
+      .fromTo('.error-cross-b', { drawSVG: '0%' }, { drawSVG: '100%', duration: .22, ease: 'power2.out' }, BEATS.result + .48)
+      .fromTo('.error-rays path', { drawSVG: '0%' }, { drawSVG: '100%', duration: .28, ease: 'power2.out' }, BEATS.result + .53)
+      .fromTo('.error-shine', { autoAlpha: 0, x: -35 }, { autoAlpha: .55, x: 0, duration: .24 }, BEATS.result + .39)
+      .to('.error-face, .error-rim', { scale: 1.055, duration: .14, yoyo: true, repeat: 1, ease: 'power2.out' }, BEATS.result + .59);
+
+    show('.route-c', BEATS.result + .18)
+      .fromTo('.route-c-depth', { drawSVG: '0%' }, { drawSVG: '100%', duration: .44, ease: 'power2.inOut' }, BEATS.result + .18)
+      .fromTo('.route-c-main', { drawSVG: '0%' }, { drawSVG: '100%', duration: .40, ease: 'power2.inOut' }, BEATS.result + .23)
+      .fromTo('.route-c-arrow', { autoAlpha: 0, scale: .2 }, { autoAlpha: 1, scale: 1, duration: .18, ease: 'settle' }, BEATS.result + .56);
+
+    show('.pulses', BEATS.result + .50)
+      .fromTo('.pulse-a', { autoAlpha: 0, motionPath: { path: '#routeA', align: '#routeA', alignOrigin: [0.5, .5], start: 0, end: 0 } }, { autoAlpha: 1, motionPath: { path: '#routeA', align: '#routeA', alignOrigin: [0.5, .5], start: 0, end: 1 }, duration: .72, ease: 'power2.inOut' }, BEATS.result + .50)
+      .fromTo('.pulse-c', { autoAlpha: 0, motionPath: { path: '#routeC', align: '#routeC', alignOrigin: [0.5, .5], start: 0, end: 0 } }, { autoAlpha: 1, motionPath: { path: '#routeC', align: '#routeC', alignOrigin: [0.5, .5], start: 0, end: 1 }, duration: .72, ease: 'power2.inOut' }, BEATS.result + .68)
+      .to({}, { duration: .01 }, BEATS.hold);
+
+    /* Salida construida al revés: símbolos, caras, bordes y profundidad. */
+    tl.to('.error-rays, .piece-text, .pulses', { autoAlpha: 0, duration: .18, ease: 'swift' }, BEATS.exit)
+      .to('.error-cross-a, .error-cross-b, .route-a-main, .route-c-main', { drawSVG: '0%', duration: .28, ease: 'swift' }, BEATS.exit + .08)
+      .to('.sticker-shine, .actor-head, .actor-body, .price-hole', { autoAlpha: 0, scale: .65, duration: .20, ease: 'swift' }, BEATS.exit + .15)
+      .to('.sticker-blue, .sticker-red, .sticker-cyan', { autoAlpha: 0, scale: .45, duration: .24, ease: 'swift' }, BEATS.exit + .24)
+      .to('.sticker-rim', { autoAlpha: 0, scale: .35, duration: .23, ease: 'swift' }, BEATS.exit + .34)
+      .to('.sticker-depth, .route-a, .route-b, .route-c, .node-person, .node-question, .node-price, .node-error', { autoAlpha: 0, duration: .22, ease: 'swift' }, BEATS.exit + .43);
   }
 });
 </script>

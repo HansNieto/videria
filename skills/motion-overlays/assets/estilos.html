@@ -83,6 +83,23 @@
     <feComposite in="color" in2="blur" operator="in" result="glow"/>
     <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
+  <linearGradient id="ovStickerBlue" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2F86FF"/><stop offset="1" stop-color="#0847B1"/></linearGradient>
+  <linearGradient id="ovStickerCyan" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#43D9FF"/><stop offset="1" stop-color="#079DDF"/></linearGradient>
+  <linearGradient id="ovStickerRed" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FF5963"/><stop offset="1" stop-color="#C9142B"/></linearGradient>
+  <linearGradient id="ovStickerWhite" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9EEF7"/></linearGradient>
+  <linearGradient id="ovStickerShine" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFFFFF" stop-opacity=".64"/>
+    <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>
+  <filter id="ovStickerShadow" x="-55%" y="-55%" width="230%" height="245%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>
+    <feOffset in="blur" dx="0" dy="7" result="offset"/>
+    <feColorMatrix in="offset" type="matrix" values="0 0 0 0 0.01 0 0 0 0 0.07 0 0 0 0 0.19 0 0 0 .62 0" result="shadow"/>
+    <feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
 </defs></svg>
 
 <script src="./lib/gsap.min.js"></script>
@@ -98,6 +115,29 @@ if (window.CustomEase) {
 const PERSON = '<circle class="st hero" cx="0" cy="-30" r="15"/>' +
                '<path class="st hero" d="M-25,26 V19 A25,25 0 0 1 25,19 V26"/>' +
                '<path class="st c-accent" d="M-12,26 V20 A12,12 0 0 1 12,20 V26"/>';
+
+const SCENE_STICKER = `
+  <g class="module" transform="translate(210,122)">
+    <g class="o links"><path class="piece sticker-route-depth" d="M-92,0 H-35 M36,0 H90"/>
+      <path class="piece sticker-route" d="M-92,0 H-35 M36,0 H90"/></g>
+    <g class="at" transform="translate(-132,0)"><g class="o p sticker-object">
+      <circle class="piece sticker-depth" cy="7" r="43"/><circle class="piece sticker-rim" r="42"/>
+      <circle class="piece sticker-blue" r="36"/><circle class="piece sticker-white" cy="-10" r="10"/>
+      <path class="piece sticker-white" d="M-19,21 V15 Q-19,2 0,2 Q19,2 19,15 V21 Z"/>
+    </g></g>
+    <g class="at" transform="translate(0,0)"><g class="o price sticker-object">
+      <rect class="piece sticker-depth" x="-43" y="-29" width="86" height="65" rx="14"/>
+      <rect class="piece sticker-rim" x="-43" y="-34" width="86" height="65" rx="14"/>
+      <rect class="piece sticker-blue" x="-37" y="-28" width="74" height="53" rx="10"/>
+      <text class="piece num xs" x="0" y="12" text-anchor="middle">S/.</text>
+    </g></g>
+    <g class="at" transform="translate(132,0)"><g class="o bad sticker-object">
+      <circle class="piece sticker-depth" cy="7" r="43"/><circle class="piece sticker-rim" r="42"/>
+      <circle class="piece sticker-red" r="36"/><path class="piece st hero" d="M-14,-14 L14,14 M14,-14 L-14,14"/>
+    </g></g>
+    <g class="at" transform="translate(0,83)"><g class="o l">
+      <text class="piece tag" text-anchor="middle">SECUENCIA</text></g></g>
+  </g>`;
 
 const SCENE_NEON = `
   <g class="module" transform="translate(210,125)">
@@ -177,6 +217,9 @@ const SCENE_FLAT = `
   </g>`;
 
 const STYLES = [
+  { cls:'s-sticker3d', name:'Sticker 3D construido', chip:'s-sticker3d', scene:SCENE_STICKER,
+    note:'Predeterminado de Videria. Profundidad, borde, cara, símbolo y brillo son piezas SVG que aparecen en secuencia; nunca entra el sticker completo.',
+    anim:{ y:10, scale:.8, dur:.32, ease:'settle', stg:.065, pieces:true } },
   { cls:'s-neon', name:'Neón editorial premium', chip:'s-neon', scene:SCENE_NEON,
     note:'Predeterminado de Videria vertical: masa translúcida local, frente nítido, glow controlado y relaciones animadas. No es un icono aislado.',
     anim:{ y:14, scale:.86, dur:.56, ease:'settle', stg:.1 } },
@@ -224,6 +267,15 @@ function play() {
     const a = s.anim;
     const objs = root.querySelectorAll('.o');
     gsap.killTweensOf(objs);
+    if (a.pieces) {
+      const pieces = root.querySelectorAll('.piece');
+      gsap.killTweensOf(pieces);
+      gsap.set(objs, { autoAlpha: 1 });
+      gsap.fromTo(pieces,
+        { autoAlpha: 0, scale: a.scale, y: a.y, transformOrigin: '50% 50%' },
+        { autoAlpha: 1, scale: 1, y: 0, duration: a.dur, ease: a.ease, stagger: a.stg });
+      return;
+    }
     gsap.fromTo(objs,
       { autoAlpha: 0, y: a.from === 'up' ? a.y : a.y, scale: a.scale, rotation: a.rot || 0 },
       { autoAlpha: 1, y: 0, scale: 1, rotation: 0, duration: a.dur, ease: a.ease,

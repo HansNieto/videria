@@ -246,6 +246,7 @@ body.hud #hud { display: block; }
    s-soft3d  3D suave (vector con volumen)
    s-flat    flat humanista (corporate memphis adaptado a overlay)
    s-neon    neón editorial premium para vertical y redes
+   s-sticker3d ilustración 3D construida por capas
 
    Nota: s-iso, s-soft3d y s-flat además cambian CÓMO se dibuja la escena.
    Ver references/visual-styles.md antes de construir con ellos.
@@ -377,3 +378,43 @@ body.hud #hud { display: block; }
 }
 .s-neon .tag { font-weight: 750; letter-spacing: .08em; fill: var(--line); }
 .s-neon .num { font-weight: 800; }
+
+/* --- 9 · sticker 3D construido ------------------------------------------
+   El acabado imita una ilustración 3D limpia, pero cada capa sigue siendo
+   vectorial e independiente para poder construirse al ritmo de la narración. */
+.s-sticker3d {
+  --accent: #13CFFF;
+  --accent-2: #1266E8;
+  --bad: #F42E3D;
+  --line: #FFFFFF;
+  --line-2: rgba(255,255,255,.82);
+  --line-3: rgba(19,207,255,.72);
+  --sw: 10;
+  --sw-thin: 7;
+  --sw-hero: 14;
+  --sw-rail: 18;
+}
+.s-sticker3d .module { filter: drop-shadow(0 14px 24px rgba(0,12,38,.34)); }
+.s-sticker3d .sticker-object { filter: url(#ovStickerShadow); }
+.s-sticker3d .sticker-depth { fill: #073783; stroke: none; }
+.s-sticker3d .sticker-rim { fill: url(#ovStickerWhite); stroke: #FFFFFF;
+  stroke-width: calc(var(--sw-thin) / var(--mscale)); }
+.s-sticker3d .sticker-blue { fill: url(#ovStickerBlue); stroke: #0A3E8E;
+  stroke-width: calc(var(--sw-thin) / var(--mscale)); }
+.s-sticker3d .sticker-cyan { fill: url(#ovStickerCyan); stroke: #0752A6;
+  stroke-width: calc(var(--sw-thin) / var(--mscale)); }
+.s-sticker3d .sticker-red { fill: url(#ovStickerRed); stroke: #94142B;
+  stroke-width: calc(var(--sw-thin) / var(--mscale)); }
+.s-sticker3d .sticker-white { fill: url(#ovStickerWhite); stroke: rgba(8,43,99,.24);
+  stroke-width: calc(var(--sw-thin) / var(--mscale)); }
+.s-sticker3d .sticker-shine { fill: url(#ovStickerShine); stroke: none; }
+.s-sticker3d .sticker-route { fill: none; stroke: var(--accent);
+  stroke-width: calc(var(--sw-rail) / var(--mscale));
+  stroke-linecap: round; stroke-linejoin: round; }
+.s-sticker3d .sticker-route.dash { stroke-dasharray: 18 22; }
+.s-sticker3d .sticker-route-depth { fill: none; stroke: #0754AC;
+  stroke-width: calc((var(--sw-rail) + 8) / var(--mscale));
+  stroke-linecap: round; stroke-linejoin: round; }
+.s-sticker3d .sticker-impact { fill: var(--bad); stroke: none; }
+.s-sticker3d .num { font-weight: 850; fill: #FFFFFF;
+  filter: drop-shadow(0 5px 0 rgba(6,42,99,.72)); }

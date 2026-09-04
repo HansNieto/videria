@@ -2,6 +2,22 @@
 
 Formato: cambios agrupados por versión, con el motivo cuando no es evidente.
 
+## 2.1.0 — los objetos se construyen, no se insertan
+
+Corregido a partir de la aclaración del usuario: el acabado puede parecer una ilustración
+3D o sticker, pero **no debe entrar como una pieza ya terminada con una transición**.
+
+- Nuevo pack predeterminado `s-sticker3d`: profundidad azul, borde blanco, cara con
+  degradado, símbolo nítido, brillo y sombra local; todas son capas SVG independientes.
+- La plantilla arma cada objeto en orden: profundidad → borde → cara → símbolo → brillo.
+  La persona construye cabeza y torso; el precio escribe `S`, `/`, `.`; el error dibuja
+  los dos trazos de la X y después sus rayos.
+- Las rutas se dibujan únicamente cuando ya existen sus dos extremos y pueden llevar un
+  pulso viajero. La salida desarma las capas en vez de aplicar un fade global.
+- Nueva guía `references/constructed-motion.md` y regla dura que prohíbe un único tween
+  `scale + autoAlpha` sobre un `.o` complejo.
+- `s-neon` se conserva como alternativa; deja de ser el predeterminado de Videria.
+
 ## 2.0.0 — vertical real y neón editorial premium
 
 Corregido a partir de la comparación visual del usuario entre el overlay generado y el

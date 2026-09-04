@@ -1,8 +1,9 @@
 # Sistema visual
 
 Estética objetivo: motion graphics editorial premium. Para Videria vertical se usa por
-defecto `s-neon`: masa translúcida local, frente nítido, aura controlada y conexiones
-animadas. Para 16:9 sigue disponible el sistema SaaS de trazo. Nada de degradados sucios,
+defecto `s-sticker3d`: profundidad, borde, cara, símbolo y brillo como capas independientes
+que se construyen siguiendo la narración. `s-neon` queda como alternativa de vidrio y
+luz. Para 16:9 sigue disponible el sistema SaaS de trazo. Nada de degradados sucios,
 skeuomorfismo ni iconografía de stock.
 
 El formato no está fijado en CSS: el `viewBox` de cada escena es la fuente de verdad y

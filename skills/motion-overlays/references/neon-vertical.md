@@ -4,6 +4,10 @@ Esta referencia define el nivel mínimo de acabado de `s-neon`. No es “poner g
 un icono: es construir una explicación visual breve, con profundidad, jerarquía y una
 relación que se revela mediante movimiento.
 
+Las reglas de **composición vertical, cantidad de nodos, zona libre y salida con alfa**
+también aplican a `s-sticker3d`. Para ese pack, sustituye las capas de aura/vidrio por
+profundidad/borde/cara y sigue `constructed-motion.md`; no copies la paleta neón.
+
 ## Composición en 1080×1920
 
 Antes de dibujar, toma un frame representativo del clip y marca tres zonas:

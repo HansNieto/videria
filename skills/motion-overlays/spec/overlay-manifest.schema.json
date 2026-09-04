@@ -22,7 +22,7 @@
     "style": {
       "type": "string",
       "description": "id del estilo aplicado (ver spec/styles.json)",
-      "enum": ["s-neon", "s-line", "s-tech", "s-bold", "s-hand", "s-iso", "s-soft3d", "s-flat"]
+      "enum": ["s-sticker3d", "s-neon", "s-line", "s-tech", "s-bold", "s-hand", "s-iso", "s-soft3d", "s-flat"]
     },
     "narration": {
       "type": "object",

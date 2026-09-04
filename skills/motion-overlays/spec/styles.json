@@ -1,18 +1,49 @@
 {
   "$comment": "Catálogo de estilos de ilustración. La clase va en #stage. Ver references/visual-styles.md.",
-  "version": "2.0.0",
-  "default": "s-neon",
+  "version": "2.1.0",
+  "default": "s-sticker3d",
   "families": {
     "trazo": "el dibujo es el contorno; se aplica a escenas ya hechas cambiando la clase",
     "masa": "el dibujo es la silueta rellena; obliga a redibujar los objetos"
   },
   "styles": [
     {
+      "id": "s-sticker3d",
+      "class": "s-sticker3d",
+      "name": "Sticker 3D construido",
+      "family": "masa",
+      "recommended": true,
+      "legibilityOnFootage": "excelente",
+      "cost": "medio-alto",
+      "bestFor": [
+        "video vertical",
+        "redes sociales",
+        "secuencias causales",
+        "procesos con tres a cinco actores",
+        "acabado ilustrado de alta producción"
+      ],
+      "avoid": [
+        "entrada del objeto completo con fade o pop",
+        "texto generado dentro de una imagen raster",
+        "más de cinco nodos simultáneos"
+      ],
+      "construction": "Cada objeto se separa en profundidad, borde blanco, cara con degradado, símbolo y brillo. La unidad .o no entra completa: se animan sus hijos .piece siguiendo la narración.",
+      "motion": "Construcción por capas; las conexiones aparecen cuando existen sus dos extremos. La salida desarma o retrae la secuencia.",
+      "stroke": {
+        "base": 10,
+        "thin": 7,
+        "hero": 14,
+        "rail": 18,
+        "mobileSafe": true,
+        "unit": "px del lienzo de salida"
+      }
+    },
+    {
       "id": "s-neon",
       "class": "s-neon",
       "name": "Neón editorial premium",
       "family": "masa",
-      "recommended": true,
+      "recommendedAlternative": true,
       "legibilityOnFootage": "excelente",
       "cost": "medio",
       "bestFor": [
@@ -274,17 +305,17 @@
     {
       "topic": "móvil o metraje ruidoso",
       "offer": [
+        "s-sticker3d",
         "s-neon",
         "s-bold",
-        "s-line",
         "s-flat"
       ]
     },
     {
       "topic": "vertical, TikTok o visual premium",
       "offer": [
+        "s-sticker3d",
         "s-neon",
-        "s-bold",
         "s-soft3d"
       ]
     },
@@ -297,5 +328,5 @@
       ]
     }
   ],
-  "strokeNote": "Los grosores estan en px del lienzo de salida: overlay.js compensa el scale() del modulo. mobileSafe = base >= 9 px. Para Videria vertical usa s-neon por defecto; s-bold queda como alternativa sobria."
+  "strokeNote": "Los grosores estan en px del lienzo de salida: overlay.js compensa el scale() del modulo. mobileSafe = base >= 9 px. Para Videria vertical usa s-sticker3d por defecto; s-neon y s-bold son alternativas."
 }

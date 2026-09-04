@@ -26,7 +26,8 @@ Muestrario visual: `assets/estilos.html` (se copia al proyecto como `00-estilos.
 
 | Estilo | Clase | Trazo (px de lienzo)<br>`--sw / --sw-thin / --sw-hero` | Aguanta móvil<br>(≥9 px) | Coste | Mejor para |
 |--------|-------|--------------|------|-------|-----------|
-| **Neón editorial premium** | `s-neon` | **10 / 7 / 14** | **sí** | medio | Videria vertical, relaciones, decisiones, acabado de alta producción |
+| **Sticker 3D construido** | `s-sticker3d` | **10 / 7 / 14** | **sí** | medio-alto | Videria vertical, secuencias y acabado ilustrado |
+| **Neón editorial premium** | `s-neon` | **10 / 7 / 14** | **sí** | medio | alternativa luminosa para relaciones y decisiones |
 | **Línea mínima** | *(ninguna)* | 6 / 4 / 8 | no | bajo | procesos y datos en 16:9 |
 | **Editorial técnico** | `s-tech` | 5 / 3.5 / 7 | no | bajo | métricas, sistemas, precisión, tono analítico |
 | **Trazo grueso** | `s-bold` | **11 / 7 / 15** | **sí** | bajo | metraje ruidoso, vertical, redes sociales |
@@ -40,16 +41,16 @@ La columna "aguanta móvil" es el umbral medido en `design-system.md` §5: por d
 Los packs de trazo fino están pensados para 16:9 a 1080p; **si el video es vertical o va
 a redes, usa `s-neon` o `s-bold`**, no uno fino con la esperanza de que se lea.
 
-**Recomendación por defecto:** `s-neon` para Videria vertical; *línea mínima* para 16:9;
-*trazo grueso* para una alternativa vertical sobria. `s-neon` combina masa, trazo grueso,
-profundidad y rutas animadas: está calibrado para sobrevivir a la compresión de un feed
-sin quedarse en un clipart plano. Lee `neon-vertical.md` antes de construirlo.
+**Recomendación por defecto:** `s-sticker3d` para Videria vertical; `s-neon` cuando se
+quiera luz y vidrio; *línea mínima* para 16:9; *trazo grueso* para una alternativa sobria.
+`s-sticker3d` parece una ilustración 3D, pero cada objeto se construye por capas. Lee
+`constructed-motion.md` y `neon-vertical.md` antes de producirlo.
 
 ### Estilos de trazo vs. estilos de masa
 
 | | Trazo | Masa |
 |---|---|---|
-| Estilos | línea mínima, editorial técnico, trazo grueso, dibujado a mano | neón editorial, 3D suave, flat humanista |
+| Estilos | línea mínima, editorial técnico, trazo grueso, dibujado a mano | sticker 3D construido, neón editorial, 3D suave, flat humanista |
 | El dibujo es… | el contorno | la silueta rellena |
 | Sobre metraje con detalle | puede perderse si el trazo es fino | siempre se ve |
 | Coste | bajo | alto (hay que redibujar los objetos) |
@@ -72,7 +73,23 @@ translúcido que desaparece en video comprimido.
 
 ---
 
-## 0 · Neón editorial premium (`s-neon`) — predeterminado en Videria
+## 00 · Sticker 3D construido (`s-sticker3d`) — predeterminado en Videria
+
+Acabado ilustrado de alto contraste: profundidad azul marino, borde blanco, cara azul o
+roja con degradado, símbolo blanco y brillo. **No es un PNG terminado.** Cada nodo se
+dibuja en SVG con hijos `.piece` y se fabrica en orden semántico.
+
+- Persona: profundidad → aro → cara → cabeza → torso → brillo.
+- Pregunta: globo → cara → `?`.
+- Precio: placa → borde → cara → `S`, `/`, `.` por separado → brillo.
+- Error: aro → cara roja → primer trazo → segundo trazo → rayos.
+- Ruta: profundidad → carril → punta → pulso.
+- Entrada prohibida: un solo `fromTo('.node', {scale,autoAlpha}, …)` para todo el objeto.
+- Lee `constructed-motion.md`; la plantilla es el ejemplo ejecutable de referencia.
+
+---
+
+## 0 · Neón editorial premium (`s-neon`) — alternativa luminosa
 
 **`--sw: 10 · --sw-thin: 7 · --sw-hero: 14 · --sw-rail: 16`**. Combina paneles azul
 noche translúcidos, frente blanco/cian nítido y una aura de color controlada. Se construye
