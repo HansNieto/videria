@@ -1,8 +1,13 @@
 # Sistema visual
 
-Estética objetivo: motion graphics de producto SaaS / editorial técnico. Vectorial,
-de trazo, con un solo acento cromático por escena y mucho aire. Nada de degradados
-sucios, nada de skeuomorfismo, nada de iconografía de stock.
+Estética objetivo: motion graphics editorial premium. Para Videria vertical se usa por
+defecto `s-neon`: masa translúcida local, frente nítido, aura controlada y conexiones
+animadas. Para 16:9 sigue disponible el sistema SaaS de trazo. Nada de degradados sucios,
+skeuomorfismo ni iconografía de stock.
+
+El formato no está fijado en CSS: el `viewBox` de cada escena es la fuente de verdad y
+`overlay.js` expone `Overlay.canvas`. Presets soportados: **1080×1920** (Videria,
+predeterminado) y **1920×1080** (horizontal).
 
 ## 1. Tokens (ya definidos en `lib/overlay.css`)
 
@@ -37,7 +42,7 @@ sucios, nada de skeuomorfismo, nada de iconografía de stock.
   --r-s: 8px; --r-m: 14px; --r-l: 22px;
   --u: 8px;       /* unidad de rejilla */
 
-  /* grosor de trazo, en px del LIENZO 1920 (ver §2) */
+  /* grosor de trazo, en px del lienzo de salida (ver §2) */
   --sw:       6;  /* estándar */
   --sw-thin:  4;  /* detalle  */
   --sw-hero:  8;  /* foco     */
@@ -56,7 +61,7 @@ Reglas de color:
 
 ## 2. Trazo y forma
 
-### El grosor se declara en píxeles del lienzo, no en unidades locales
+### El grosor se declara en píxeles del lienzo de salida, no en unidades locales
 
 Esta es la regla que más se equivoca, porque falla en silencio.
 
@@ -67,7 +72,7 @@ que le pasa a todas las escenas, cada una con un factor distinto. Dos overlays d
 proyecto acaban con grosores diferentes sin que nadie lo haya decidido.
 
 Solución del sistema: **los tokens `--sw`, `--sw-thin`, `--sw-hero` y `--sw-rail` están en
-px del lienzo 1920**, y `overlay.js` mide con `getCTM()` la escala real del grupo `.module`
+px del lienzo de salida**, y `overlay.js` mide con `getCTM()` la escala real del grupo `.module`
 y la publica en `--mscale`. Las reglas `.st` dividen por ella:
 
 ```css
@@ -122,7 +127,36 @@ font-family: system-ui, "Segoe UI Variable Display", "Segoe UI", Inter, Roboto,
 - El texto es UI, no discurso: `S/500`, `-S/100`, `7 DÍAS`, `LÍMITE`, `OK`, `?`, `03/12`.
 - Prohibido escribir frases del guion.
 
-## 4. Layout en 1920×1080
+## 4. Layout según el proyecto
+
+### Videria vertical 1080×1920 — predeterminado
+
+```
+┌────────────────────────────┐
+│ margen 60 px               │
+│ ┌────────────────────────┐ │
+│ │ MOTION 820–960 ×       │ │  ← normalmente y=120…820
+│ │ 520–760                │ │
+│ └────────────────────────┘ │
+│    cara / manos libres      │
+│                            │
+│    subtítulos libres        │
+└────────────────────────────┘
+```
+
+El módulo no se centra por costumbre: se coloca sobre la zona realmente libre del clip.
+Hay que inspeccionar un frame del video antes de fijar coordenadas. La plantilla usa
+`translate(540,500)` porque está pensada para un presentador centrado en la mitad inferior.
+
+| Medida vertical | Objetivo |
+|---|---|
+| Margen seguro | ≥60 px |
+| Ancho del módulo | 820–960 px (máx. 980) |
+| Alto del módulo | 520–760 px |
+| Nodo protagonista | 150–230 px |
+| Elementos en clímax | 3–5 nodos + conexiones cuando exista causalidad |
+
+### Horizontal 1920×1080
 
 ```
 ┌────────────────────────────────────────────────────────┐  1920×1080
@@ -134,7 +168,7 @@ font-family: system-ui, "Segoe UI Variable Display", "Segoe UI", Inter, Roboto,
 └────────────────────────────────────────────────────────┘
 ```
 
-### Densidad (lo que más se corrige en revisión)
+### Densidad (aplica a ambos formatos)
 
 Un overlay se ve "suelto" o "profesional" según la **relación entre el tamaño de los
 objetos y el hueco que los separa**, no según el tamaño del lienzo. Reglas:

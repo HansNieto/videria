@@ -2,6 +2,25 @@
 
 Formato: cambios agrupados por versión, con el motivo cuando no es evidente.
 
+## 2.0.0 — vertical real y neón editorial premium
+
+Corregido a partir de la comparación visual del usuario entre el overlay generado y el
+acabado esperado:
+
+- Nuevo pack `s-neon`: paneles azul noche translúcidos, frente blanco/cian nítido,
+  resplandor controlado, rutas curvas, pulsos y rojo exclusivamente semántico.
+- La plantilla dejó de ser una tarjeta genérica 16:9. Ahora es una escena 1080×1920 de
+  referencia con cuatro nodos conectados, animación causal y espacio reservado para el
+  presentador y los subtítulos.
+- Nueva regla de composición: una idea compleja necesita 3–5 nodos y al menos dos
+  conexiones cuando exista causalidad. Se rechaza “icono grande + línea larga + X”.
+- `overlay.js`, `capture.mjs` y la galería leen el `viewBox`; horizontal y vertical se
+  previsualizan y capturan en su tamaño real, sin estirar uno dentro del otro.
+- `Overlay.canvas` expone ancho, alto y orientación. La auditoría lo reporta.
+- Nueva guía `references/neon-vertical.md`: zona libre sobre un frame real, capas de un
+  nodo premium, paleta, movimiento, canal alfa y criterios de rechazo.
+- Esquema, tokens y catálogo actualizados a lienzos adaptables y ocho estilos.
+
 ## 1.3.0 — el grosor del trazo deja de depender de la escala
 
 Corregido, a partir de un aviso del usuario ("las líneas son muy delgadas y se van a

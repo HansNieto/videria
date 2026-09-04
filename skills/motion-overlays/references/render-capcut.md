@@ -12,12 +12,13 @@ Captura frame a frame con Chrome headless y luego arma el video con ffmpeg.
 ```bash
 npm i -D puppeteer                 # una sola vez, en la carpeta del proyecto
 node capture.mjs 01_dependencia.html --fps 60
-# → frames/01_dependencia/0000.png … (1920×1080, fondo transparente)
+# → frames/01_dependencia/0000.png … (tamaño del viewBox, fondo transparente)
 ```
 
 Funciona porque el script:
 1. abre la página con `?paused=1` (el runtime no reproduce solo);
-2. fija el viewport en 1920×1080 y `omitBackground: true` en cada screenshot;
+2. lee `Overlay.canvas`, fija el viewport al `viewBox` (1080×1920 en Videria) y usa
+   `omitBackground: true` en cada screenshot;
 3. hace `Overlay.seek(frame / fps)` y captura, frame a frame — así el resultado es
    determinista y no depende de la velocidad real de reproducción.
 
@@ -52,7 +53,7 @@ mkdir -p frames/01
 for i in $(seq 0 $((N-1))); do
   T=$(awk "BEGIN{printf \"%.4f\", $i/$FPS}")
   "$CHROME" --headless=new --disable-gpu --hide-scrollbars \
-    --default-background-color=00000000 --window-size=1920,1080 \
+    --default-background-color=00000000 --window-size=1080,1920 \
     --virtual-time-budget=4000 \
     --screenshot="$PWD/frames/01/$(printf %04d $i).png" \
     "$BASE/01_dependencia.html?t=$T" >/dev/null 2>&1
@@ -92,7 +93,7 @@ ajusta *Intensidad* y *Sombra* hasta que los bordes queden limpios.
 
 ## Ruta C — Grabación de pantalla (rápido y sucio)
 
-Abrir el HTML en Chrome a pantalla completa (F11, ventana en 1920×1080) y grabar con
+Abrir el HTML en Chrome a pantalla completa (F11, ventana con la relación del proyecto) y grabar con
 OBS/CapCut. Sin alfa: solo sirve con la ruta de croma o si el overlay va sobre fondo sólido.
 El timing depende de la reproducción real, así que revisa que no se caigan frames.
 
@@ -105,6 +106,7 @@ El timing depende de la reproducción real, así que revisa que no se caigan fra
 | `?loop=0` | reproduce una sola vez |
 | `?bg=green\|magenta\|dark\|light\|photo\|checker` | fondo de revisión o de croma |
 | `Overlay.duration` | duración exacta del timeline, en segundos |
+| `Overlay.canvas` | ancho, alto y orientación leídos del `viewBox` |
 | `Overlay.audit()` | lista los elementos visibles en t=0 y t=fin (debe dar 0) |
 
 ## Montaje en CapCut
@@ -112,8 +114,8 @@ El timing depende de la reproducción real, así que revisa que no se caigan fra
 1. Pista de video principal: la toma del presentador.
 2. Pista superior: el overlay (`.mov` con alfa o el `.mp4` verde + croma).
 3. Alinea el inicio del clip con la **palabra de entrada** indicada en el README.
-4. Escala/reposiciona: como el contenido vive en un módulo central de ~1200×700,
-   puedes reducir al 60–70% y llevarlo a un tercio sin que se corte nada.
+4. En Videria vertical, conserva el overlay a escala 100 %: ya está compuesto para
+   1080×1920 y para la zona libre del presentador. Reposiciona solo si cambió el encuadre.
 5. Si el overlay compite con el rostro, usa la variante `.pos-left` / `.pos-right`
    del propio HTML en lugar de recortar en CapCut (se conserva la resolución).
 6. No apliques transiciones de CapCut al overlay: la entrada y la salida ya están animadas.

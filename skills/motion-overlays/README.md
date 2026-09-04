@@ -1,6 +1,6 @@
 # Skill · motion-overlays
 
-**v1.2.1** · Convierte un guion hablado en un set de **overlays HTML animados con GSAP**,
+**v2.0.0** · Convierte un guion hablado en un set de **overlays HTML animados con GSAP**,
 con fondo transparente, listos para renderizar con canal alfa y montar encima del video.
 
 Pensada para funcionar con un agente (Claude Code, Cursor o cualquiera que soporte el
@@ -12,12 +12,14 @@ en JSON, no solo en prosa.
 
 ## Qué hace
 
-1. **Pregunta el estilo visual** antes de dibujar nada — 7 packs, de línea mínima a 3D suave.
+1. **Toma la referencia visual como contrato** — 8 packs; Videria vertical usa por
+   defecto `s-neon`, con profundidad, glow controlado y rutas causales animadas.
 2. **Analiza el guion** y elige solo los momentos donde un motion graphic aporta
    (≈ 1 cada 12–20 s) en vez de animar cada frase.
 3. **Escribe un HTML independiente por escena**, sincronizado palabra a palabra con la
    locución (2.6 palabras/segundo) y respetando las pausas semánticas.
-4. **Verifica cada overlay**: transparencia real, entrada y salida limpias, duración 2–6 s.
+4. **Verifica cada overlay**: transparencia real, formato correcto, entrada y salida
+   limpias, duración 2–6 s y legibilidad sobre un frame real.
 5. **Entrega** galería de revisión, README, hoja de contactos y `overlays.json` —el
    manifiesto de montaje— más el script de captura a video.
 
@@ -31,11 +33,12 @@ motion-overlays/
 ├── sync.sh                     instala esta carpeta como skill activa
 ├── spec/                       ← especificaciones legibles por máquina
 │   ├── design-tokens.json          color, tipografía, tiempos, densidad, lienzo
-│   ├── styles.json                 los 7 estilos, cuándo usarlos, cómo se construyen
+│   ├── styles.json                 los 8 estilos, cuándo usarlos, cómo se construyen
 │   └── overlay-manifest.schema.json  contrato del overlays.json de cada proyecto
 ├── references/
 │   ├── pitfalls.md             8 fallos silenciosos y su arreglo — leer antes de depurar
 │   ├── visual-styles.md        estilos de trazo vs. de masa
+│   ├── neon-vertical.md        estándar premium vertical y criterios de rechazo
 │   ├── design-system.md        paleta, trazo, tipografía, layout y densidad
 │   ├── motion-language.md      eases, tiempos, coreografía, recetas por tipo de escena
 │   ├── svg-assets.md           biblioteca vectorial (versión de trazo y versión de masa)
@@ -43,9 +46,9 @@ motion-overlays/
 │   └── render-capcut.md        render con alfa y montaje en CapCut
 ├── assets/
 │   ├── vendor/                 GSAP 3.15 completo, local (sin CDN)
-│   ├── overlay.css             tokens, fondo transparente, 7 packs de estilo
-│   ├── overlay.js              runtime: escalado, loop, captura, defs, Overlay.audit()
-│   ├── overlay-template.html   plantilla de escena
+│   ├── overlay.css             tokens, transparencia, 8 packs y lienzo adaptable
+│   ├── overlay.js              runtime: formato, escalado, loop, captura y auditoría
+│   ├── overlay-template.html   plantilla vertical s-neon de calidad de referencia
 │   ├── preview-template.html   galería 00-preview.html
 │   ├── estilos.html            muestrario 00-estilos.html
 │   └── capture.mjs             captura frame a frame con alfa
@@ -71,6 +74,7 @@ Cada HTML generado expone:
 
 ```js
 Overlay.duration     // duración exacta en segundos
+Overlay.canvas       // { width, height, orientation }, leído del viewBox
 Overlay.seek(t)      // salto determinista a un frame (para capturar)
 Overlay.audit()      // { start: [], end: [], ok: true }
 ```
@@ -98,6 +102,9 @@ no necesita npm).
 ## Reglas que no se negocian
 
 - Fondo transparente; nada opaco que tape el video.
+- Videria usa 1080×1920 real; el runtime y la captura leen el `viewBox` y no deforman.
+- Una idea relacional se explica con 3–5 nodos y conexiones; no con clipart aislado.
+- El glow siempre conserva un frente nítido y nunca cubre el fotograma completo.
 - No se escriben las frases del guion (el video ya lleva subtítulos): solo etiquetas de
   interfaz muy cortas.
 - En `t=0` y en `t=fin` no hay nada visible.

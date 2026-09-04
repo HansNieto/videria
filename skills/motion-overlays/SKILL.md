@@ -11,13 +11,15 @@ transparente, listos para renderizar y montar encima del video.
 
 ## 0. Antes de diseñar (obligatorio)
 
-1. **Pregunta el estilo visual al usuario** (§3, paso 1). Nunca empieces a dibujar sin
-   esa respuesta: cambia cómo se construyen los SVG.
+1. **Confirma el estilo visual** (§3, paso 1). Si hay una captura de referencia, úsala
+   como contrato de acabado y no vuelvas a preguntar. Para Videria vertical, el estilo
+   por defecto es `s-neon`.
 2. Carga las skills **gsap-core**, **gsap-timeline** y **gsap-plugins** (y **gsap-performance**
    si la escena tiene muchos elementos). Este skill asume su API correcta.
 3. Lee `references/motion-language.md` y `references/design-system.md`.
 4. Lee `references/visual-styles.md` para el estilo elegido.
-5. Lee `references/svg-assets.md` cuando la escena necesite un objeto concreto
+5. Si el resultado es vertical o `s-neon`, lee `references/neon-vertical.md`.
+6. Lee `references/svg-assets.md` cuando la escena necesite un objeto concreto
    (persona, moneda, caja, celular, carpeta, reloj…). No inventes iconos genéricos
    si ya hay un recurso base que puedes componer y variar.
 
@@ -56,16 +58,18 @@ Cada overlay se escribe partiendo de `assets/overlay-template.html`.
 |---|-------|
 | 1 | `html, body { background: transparent }`. **Ningún** rectángulo, panel opaco o color que tape el video. Los scrims translúcidos (`rgba(…, .5)`) sí se permiten. |
 | 2 | **No** escribir las frases del guion. Ya hay subtítulos. Texto solo como UI corta: `S/500`, `7 DÍAS`, `LÍMITE`, `OK`, `?`, `03`. Máx. ~3 palabras por etiqueta. |
-| 3 | Lienzo **1920×1080**. El módulo **llena el encuadre**: 1150–1350 px de ancho y 650–850 de alto, objetos protagonistas de 200–260 px. El hueco entre objetos relacionados no pasa de **0.6× su tamaño**, y solo se justifica si algo lo recorre (ver `design-system.md` §4). |
+| 3 | El lienzo coincide con el proyecto. En Videria: **1080×1920 vertical**. El módulo vive normalmente en el tercio superior, mide 820–960 px de ancho y 520–760 de alto, y deja libre la cara, manos y subtítulos. Para 16:9 se permite 1920×1080. El runtime lee el `viewBox`; no estira un formato dentro del otro. |
 | 4 | Duración **2–6 s**. Estructura obligatoria: **entrada → desarrollo → salida**. |
 | 5 | En `t=0` y en `t=duración` **nada visible**. El overlay entra y sale limpio. |
 | 6 | Solo `transform` + `opacity` para el movimiento (más `drawSVG`, `morphSVG`, color y `strokeDashoffset` cuando aportan). Nunca `top/left/width/height` para mover. |
-| 6b | **Nunca escribas `stroke-width` literal.** El grosor lo ponen los tokens `--sw`, `--sw-thin`, `--sw-hero`, en px del lienzo 1920, y el runtime compensa el `scale()` del módulo. Si necesitas uno propio: `calc(9 / var(--mscale))`. Ver `design-system.md` §2. |
+| 6b | **Nunca escribas `stroke-width` literal.** El grosor lo ponen los tokens `--sw`, `--sw-thin`, `--sw-hero`, en px del lienzo de salida, y el runtime compensa el `scale()` del módulo. Si necesitas uno propio: `calc(9 / var(--mscale))`. Ver `design-system.md` §2. |
 | 7 | Nada de `backdrop-filter`: en el render con alpha no hay nada detrás que desenfocar. Usa rellenos `rgba()`. |
 | 8 | Una idea visual por archivo. Mejor 4 elementos coreografiados que 20 moviéndose a la vez. |
 | 9 | Sin emojis, sin clipart, sin estilo PowerPoint, sin infografía escolar. Estética SaaS: editorial, técnica, premium. |
 | 10 | Cero dependencias externas en runtime: GSAP va en `lib/`, el SVG va inline. Sin fuentes remotas. |
 | 11 | **Colocación fuera, animación dentro** (ver §3, «Estructura del SVG»). Nunca animes `x`/`y` sobre un grupo que lleva `transform="translate(…)"`. |
+| 12 | **Una relación, no un clipart.** En el clímax debe haber 3–5 nodos con jerarquía y, cuando el concepto sea causal, al menos 2 conexiones curvas. Prohibido resolver una idea compleja con un teléfono genérico, una línea recta y una X. |
+| 13 | **Neón con frente nítido.** El glow es un aura secundaria; el icono, número o ruta conserva un borde definido. Máximo un filtro de glow por nodo importante y nunca un velo oscuro de fotograma completo. |
 
 ## 3. Flujo de trabajo
 
@@ -79,20 +83,21 @@ Guía para elegir qué ofrecer:
 
 | Si el guion va de… | Ofrece |
 |--------------------|--------|
-| procesos, decisiones, cifras (caso general) | **Línea mínima** *(recomendado)*, Editorial técnico, Trazo grueso |
+| procesos, decisiones, cifras en Videria vertical | **Neón editorial premium** *(recomendado)*, Trazo grueso, 3D suave |
+| procesos, decisiones, cifras en 16:9 | **Línea mínima** *(recomendado)*, Editorial técnico, Trazo grueso |
 | datos, métricas, precisión, análisis | Editorial técnico *(recomendado)*, Línea mínima, 3D suave |
 | consejo cercano, docente, personal | Dibujado a mano, Línea mínima *(recomendado)*, Flat humanista |
 | infraestructura, áreas, "el sistema" | Isométrico, Línea mínima *(recomendado)*, Editorial técnico |
 | producto, dinero, algo tangible | 3D suave, Trazo grueso, Línea mínima *(recomendado)* |
 | equipos, personas, cultura | Flat humanista, Línea mínima *(recomendado)*, Dibujado a mano |
-| se verá en móvil / metraje ruidoso | Trazo grueso *(recomendado)*, Línea mínima, Flat humanista |
+| se verá en móvil / metraje ruidoso | Neón editorial premium *(recomendado)*, Trazo grueso, Flat humanista |
 
 Si el usuario ya indicó estilo en su mensaje, no preguntes: confírmalo en una línea y sigue.
 Si el proyecto ya tiene overlays hechos, tampoco: mantén el estilo existente salvo que
 pida cambiarlo.
 
-La respuesta se aplica como clase en `#stage` (`s-tech`, `s-bold`, `s-hand`, `s-iso`,
-`s-soft3d`, `s-flat`; sin clase = línea mínima) y **se anota en el README**.
+La respuesta se aplica como clase en `#stage` (`s-neon`, `s-tech`, `s-bold`, `s-hand`,
+`s-iso`, `s-soft3d`, `s-flat`; sin clase = línea mínima) y **se anota en el README**.
 
 ### Paso 2 — Leer el guion completo antes de escribir nada
 
@@ -125,6 +130,10 @@ Antes de programar, escribe las 6 líneas de `references/script-to-beats.md`:
 concepto → metáfora → qué entra primero → qué pasa después → momento principal → cómo sale.
 Si no puedes escribir la metáfora en una frase, la escena no está lista.
 
+Añade una séptima línea para composición: `nodos → conexiones → zona libre del plano`.
+En video con presentador, inspecciona un frame real y anota explícitamente dónde están
+cara, manos y subtítulos. La composición no se aprueba con un fondo vacío únicamente.
+
 ### Paso 5 — Sincronizar con la narración
 
 Español explicativo ≈ **2.6 palabras/segundo**. Cuenta las palabras entre la palabra ancla
@@ -147,7 +156,9 @@ const BEATS = {
 
 ### Paso 6 — Programar
 
-Un archivo por overlay, desde `assets/overlay-template.html`. Contrato:
+Un archivo por overlay, desde `assets/overlay-template.html`. La plantilla ya es vertical,
+animada, transparente y `s-neon`; sustituye su metáfora sin degradar su riqueza visual.
+Contrato:
 
 ```js
 Overlay.scene({
@@ -190,10 +201,10 @@ también la forma de construir los objetos.
 
 - **Trazo, no relleno.** La base del estilo son líneas de trazo, esquinas redondeadas,
   `stroke-linecap: round`, y rellenos translúcidos puntuales.
-- **El grosor se declara en px del lienzo 1920**, no en unidades locales: los tokens
+- **El grosor se declara en px del lienzo de salida**, no en unidades locales: los tokens
   `--sw` / `--sw-thin` / `--sw-hero` y `overlay.js` compensando el `scale()` del módulo.
-  Mínimos: **6 px** para 16:9 a 1080p, **9 px** si el video se ve en móvil o vertical
-  (por eso `s-bold` está en 11). Nunca `stroke-width` literal en el SVG.
+  Mínimos: **6 px** para 16:9 a 1080p, **9 px** si el video se ve en móvil o vertical.
+  `s-neon` usa 10/7/14 y `s-bold` 11/7/15. Nunca `stroke-width` literal en el SVG.
 - **El color va por clase, nunca por atributo.** En un elemento con `.st`, un
   `stroke="#..."` o `fill="..."` es atributo de presentación y el CSS de `.st` lo anula:
   el elemento saldría blanco sin relleno. Usa `.c-ok`, `.c-warn`, `.c-accent`, `.c-bad`,
@@ -211,6 +222,10 @@ también la forma de construir los objetos.
   peso 600. Cifras con `font-variant-numeric: tabular-nums` para que no bailen al contar.
 - **Personas:** vectoriales simplificadas, corporativas (cabeza + torso geométrico + trazo),
   diferenciadas por postura, accesorio y color de acento —nunca caricatura ni emoji—.
+- **Neón editorial premium (`s-neon`):** paneles oscuros locales al 55–65 %, frente blanco
+  o cian definido, una aura controlada y rutas curvas. Construye una mini-historia visual:
+  solicitud → actor → decisión → consecuencia. No copies literalmente esa secuencia si
+  el guion dice otra cosa; conserva la densidad, la profundidad y la causalidad.
 
 ## 5. Lenguaje de movimiento (resumen)
 
@@ -232,13 +247,18 @@ Detalle y recetas en `references/motion-language.md`.
 Abre cada archivo en Chrome y verifica:
 
 - [ ] `Overlay.audit()` en consola: **0 elementos visibles** en `t=0` y en `t=fin`.
-- [ ] Nada recortado: todo dentro de 1920×1080 con 64px de margen en cualquier frame.
+- [ ] Nada recortado: todo dentro del `viewBox`, con ≥60px de margen en vertical o ≥96px en 16:9.
+- [ ] `Overlay.canvas` coincide con el proyecto (Videria: 1080×1920, `portrait`).
+- [ ] Sobre un frame real: cara, manos y subtítulos quedan libres; el gráfico ocupa una
+      región útil, no una esquina diminuta.
+- [ ] En el clímax se entiende la relación sin leer la narración: 3–5 nodos y conexiones
+      con dirección, no iconos genéricos repartidos.
 - [ ] SVG alineados: `viewBox` correcto, trazos en la misma escala, sin medio píxel borroso.
 - [ ] El loop no salta (start y end limpios → el bucle es continuo).
 - [ ] `?bg=light`, `?bg=dark` y `?bg=photo`: legible en los tres.
 - [ ] **Prueba de tamaño real:** el frame de clímax renderizado a **430 px de ancho**
       (la escala de un móvil) sobre un fondo con textura y zonas claras, mirado sin
-      ampliar. Si a ese tamaño no distingues qué es cada objeto, sube el pack a `s-bold`,
+      ampliar. Si a ese tamaño no distingues qué es cada objeto, usa `s-neon` o `s-bold`,
       sube la opacidad de lo secundario o quita elementos.
 - [ ] `Overlay.audit()` reporta el grosor en px de lienzo: **≥6** siempre, **≥9** si el
       video va a móvil o vertical.
@@ -309,6 +329,7 @@ Y en tiempo de ejecución, cada HTML expone:
 
 ```js
 Overlay.duration        // duración exacta en segundos
+Overlay.canvas          // { width, height, orientation }, leído del viewBox
 Overlay.moduleScale     // escala real del grupo .module, medida con getCTM()
 Overlay.seek(t)         // salta a un frame de forma determinista (para capturar)
 Overlay.audit()         // { start:[], end:[], ok, moduleScale, stroke:{base,thin,hero} }
@@ -322,7 +343,9 @@ PNG con alfa reproducible frame a frame.
 ## Referencias
 
 - `references/pitfalls.md` — **léelo antes de depurar**: ocho fallos que se ven como "está mal dibujado" y no dan error.
-- `references/visual-styles.md` — los 7 estilos, cuándo usar cada uno y cómo se construyen.
+- `references/visual-styles.md` — los 8 estilos, cuándo usar cada uno y cómo se construyen.
+- `references/neon-vertical.md` — composición, capas, movimiento y criterios de rechazo
+  para el acabado premium de Videria.
 - `references/design-system.md` — tokens, paleta, trazo, tipografía, layout, temas.
 - `references/motion-language.md` — eases, tiempos, coreografía, recetas por tipo de escena.
 - `references/svg-assets.md` — biblioteca de recursos vectoriales listos para componer.

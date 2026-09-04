@@ -1,6 +1,6 @@
 /* ==========================================================================
    motion-overlays — runtime
-   Resuelve: escalado del lienzo, plugins, eases de marca, reproducción,
+   Resuelve: lienzo horizontal o vertical, plugins, eases de marca, reproducción,
    loop limpio, control por teclado, captura frame a frame y auditoría.
 
    Parámetros de URL:
@@ -51,7 +51,7 @@
   }
 
   /* --- escala real del módulo -------------------------------------------
-     Los grosores de trazo se declaran en px del lienzo 1920 (--sw, --sw-thin,
+     Los grosores de trazo se declaran en px del lienzo de salida (--sw, --sw-thin,
      --sw-hero) y las reglas .st dividen por --mscale. Aquí se mide la escala
      acumulada del grupo .module con getCTM() y se publica, de modo que el
      grosor declarado sea el grosor renderizado sin que el autor tenga que
@@ -63,6 +63,24 @@
      drawSVG sale fragmentada. Ver references/pitfalls.md §10.
      ---------------------------------------------------------------------- */
   var moduleScale = 1;
+  var canvas = { width: 1920, height: 1080, orientation: 'landscape' };
+
+  function measureCanvas() {
+    var svg = stage && (stage.querySelector('svg.canvas') || stage.querySelector('svg'));
+    var vb = svg && svg.viewBox && svg.viewBox.baseVal;
+    var w = vb && vb.width ? vb.width : 1920;
+    var h = vb && vb.height ? vb.height : 1080;
+    canvas = {
+      width: Math.round(w),
+      height: Math.round(h),
+      orientation: h > w ? 'portrait' : (w > h ? 'landscape' : 'square')
+    };
+    stage.style.setProperty('--canvas-w', canvas.width + 'px');
+    stage.style.setProperty('--canvas-h', canvas.height + 'px');
+    stage.classList.toggle('is-vertical', canvas.orientation === 'portrait');
+    API.canvas = canvas;
+    return canvas;
+  }
   function measureModule() {
     if (!stage) return 1;
     var mod = stage.querySelector('.module');
@@ -88,7 +106,7 @@
   var stage;
   function fit() {
     if (!stage) return;
-    var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    var s = Math.min(window.innerWidth / canvas.width, window.innerHeight / canvas.height);
     stage.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
   }
 
@@ -126,7 +144,31 @@
       '<stop offset="0" stop-color="#7BE7BC"/><stop offset="1" stop-color="#1FA871"/></linearGradient>' +
     '<radialGradient id="ovSpec" cx="30%" cy="20%" r="62%">' +
       '<stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>' +
-      '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>';
+      '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>' +
+    '<linearGradient id="ovNeonGlass" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#132B4B" stop-opacity=".78"/>' +
+      '<stop offset="1" stop-color="#03101F" stop-opacity=".62"/></linearGradient>' +
+    '<radialGradient id="ovNeonHalo" cx="50%" cy="50%" r="50%">' +
+      '<stop offset="0" stop-color="#38E5FF" stop-opacity=".24"/>' +
+      '<stop offset="1" stop-color="#38E5FF" stop-opacity="0"/></radialGradient>' +
+    '<radialGradient id="ovNeonDanger" cx="50%" cy="50%" r="50%">' +
+      '<stop offset="0" stop-color="#FF394C" stop-opacity=".25"/>' +
+      '<stop offset="1" stop-color="#FF394C" stop-opacity="0"/></radialGradient>' +
+    '<filter id="ovGlowCyan" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">' +
+      '<feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur"/>' +
+      '<feFlood flood-color="#38E5FF" flood-opacity=".78" result="color"/>' +
+      '<feComposite in="color" in2="blur" operator="in" result="glow"/>' +
+      '<feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+    '<filter id="ovGlowBlue" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">' +
+      '<feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>' +
+      '<feFlood flood-color="#347BFF" flood-opacity=".82" result="color"/>' +
+      '<feComposite in="color" in2="blur" operator="in" result="glow"/>' +
+      '<feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+    '<filter id="ovGlowRed" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">' +
+      '<feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>' +
+      '<feFlood flood-color="#FF4353" flood-opacity=".86" result="color"/>' +
+      '<feComposite in="color" in2="blur" operator="in" result="glow"/>' +
+      '<feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
 
   function injectDefs(root) {
     var svg = root.querySelector('svg.canvas') || root.querySelector('svg');
@@ -205,6 +247,7 @@
 
     var ok = !atStart.length && !atEnd.length && swOk;
     console.log('%c[overlay] audit ' + API.id, 'font-weight:700');
+    console.log('  lienzo: ' + canvas.width + '×' + canvas.height + ' · ' + canvas.orientation);
     console.log('  duración: ' + API.duration.toFixed(2) + ' s  ' +
       (API.duration >= 2 && API.duration <= 6 ? '✔ (2–6 s)' : '✖ fuera del rango 2–6 s'));
     console.log('  escala del módulo: ×' + moduleScale.toFixed(3) +
@@ -212,7 +255,7 @@
     console.log('  trazo en el lienzo: ' + sw.base + ' / ' + sw.thin + ' / ' + sw.hero +
       ' px (base/fino/héroe)  ' +
       (swMobile ? '✔ vale también en móvil y vertical'
-                : swOk ? '✔ 16:9 a 1080p · ✖ para móvil usa s-bold (≥9)'
+                : swOk ? '✔ 16:9 a 1080p · ✖ para móvil usa s-neon o s-bold (≥9)'
                        : '✖ por debajo de 6 px: se pierde sobre video'));
     console.log('  visibles en t=0:   ' + atStart.length + (atStart.length ? ' ✖' : ' ✔'));
     console.log('  visibles en t=fin: ' + atEnd.length + (atEnd.length ? ' ✖' : ' ✔'));
@@ -221,7 +264,7 @@
     if (!atStart.length && !atEnd.length)
       console.log('  overlay limpio: entra y sale sin residuos ✔');
     return { start: atStart, end: atEnd, ok: ok,
-             moduleScale: moduleScale, stroke: sw };
+             canvas: canvas, moduleScale: moduleScale, stroke: sw };
   }
 
   /* --- API -------------------------------------------------------------- */
@@ -229,6 +272,7 @@
     id: null,
     tl: null,
     duration: 0,
+    canvas: canvas,
     moduleScale: 1,
     scene: scene,
     audit: audit,
@@ -257,6 +301,7 @@
     applyBg();
     injectDefs(stage);
     if (cfg.style) stage.classList.add(cfg.style);
+    measureCanvas();
     measureModule();
     fit();
     window.addEventListener('resize', fit);
@@ -281,9 +326,11 @@
 
     keys();
     if (window.parent !== window) {
-      window.parent.postMessage({ __overlay: 'ready', id: API.id, duration: API.duration }, '*');
+      window.parent.postMessage({ __overlay: 'ready', id: API.id, duration: API.duration,
+                                  canvas: API.canvas }, '*');
     }
-    console.log('[overlay] ' + API.id + ' · ' + API.duration.toFixed(2) +
+    console.log('[overlay] ' + API.id + ' · ' + canvas.width + '×' + canvas.height +
+                ' · ' + API.duration.toFixed(2) +
                 ' s · Overlay.audit() para revisar');
     return tl;
   }

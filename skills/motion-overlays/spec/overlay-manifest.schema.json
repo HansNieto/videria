@@ -12,8 +12,9 @@
       "type": "object",
       "required": ["width", "height"],
       "properties": {
-        "width": { "type": "integer", "const": 1920 },
-        "height": { "type": "integer", "const": 1080 },
+        "width": { "type": "integer", "minimum": 720 },
+        "height": { "type": "integer", "minimum": 720 },
+        "orientation": { "type": "string", "enum": ["portrait", "landscape", "square"] },
         "fps": { "type": "integer", "default": 30 },
         "alpha": { "type": "boolean", "const": true }
       }
@@ -21,7 +22,7 @@
     "style": {
       "type": "string",
       "description": "id del estilo aplicado (ver spec/styles.json)",
-      "enum": ["s-line", "s-tech", "s-bold", "s-hand", "s-iso", "s-soft3d", "s-flat"]
+      "enum": ["s-neon", "s-line", "s-tech", "s-bold", "s-hand", "s-iso", "s-soft3d", "s-flat"]
     },
     "narration": {
       "type": "object",
@@ -110,7 +111,7 @@
       "type": "object",
       "properties": {
         "captureUrl": { "type": "string", "default": "<file>?paused=1&t=<segundo>", "description": "El runtime expone Overlay.seek(t) y Overlay.duration para capturar frame a frame de forma determinista." },
-        "chromeFlags": { "type": "string", "default": "--headless=new --default-background-color=00000000 --window-size=1920,1080" },
+        "chromeFlags": { "type": "string", "default": "--headless=new --default-background-color=00000000; el viewport se toma del viewBox" },
         "recommendedCodec": { "type": "string", "default": "prores_ks profile 4444 pix_fmt yuva444p10le" },
         "fallback": { "type": "string", "default": "?bg=green + chroma key" }
       }

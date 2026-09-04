@@ -2,58 +2,93 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>NN — concepto</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NN — flujo visual</title>
 <link rel="stylesheet" href="./lib/overlay.css">
 </head>
 <body>
 
-<!-- ==========================================================================
-     Lienzo 1920x1080. Fondo transparente (overlay para CapCut).
+<!-- Plantilla Videria: 1080×1920 vertical, fondo transparente.
+     Cambia los actores y la metáfora, no reduzcas esta escena a un icono aislado.
 
-     ESTRUCTURA OBLIGATORIA
-     .frame  → encuadre: pos-center / pos-left / pos-right / pos-top / pos-bottom
-     .module → transform="translate(960,540)". NO se anima.
-     .at     → grupo de COLOCACIÓN: lleva el translate. NO se anima.
-     .o      → grupo ANIMADO, siempre dentro de .at y SIN transform propio.
+     .module → colocación global; NO se anima.
+     .at     → colocación local; NO se anima.
+     .o      → objeto animado; no lleva transform de colocación.
 
-     Motivo: GSAP convierte el atributo transform en sus propios x/y, así que
-     animar y: sobre un grupo colocado con translate(0,152) lo manda a y=0.
-     Colocación fuera, animación dentro. Siempre.
-
-     GROSOR DE TRAZO
-     Nunca escribas stroke-width. El grosor lo ponen --sw / --sw-thin / --sw-hero
-     (clases .st / .st.thin / .st.hero), declarados en px del LIENZO 1920. Si el
-     módulo lleva scale(...), overlay.js lo mide y lo compensa: el número
-     declarado es el que se renderiza. Si una pieza necesita grosor propio:
-     stroke-width: calc(9 / var(--mscale)). Ver references/design-system.md §2.
-     ========================================================================== -->
-<div id="stage">
-  <svg class="canvas" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+     No escribas stroke-width: usa .st / .thin / .hero. -->
+<div id="stage" class="s-neon">
+  <svg class="canvas" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
     <g class="frame pos-center">
-      <g class="module" transform="translate(960,540)">
+      <!-- El gráfico ocupa el tercio superior y deja libre al presentador. -->
+      <g class="module" transform="translate(540,500)">
 
-        <!-- ============ ESCENA ============ -->
-        <g class="at" transform="translate(0,0)">
-          <g class="o card">
-            <rect class="st" x="-150" y="-100" width="300" height="200" rx="22"/>
-            <path class="st dim" d="M-100,-30 H60 M-100,10 H10"/>
+        <!-- Rutas causales: curvas, cercanas y con dirección. -->
+        <g class="o route-top">
+          <path id="routeTop" class="route" d="M-190,-120 C-85,-285,85,-300,155,-226"/>
+          <path class="st hero c-accent" d="M130,-242 L160,-224 L143,-194"/>
+        </g>
+        <g class="o route-right">
+          <path id="routeRight" class="route dash" d="M270,-115 C330,-26,331,74,278,132"/>
+          <path class="st c-accent" d="M296,116 L276,140 L252,119"/>
+        </g>
+        <g class="o route-bottom">
+          <path id="routeBottom" class="route" d="M152,222 C30,318,-124,303,-190,231"/>
+          <path class="st hero c-accent" d="M-164,246 L-198,226 L-177,197"/>
+        </g>
+        <g class="o route-left">
+          <path id="routeLeft" class="route dash" d="M-292,137 C-341,54,-331,-35,-282,-94"/>
+          <path class="st c-accent" d="M-304,-76 L-278,-101 L-257,-75"/>
+        </g>
+
+        <!-- 1. Mensaje / solicitud -->
+        <g class="at" transform="translate(-285,-145)">
+          <g class="o node-message neon-cyan">
+            <path class="glass-panel" d="M-142,-72 H118 Q146,-72 146,-44 V39 Q146,67 118,67 H-44 L-83,103 L-77,67 H-142 Q-170,67 -170,39 V-44 Q-170,-72 -142,-72 Z"/>
+            <path class="st thin" d="M-118,-25 H86 M-118,11 H58"/>
           </g>
         </g>
 
-        <g class="at" transform="translate(150,-100)">
-          <g class="o mark">
-            <circle class="st c-ok" r="30" fill="var(--fill-ok)"/>
-            <path class="st c-ok" d="M-12,1 L-3,10 L13,-9"/>
+        <!-- 2. Persona / cliente con duda -->
+        <g class="at" transform="translate(228,-190)">
+          <g class="o node-person neon-blue">
+            <circle class="soft-halo" r="128"/>
+            <circle class="st hero c-accent f-accent" r="92"/>
+            <circle class="st" cy="-24" r="27"/>
+            <path class="st" d="M-49,53 V38 Q-49,4 0,4 Q49,4 49,38 V53 Z"/>
+          </g>
+        </g>
+        <g class="at" transform="translate(338,-276)">
+          <g class="o node-question neon-cyan">
+            <path class="glass-panel" d="M-44,-52 H28 Q55,-52 55,-25 V18 Q55,45 28,45 H4 L-17,69 L-14,45 H-44 Q-69,45 -69,18 V-25 Q-69,-52 -44,-52 Z"/>
+            <text class="num sm t-accent" x="-7" y="20" text-anchor="middle">?</text>
           </g>
         </g>
 
-        <g class="at" transform="translate(0,152)">
-          <g class="o label">
-            <text class="tag" text-anchor="middle">ETIQUETA</text>
+        <!-- 3. Precio / decisión -->
+        <g class="at" transform="translate(-250,190)">
+          <g class="o node-price neon-blue">
+            <rect class="glass-panel" x="-128" y="-70" width="256" height="140" rx="36"/>
+            <rect class="st hero c-accent f-accent" x="-115" y="-57" width="230" height="114" rx="29"/>
+            <text class="num sm" x="-12" y="20" text-anchor="middle">S/</text>
+            <text class="num sm t-accent" x="71" y="20" text-anchor="middle">?</text>
           </g>
         </g>
-        <!-- ============ /ESCENA ============ -->
 
+        <!-- 4. Resultado negativo -->
+        <g class="at" transform="translate(238,190)">
+          <g class="o node-error neon-red">
+            <circle class="soft-danger" r="132"/>
+            <circle class="ring-dash" r="105"/>
+            <circle class="st hero c-bad f-bad" r="84"/>
+            <path class="st hero c-bad" d="M-34,-34 L34,34 M34,-34 L-34,34"/>
+          </g>
+        </g>
+
+        <!-- Pulsos: movimiento que explica la relación, no decoración. -->
+        <g class="o pulses">
+          <circle class="dot accent pulse-top" r="11"/>
+          <circle class="dot accent pulse-bottom" r="11"/>
+        </g>
       </g>
     </g>
   </svg>
@@ -66,46 +101,57 @@
 <script src="./lib/MorphSVGPlugin.min.js"></script>
 <script src="./lib/overlay.js"></script>
 <script>
-/* Tiempos anclados a la narración (palabras / 2.6 = segundos).
-   Anota la palabra exacta de cada beat: es lo que se entrega en el README. */
+/* Sustituye las palabras ancla por las de la narración real. */
 const BEATS = {
-  in:    0.00,   // palabra: "…"
-  main:  1.10,   // palabra: "…"   ← momento principal
-  hold:  2.20,   // pausa semántica: no entra nada nuevo
-  exit:  3.10
+  in:       0.00, // palabra: "…"
+  actor:    0.48, // palabra: "…"
+  decision: 1.18, // palabra: "…"
+  result:   2.02, // palabra: "…"
+  hold:     3.25,
+  exit:     3.88
 };
 
 Overlay.scene({
-  id: 'NN_concepto',
+  id: 'NN_flujo_visual',
+  style: 's-neon',
   BEATS,
-  build(tl, ctx) {
-    const { q, qa } = ctx;
-
-    /* Estado inicial explícito: garantiza t=0 vacío y un loop limpio. */
+  build(tl) {
     gsap.set('.o', { autoAlpha: 0 });
+    gsap.set('.route-top path:first-child, .route-bottom path:first-child', { drawSVG: '0%' });
 
-    /* ---- ENTRADA ---- */
-    tl.fromTo('.card',
-        { autoAlpha: 0, yPercent: 6, scale: .96 },
-        { autoAlpha: 1, yPercent: 0, scale: 1, duration: .55, ease: 'brand' }, BEATS.in)
-      .fromTo('.label',
-        { autoAlpha: 0, y: 10 },
-        { autoAlpha: 1, y: 0, duration: .4, ease: 'brand' }, BEATS.in + .12);
-
-    /* ---- DESARROLLO / momento principal ---- */
-    tl.fromTo('.mark',
-        { autoAlpha: 0, scale: .5 },
-        { autoAlpha: 1, scale: 1, duration: .45, ease: 'settle' }, BEATS.main)
-      .to('.card', { scale: 1.02, duration: .18, yoyo: true, repeat: 1,
-                     ease: 'power2.out' }, BEATS.main + .05);
-
-    /* ---- PAUSA (respeta el ritmo de la narración) ---- */
-    tl.to({}, { duration: .01 }, BEATS.hold);
-
-    /* ---- SALIDA (más rápida que la entrada, con intención) ---- */
-    tl.to('.mark',  { autoAlpha: 0, scale: .9, duration: .25, ease: 'swift' }, BEATS.exit)
-      .to('.label', { autoAlpha: 0, y: -8, duration: .28, ease: 'swift' }, BEATS.exit + .04)
-      .to('.card',  { autoAlpha: 0, scale: .97, duration: .34, ease: 'swift' }, BEATS.exit + .08);
+    tl.fromTo('.node-message',
+        { autoAlpha: 0, scale: .82, y: 22 },
+        { autoAlpha: 1, scale: 1, y: 0, duration: .58, ease: 'settle' }, BEATS.in)
+      .fromTo('.node-person',
+        { autoAlpha: 0, scale: .74, x: 22 },
+        { autoAlpha: 1, scale: 1, x: 0, duration: .55, ease: 'settle' }, BEATS.actor)
+      .fromTo('.node-question',
+        { autoAlpha: 0, scale: .45, y: 12 },
+        { autoAlpha: 1, scale: 1, y: 0, duration: .42, ease: 'settle' }, BEATS.actor + .18)
+      .to('.route-top', { autoAlpha: 1, duration: .01 }, BEATS.actor - .08)
+      .to('.route-top path:first-child', { drawSVG: '100%', duration: .58, ease: 'power2.inOut' }, BEATS.actor - .08)
+      .fromTo('.node-price',
+        { autoAlpha: 0, scale: .78, x: -18 },
+        { autoAlpha: 1, scale: 1, x: 0, duration: .52, ease: 'settle' }, BEATS.decision)
+      .fromTo('.route-left',
+        { autoAlpha: 0 },
+        { autoAlpha: 1, duration: .38, ease: 'brand' }, BEATS.decision + .12)
+      .fromTo('.node-error',
+        { autoAlpha: 0, scale: .52, rotation: -8 },
+        { autoAlpha: 1, scale: 1, rotation: 0, duration: .52, ease: 'settle' }, BEATS.result)
+      .to('.route-right', { autoAlpha: 1, duration: .35, ease: 'brand' }, BEATS.result - .20)
+      .to('.route-bottom', { autoAlpha: 1, duration: .01 }, BEATS.result + .06)
+      .to('.route-bottom path:first-child', { drawSVG: '100%', duration: .62, ease: 'power2.inOut' }, BEATS.result + .06)
+      .fromTo('.pulses', { autoAlpha: 0 }, { autoAlpha: 1, duration: .15 }, BEATS.result + .14)
+      .fromTo('.pulse-top',
+        { motionPath: { path: '#routeTop', align: '#routeTop', alignOrigin: [0.5, 0.5], start: 0, end: 0 } },
+        { motionPath: { path: '#routeTop', align: '#routeTop', alignOrigin: [0.5, 0.5], start: 0, end: 1 }, duration: .9, ease: 'power2.inOut' }, BEATS.result + .15)
+      .fromTo('.pulse-bottom',
+        { motionPath: { path: '#routeBottom', align: '#routeBottom', alignOrigin: [0.5, 0.5], start: 0, end: 0 } },
+        { motionPath: { path: '#routeBottom', align: '#routeBottom', alignOrigin: [0.5, 0.5], start: 0, end: 1 }, duration: .9, ease: 'power2.inOut' }, BEATS.result + .35)
+      .to('.node-error', { scale: 1.07, duration: .18, yoyo: true, repeat: 1, ease: 'power2.out' }, BEATS.result + .52)
+      .to({}, { duration: .01 }, BEATS.hold)
+      .to('.o', { autoAlpha: 0, scale: .96, duration: .36, stagger: .025, ease: 'swift' }, BEATS.exit);
   }
 });
 </script>

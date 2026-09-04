@@ -24,10 +24,9 @@
   .cell{position:relative;aspect-ratio:420/250;display:block;
     background:radial-gradient(120% 90% at 20% 10%,#4a5b73 0%,#26313f 55%,#131820 100%)}
   body.light .cell{background:linear-gradient(160deg,#e9edf3,#c9d2de)}
-  /* El muestrario dibuja en un viewBox de 420, no en el lienzo de 1920. Los
+  /* El muestrario dibuja en un viewBox de 420. Los
      grosores (--sw y compañía) están en px de lienzo, así que hay que declarar
-     la escala equivalente (1920/420) o saldrían 4.6 veces más gruesos de lo que
-     se ven en un overlay real. */
+     la escala equivalente al preset horizontal (1920/420). */
   .cell svg{position:absolute;inset:0;width:100%;height:100%;--mscale:4.571}
   .meta{padding:14px 16px 16px}
   .nm{font-size:13px;font-weight:650;display:flex;gap:8px;align-items:baseline}
@@ -48,9 +47,9 @@
 <main id="grid"></main>
 
 <p class="hint">
-  Elige uno y díselo a Claude (“hazlo en <b>editorial técnico</b>”). Los tres primeros y
+  Elige uno y díselo al agente (“hazlo en <b>neón editorial</b>”). Los packs de trazo y
   el dibujado a mano solo cambian el acabado: se pueden aplicar a overlays ya hechos.
-  Isométrico, 3D suave y flat humanista cambian además cómo se dibujan los objetos.
+  Neón, isométrico, 3D suave y flat humanista cambian además cómo se dibujan los objetos.
 </p>
 
 <!-- defs compartidos (los mismos que inyecta overlay.js) -->
@@ -72,6 +71,18 @@
   <radialGradient id="ovSpec" cx="30%" cy="20%" r="62%">
     <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
     <stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+  <linearGradient id="ovNeonGlass" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#132B4B" stop-opacity=".78"/>
+    <stop offset="1" stop-color="#03101F" stop-opacity=".62"/></linearGradient>
+  <radialGradient id="ovNeonHalo" cx="50%" cy="50%" r="50%">
+    <stop offset="0" stop-color="#38E5FF" stop-opacity=".24"/>
+    <stop offset="1" stop-color="#38E5FF" stop-opacity="0"/></radialGradient>
+  <filter id="ovGlowCyan" x="-80%" y="-80%" width="260%" height="260%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+    <feFlood flood-color="#38E5FF" flood-opacity=".8" result="color"/>
+    <feComposite in="color" in2="blur" operator="in" result="glow"/>
+    <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
 </defs></svg>
 
 <script src="./lib/gsap.min.js"></script>
@@ -87,6 +98,21 @@ if (window.CustomEase) {
 const PERSON = '<circle class="st hero" cx="0" cy="-30" r="15"/>' +
                '<path class="st hero" d="M-25,26 V19 A25,25 0 0 1 25,19 V26"/>' +
                '<path class="st c-accent" d="M-12,26 V20 A12,12 0 0 1 12,20 V26"/>';
+
+const SCENE_NEON = `
+  <g class="module" transform="translate(210,125)">
+    <g class="o link"><path class="route dash" d="M-86,-12 C-30,-76 43,-73 78,-23"/>
+      <path class="st c-accent" d="M66,-31 L80,-20 L70,-6"/></g>
+    <g class="at" transform="translate(-112,-2)"><g class="o p neon-cyan">
+      <path class="glass-panel" d="M-50,-31 H34 Q49,-31 49,-16 V15 Q49,30 34,30 H-12 L-30,46 L-27,30 H-50 Q-65,30 -65,15 V-16 Q-65,-31 -50,-31 Z"/>
+      <path class="st thin" d="M-42,-8 H25 M-42,9 H8"/></g></g>
+    <g class="at" transform="translate(103,-23)"><g class="o b neon-cyan">
+      <circle class="soft-halo" r="55"/><circle class="st hero c-accent f-accent" r="38"/>
+      <circle class="st" cy="-10" r="10"/><path class="st" d="M-18,22 V17 Q-18,4 0,4 Q18,4 18,17 V22"/>
+    </g></g>
+    <g class="at" transform="translate(0,78)"><g class="o l">
+      <text class="tag" text-anchor="middle">FLUJO</text></g></g>
+  </g>`;
 
 const SCENE_LINE = `
   <g class="module" transform="translate(210,125)">
@@ -151,7 +177,10 @@ const SCENE_FLAT = `
   </g>`;
 
 const STYLES = [
-  { cls:'',        name:'Línea mínima',      chip:'(por defecto)', scene:SCENE_LINE,
+  { cls:'s-neon', name:'Neón editorial premium', chip:'s-neon', scene:SCENE_NEON,
+    note:'Predeterminado de Videria vertical: masa translúcida local, frente nítido, glow controlado y relaciones animadas. No es un icono aislado.',
+    anim:{ y:14, scale:.86, dur:.56, ease:'settle', stg:.1 } },
+  { cls:'',        name:'Línea mínima',      chip:'(16:9)', scene:SCENE_LINE,
     note:'Trazo de 6px de lienzo y rellenos translúcidos. El más rápido de producir y el que menos compite con el presentador. Para 16:9; en móvil usa trazo grueso.',
     anim:{ y:14, scale:.96, dur:.5,  ease:'brand',        stg:.07 } },
   { cls:'s-tech',  name:'Editorial técnico', chip:'s-tech',        scene:SCENE_LINE,

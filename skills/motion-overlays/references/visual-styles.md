@@ -11,8 +11,8 @@ La clase va en `#stage`:
 
 o se pasa al runtime: `Overlay.scene({ id: '…', style: 's-tech', build … })`.
 
-Cada pack define **solo tres números**: `--sw` (estándar), `--sw-thin` (detalle) y
-`--sw-hero` (foco), en px del **lienzo 1920**. `overlay.js` compensa el `scale()` del
+Cada pack define al menos tres números: `--sw` (estándar), `--sw-thin` (detalle) y
+`--sw-hero` (foco), en px del **lienzo de salida**. `overlay.js` compensa el `scale()` del
 módulo, así que el número declarado es el que se ve (ver `design-system.md` §2).
 
 Los filtros y degradados que necesitan los packs (`#ovRoughen`, `#ovSoft`, `#ovSpec`…)
@@ -26,7 +26,8 @@ Muestrario visual: `assets/estilos.html` (se copia al proyecto como `00-estilos.
 
 | Estilo | Clase | Trazo (px de lienzo)<br>`--sw / --sw-thin / --sw-hero` | Aguanta móvil<br>(≥9 px) | Coste | Mejor para |
 |--------|-------|--------------|------|-------|-----------|
-| **Línea mínima** | *(ninguna)* | 6 / 4 / 8 | no | bajo | por defecto: procesos, datos, cualquier cosa |
+| **Neón editorial premium** | `s-neon` | **10 / 7 / 14** | **sí** | medio | Videria vertical, relaciones, decisiones, acabado de alta producción |
+| **Línea mínima** | *(ninguna)* | 6 / 4 / 8 | no | bajo | procesos y datos en 16:9 |
 | **Editorial técnico** | `s-tech` | 5 / 3.5 / 7 | no | bajo | métricas, sistemas, precisión, tono analítico |
 | **Trazo grueso** | `s-bold` | **11 / 7 / 15** | **sí** | bajo | metraje ruidoso, vertical, redes sociales |
 | **Dibujado a mano** | `s-hand` | 7 / 5 / 10 | casi | bajo | tono cercano, docente, "te lo explico" |
@@ -37,18 +38,18 @@ Muestrario visual: `assets/estilos.html` (se copia al proyecto como `00-estilos.
 La columna "aguanta móvil" es el umbral medido en `design-system.md` §5: por debajo de
 **9 px de lienzo** el trazo cae de 2 px reales cuando el video se ve en un teléfono.
 Los packs de trazo fino están pensados para 16:9 a 1080p; **si el video es vertical o va
-a redes, el pack es `s-bold`**, no uno fino con la esperanza de que se lea.
+a redes, usa `s-neon` o `s-bold`**, no uno fino con la esperanza de que se lea.
 
-**Recomendación por defecto:** *Línea mínima* para 16:9; ***trazo grueso* si el video se
-va a ver en móvil o vertical**. Línea mínima es el más rápido de producir y el que menos
-compite con la cara del presentador; trazo grueso es el único calibrado para sobrevivir a
-la escala y la compresión de un feed. Los demás se eligen cuando el tema lo pide.
+**Recomendación por defecto:** `s-neon` para Videria vertical; *línea mínima* para 16:9;
+*trazo grueso* para una alternativa vertical sobria. `s-neon` combina masa, trazo grueso,
+profundidad y rutas animadas: está calibrado para sobrevivir a la compresión de un feed
+sin quedarse en un clipart plano. Lee `neon-vertical.md` antes de construirlo.
 
 ### Estilos de trazo vs. estilos de masa
 
 | | Trazo | Masa |
 |---|---|---|
-| Estilos | línea mínima, editorial técnico, trazo grueso, dibujado a mano | 3D suave, flat humanista |
+| Estilos | línea mínima, editorial técnico, trazo grueso, dibujado a mano | neón editorial, 3D suave, flat humanista |
 | El dibujo es… | el contorno | la silueta rellena |
 | Sobre metraje con detalle | puede perderse si el trazo es fino | siempre se ve |
 | Coste | bajo | alto (hay que redibujar los objetos) |
@@ -71,7 +72,23 @@ translúcido que desaparece en video comprimido.
 
 ---
 
-## 1 · Línea mínima *(por defecto)*
+## 0 · Neón editorial premium (`s-neon`) — predeterminado en Videria
+
+**`--sw: 10 · --sw-thin: 7 · --sw-hero: 14 · --sw-rail: 16`**. Combina paneles azul
+noche translúcidos, frente blanco/cian nítido y una aura de color controlada. Se construye
+como una mini-historia de **3–5 nodos conectados**, no como un icono individual.
+
+- **Sí:** video vertical, TikTok/Reels, decisiones, flujos entre personas, causa y efecto.
+- **No:** más de cinco nodos simultáneos ni fondos completos.
+- El glow se aplica a nodos heroicos y nunca reemplaza el contorno.
+- Las conexiones son curvas, cortas y con dirección; una partícula puede recorrerlas.
+- Rojo solo significa fallo. Azul/cian llevan la relación normal.
+- La secuencia revela significado: nodo → ruta → actor → consecuencia → pausa → salida.
+- Lee `neon-vertical.md` para composición sobre el presentador y criterios de rechazo.
+
+---
+
+## 1 · Línea mínima *(por defecto en 16:9)*
 
 Trazo blanco, esquinas redondeadas, rellenos translúcidos puntuales, un acento.
 Es el sistema descrito en `design-system.md`.
@@ -230,5 +247,5 @@ Los packs que **solo** cambian acabado (`s-tech`, `s-bold`, `s-hand`) se aplican
 escenas ya hechas cambiando la clase de `#stage`: la animación no se toca, y el grosor
 tampoco hay que recalcularlo (los tres números del pack están en px de lienzo y el
 runtime compensa la escala del módulo).
-`s-iso`, `s-soft3d` y `s-flat` obligan a redibujar los objetos, aunque el timeline y los
+`s-neon`, `s-iso`, `s-soft3d` y `s-flat` obligan a redibujar los objetos, aunque el timeline y los
 BEATS se conservan.

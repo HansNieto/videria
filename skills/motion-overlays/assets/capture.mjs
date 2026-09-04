@@ -9,7 +9,7 @@
      node capture.mjs 01_dependencia.html --bg green      (para croma, sin alfa)
      node capture.mjs --all                                (todos los NN_*.html)
 
-   Salida: frames/<nombre>/0000.png … (1920x1080, fondo transparente)
+   Salida: frames/<nombre>/0000.png … (tamaño del viewBox, fondo transparente)
    Después, ffmpeg (ver references/render-capcut.md).
    ========================================================================== */
 import puppeteer from 'puppeteer';
@@ -46,7 +46,8 @@ for (const file of files) {
   fs.mkdirSync(dir, { recursive: true });
 
   const page = await browser.newPage();
-  await page.setViewport({ width: 1920, height: 1080, deviceScaleFactor: 1 });
+  // Viewport provisional: el runtime publica el tamaño real del viewBox.
+  await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
 
   const url = pathToFileURL(path.resolve(file)).href +
               '?paused=1&loop=0' + (bg && bg !== true ? '&bg=' + bg : '');
@@ -56,9 +57,16 @@ for (const file of files) {
   await page.goto(url, { waitUntil: 'load', timeout: 15000 });
   await page.waitForFunction('window.Overlay && window.Overlay.duration > 0', { timeout: 15000 });
 
-  const duration = await page.evaluate(() => window.Overlay.duration);
+  const meta = await page.evaluate(() => ({
+    duration: window.Overlay.duration,
+    canvas: window.Overlay.canvas
+  }));
+  const duration = meta.duration;
+  const canvas = meta.canvas || { width: 1920, height: 1080 };
+  await page.setViewport({ width: canvas.width, height: canvas.height, deviceScaleFactor: 1 });
+  await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
   const total = Math.round(duration * fps) + 1;
-  process.stdout.write(`${name}: ${duration.toFixed(2)}s · ${total} frames @ ${fps}fps\n`);
+  process.stdout.write(`${name}: ${canvas.width}×${canvas.height} · ${duration.toFixed(2)}s · ${total} frames @ ${fps}fps\n`);
 
   for (let i = 0; i < total; i++) {
     await page.evaluate(t => window.Overlay.seek(t), i / fps);

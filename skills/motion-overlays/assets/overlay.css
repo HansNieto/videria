@@ -1,6 +1,6 @@
 /* ==========================================================================
    motion-overlays — base de estilos
-   Lienzo 1920x1080, fondo SIEMPRE transparente. Nada aquí puede tapar el video.
+   Lienzo adaptable, fondo SIEMPRE transparente. Nada aquí puede tapar el video.
    ========================================================================== */
 
 :root {
@@ -38,7 +38,7 @@
   --u: 8px;
 
   /* --- GROSOR DE TRAZO -----------------------------------------------------
-     Estos valores están en px del LIENZO 1920, no en unidades locales del SVG.
+     Estos valores están en px del LIENZO DE SALIDA, no en unidades locales del SVG.
      Un módulo con transform="translate(960,540) scale(1.44)" multiplicaría por
      1.44 cualquier stroke-width literal: lo declarado dejaría de ser lo que se
      ve. overlay.js mide la escala real del módulo (getCTM) y la publica en
@@ -57,6 +57,8 @@
      sobrescribe en #stage. El 1 de aquí es el fallback: sin él, un documento sin
      #stage dejaría el calc() inválido y todos los trazos caerían a 1px. */
   --mscale: 1;
+  --canvas-w: 1920px;
+  --canvas-h: 1080px;
 
   --font: system-ui, "Segoe UI Variable Display", "Segoe UI", Inter, Roboto,
           "Helvetica Neue", Arial, sans-serif;
@@ -97,8 +99,8 @@ body.bg-magenta { background: #FF00FF; }
   position: fixed;
   left: 50%;
   top: 50%;
-  width: 1920px;
-  height: 1080px;
+  width: var(--canvas-w);
+  height: var(--canvas-h);
   transform-origin: 50% 50%;
   transform: translate(-50%, -50%);
   background: transparent;
@@ -106,8 +108,8 @@ body.bg-magenta { background: #FF00FF; }
 .canvas {
   position: absolute;
   inset: 0;
-  width: 1920px;
-  height: 1080px;
+  width: 100%;
+  height: 100%;
   overflow: visible;
   display: block;
 }
@@ -120,6 +122,14 @@ body.bg-magenta { background: #FF00FF; }
 .pos-top      { transform: translate(0px, -170px); }
 .pos-bottom   { transform: translate(0px, 170px); }
 .pos-left-top { transform: translate(-330px, -150px); }
+
+/* Desplazamientos proporcionados para lienzo vertical 1080×1920. La escena
+   conserva la misma API de encuadre sin salir del margen seguro. */
+#stage.is-vertical .pos-left     { transform: translate(-150px, 0px); }
+#stage.is-vertical .pos-right    { transform: translate(150px, 0px); }
+#stage.is-vertical .pos-top      { transform: translate(0px, -260px); }
+#stage.is-vertical .pos-bottom   { transform: translate(0px, 260px); }
+#stage.is-vertical .pos-left-top { transform: translate(-130px, -230px); }
 
 /* El grupo .module lleva su propio transform="translate(960,540)".
    NO lo animes con GSAP (sobrescribiría esa colocación): anima sus hijos. */
@@ -235,6 +245,7 @@ body.hud #hud { display: block; }
    s-iso     isométrico
    s-soft3d  3D suave (vector con volumen)
    s-flat    flat humanista (corporate memphis adaptado a overlay)
+   s-neon    neón editorial premium para vertical y redes
 
    Nota: s-iso, s-soft3d y s-flat además cambian CÓMO se dibuja la escena.
    Ver references/visual-styles.md antes de construir con ellos.
@@ -316,3 +327,53 @@ body.hud #hud { display: block; }
 .s-flat .st.ghost     { stroke: rgba(255,255,255,.45); }
 .s-flat .tag          { fill: var(--line); font-weight: 700; letter-spacing: .08em; }
 .s-flat .module       { filter: drop-shadow(0 10px 22px rgba(0,0,0,.42)); }
+
+/* --- 8 · neón editorial premium -----------------------------------------
+   No se ilumina todo: cada nodo conserva un frente nítido y una sola aura.
+   Los filtros tienen regiones amplias para no recortar el resplandor. */
+.s-neon {
+  --accent: #36DEFF;
+  --accent-2: #347BFF;
+  --bad: #FF4353;
+  --line: rgba(248,252,255,.98);
+  --line-2: rgba(220,239,255,.78);
+  --line-3: rgba(104,219,255,.56);
+  --fill-1: rgba(4,12,28,.62);
+  --fill-2: rgba(16,40,72,.34);
+  --fill-accent: rgba(31,132,255,.23);
+  --fill-bad: rgba(255,45,65,.20);
+  --sw: 10;
+  --sw-thin: 7;
+  --sw-hero: 14;
+  --sw-rail: 16;
+}
+.s-neon .module { filter: drop-shadow(0 12px 26px rgba(0,0,0,.58)); }
+.s-neon .glass-panel {
+  fill: url(#ovNeonGlass);
+  stroke: rgba(224,246,255,.92);
+  stroke-width: calc(var(--sw-thin) / var(--mscale));
+}
+.s-neon .neon-cyan  { filter: url(#ovGlowCyan); }
+.s-neon .neon-blue  { filter: url(#ovGlowBlue); }
+.s-neon .neon-red   { filter: url(#ovGlowRed); }
+.s-neon .soft-halo  { fill: url(#ovNeonHalo); stroke: none; }
+.s-neon .soft-danger{ fill: url(#ovNeonDanger); stroke: none; }
+.s-neon .route {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: calc(var(--sw-rail) / var(--mscale));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.s-neon .route.dash {
+  stroke-width: calc(var(--sw-thin) / var(--mscale));
+  stroke-dasharray: 10 24;
+}
+.s-neon .ring-dash {
+  fill: none;
+  stroke: var(--bad);
+  stroke-width: calc(var(--sw-thin) / var(--mscale));
+  stroke-dasharray: 4 15;
+}
+.s-neon .tag { font-weight: 750; letter-spacing: .08em; fill: var(--line); }
+.s-neon .num { font-weight: 800; }

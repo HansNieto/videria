@@ -34,10 +34,11 @@
   }
   .btn:hover{border-color:rgba(255,255,255,.28)}
 
-  main{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));
+  main{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
        gap:26px;padding:26px 28px 60px}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-  .view{position:relative;aspect-ratio:16/9;background:#0A0D12;overflow:hidden}
+  .view{position:relative;aspect-ratio:16/9;background:#0A0D12;overflow:hidden;
+        max-height:72vh}
   .view.bg-light  {background:#E8ECF2}
   .view.bg-photo  {background:radial-gradient(120% 90% at 20% 10%,#4a5b73 0%,#26313f 55%,#131820 100%)}
   .view.bg-checker{background-color:#2a2f37;
@@ -128,7 +129,14 @@ window.addEventListener('message', e => {
   const d = e.data || {};
   if (d.__overlay !== 'ready') return;
   const hit = frames.find(f => f.frame.contentWindow === e.source);
-  if (hit) hit.dur.textContent = d.duration.toFixed(2) + ' s';
+  if (hit) {
+    hit.dur.textContent = d.duration.toFixed(2) + ' s';
+    if (d.canvas && d.canvas.width && d.canvas.height) {
+      hit.view.style.aspectRatio = `${d.canvas.width} / ${d.canvas.height}`;
+      hit.view.style.maxWidth = d.canvas.height > d.canvas.width ? '430px' : '';
+      hit.view.style.marginInline = d.canvas.height > d.canvas.width ? 'auto' : '';
+    }
+  }
 });
 
 document.getElementById('bgseg').addEventListener('click', e => {

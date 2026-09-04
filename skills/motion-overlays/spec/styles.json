@@ -1,18 +1,48 @@
 {
   "$comment": "Catálogo de estilos de ilustración. La clase va en #stage. Ver references/visual-styles.md.",
-  "version": "1.3.0",
-  "default": "s-line",
+  "version": "2.0.0",
+  "default": "s-neon",
   "families": {
     "trazo": "el dibujo es el contorno; se aplica a escenas ya hechas cambiando la clase",
     "masa": "el dibujo es la silueta rellena; obliga a redibujar los objetos"
   },
   "styles": [
     {
+      "id": "s-neon",
+      "class": "s-neon",
+      "name": "Neón editorial premium",
+      "family": "masa",
+      "recommended": true,
+      "legibilityOnFootage": "excelente",
+      "cost": "medio",
+      "bestFor": [
+        "video vertical",
+        "redes sociales",
+        "relaciones entre actores",
+        "decisiones y resultados",
+        "visuales con producción"
+      ],
+      "avoid": [
+        "más de cinco nodos simultáneos",
+        "fondos completos u opacos"
+      ],
+      "construction": "Tres a cinco nodos con frente nítido, panel local translúcido, una aura controlada, conectores curvos y pulsos. Nunca un icono aislado con una línea larga.",
+      "motion": "La relación se revela por etapas: nodo, ruta, actor, consecuencia. Una partícula recorre la ruta y el foco respira una vez; nada parpadea gratuitamente.",
+      "stroke": {
+        "base": 10,
+        "thin": 7,
+        "hero": 14,
+        "rail": 16,
+        "mobileSafe": true,
+        "unit": "px del lienzo de salida"
+      }
+    },
+    {
       "id": "s-line",
       "class": null,
       "name": "Línea mínima",
       "family": "trazo",
-      "recommended": true,
+      "recommendedForLandscape": true,
       "legibilityOnFootage": "excelente",
       "cost": "bajo",
       "bestFor": [
@@ -22,14 +52,14 @@
         "caso general"
       ],
       "avoid": [],
-      "construction": "Trazo de 3px, esquinas redondeadas, rellenos translúcidos, un acento.",
+      "construction": "Trazo base de 6px, esquinas redondeadas, rellenos translúcidos y un acento.",
       "motion": "El estándar de motion-language.md.",
       "stroke": {
         "base": 6,
         "thin": 4,
         "hero": 8,
         "mobileSafe": false,
-        "unit": "px de lienzo 1920"
+        "unit": "px del lienzo de salida"
       }
     },
     {
@@ -55,7 +85,7 @@
         "thin": 3.5,
         "hero": 7,
         "mobileSafe": false,
-        "unit": "px de lienzo 1920"
+        "unit": "px del lienzo de salida"
       }
     },
     {
@@ -81,7 +111,7 @@
         "thin": 7,
         "hero": 15,
         "mobileSafe": true,
-        "unit": "px de lienzo 1920"
+        "unit": "px del lienzo de salida"
       }
     },
     {
@@ -109,7 +139,7 @@
         "thin": 5,
         "hero": 10,
         "mobileSafe": false,
-        "unit": "px de lienzo 1920"
+        "unit": "px del lienzo de salida"
       }
     },
     {
@@ -134,7 +164,7 @@
         "thin": 4,
         "hero": 7,
         "mobileSafe": false,
-        "unit": "px de lienzo 1920"
+        "unit": "px del lienzo de salida"
       }
     },
     {
@@ -160,7 +190,7 @@
         "thin": 4,
         "hero": 6.5,
         "mobileSafe": false,
-        "unit": "px de lienzo 1920"
+        "unit": "px del lienzo de salida"
       }
     },
     {
@@ -188,7 +218,7 @@
         "thin": 6,
         "hero": 12,
         "mobileSafe": true,
-        "unit": "px de lienzo 1920"
+        "unit": "px del lienzo de salida"
       }
     }
   ],
@@ -244,9 +274,18 @@
     {
       "topic": "móvil o metraje ruidoso",
       "offer": [
+        "s-neon",
         "s-bold",
         "s-line",
         "s-flat"
+      ]
+    },
+    {
+      "topic": "vertical, TikTok o visual premium",
+      "offer": [
+        "s-neon",
+        "s-bold",
+        "s-soft3d"
       ]
     },
     {
@@ -258,5 +297,5 @@
       ]
     }
   ],
-  "strokeNote": "Los grosores estan en px del lienzo 1920: overlay.js compensa el scale() del modulo. mobileSafe = base >= 9 px, umbral por debajo del cual el trazo cae de 2 px reales cuando el video se ve en un telefono. Si el video es vertical o va a redes, usa s-bold."
+  "strokeNote": "Los grosores estan en px del lienzo de salida: overlay.js compensa el scale() del modulo. mobileSafe = base >= 9 px. Para Videria vertical usa s-neon por defecto; s-bold queda como alternativa sobria."
 }

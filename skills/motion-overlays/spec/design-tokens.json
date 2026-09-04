@@ -1,22 +1,27 @@
 {
   "$comment": "Tokens del sistema visual de motion-overlays. Espejo legible por máquina de assets/overlay.css y references/design-system.md. Fuente de verdad para agentes que generen o validen escenas.",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "canvas": {
-    "width": 1920,
-    "height": 1080,
-    "safeMargin": 96,
+    "width": 1080,
+    "height": 1920,
+    "orientation": "portrait",
+    "safeMargin": 60,
+    "supportedPresets": [
+      { "id": "vertical-1080", "width": 1080, "height": 1920, "default": true },
+      { "id": "landscape-1080", "width": 1920, "height": 1080, "default": false }
+    ],
     "background": "transparent",
     "module": {
       "widthRange": [
-        1150,
-        1350
+        820,
+        960
       ],
       "heightRange": [
-        650,
-        850
+        520,
+        760
       ],
-      "maxWidth": 1450,
-      "anchor": "translate(960,540)",
+      "maxWidth": 980,
+      "anchor": "translate(540,500)",
       "note": "El contenido vive en un grupo único para poder escalarlo y reposicionarlo como una pieza en el editor."
     },
     "positions": {
@@ -25,24 +30,24 @@
         0
       ],
       "pos-left": [
-        -330,
+        -150,
         0
       ],
       "pos-right": [
-        330,
+        150,
         0
       ],
       "pos-top": [
         0,
-        -170
+        -260
       ],
       "pos-bottom": [
         0,
-        170
+        260
       ],
       "pos-left-top": [
-        -330,
-        -150
+        -130,
+        -230
       ]
     }
   },
@@ -50,8 +55,8 @@
     "$comment": "Lo que más se corrige en revisión. El overlay se ve suelto o compacto según la relación hueco/objeto, no según el tamaño del lienzo.",
     "maxGapToObjectRatio": 0.6,
     "heroObjectDiameter": [
-      200,
-      260
+      150,
+      230
     ],
     "secondaryObjectDiameter": [
       120,
@@ -84,6 +89,14 @@
       "warn": "rgba(255,176,32,.16)",
       "gold": "rgba(242,193,78,.16)"
     },
+    "neon": {
+      "cyan": "#36DEFF",
+      "blue": "#347BFF",
+      "bad": "#FF4353",
+      "glassTop": "rgba(19,43,75,.78)",
+      "glassBottom": "rgba(3,16,31,.62)",
+      "rule": "El frente permanece nitido; el glow es una aura secundaria y local."
+    },
     "semantics": {
       "accent": "el actor central o el flujo normal",
       "ok": "resuelto, funcionando",
@@ -94,8 +107,8 @@
     "rule": "Base blanca + un acento por escena. Los semánticos solo cuando el guion habla de estado. Máximo 2 colores además del base."
   },
   "stroke": {
-    "$comment": "Grosores en px del LIENZO 1920, no en unidades locales del SVG. overlay.js mide la escala real del grupo .module con getCTM() y la publica en --mscale; las reglas .st dividen por ella. Así el valor declarado es el renderizado aunque el modulo lleve scale().",
-    "unit": "px de lienzo 1920",
+    "$comment": "Grosores en px del lienzo de salida, no en unidades locales del SVG. overlay.js mide la escala real del grupo .module con getCTM() y la publica en --mscale; las reglas .st dividen por ella. Así el valor declarado es el renderizado aunque el modulo lleve scale().",
+    "unit": "px del lienzo de salida",
     "thin": 4,
     "base": 6,
     "hero": 8,
@@ -105,6 +118,12 @@
         "thin": 4,
         "base": 6,
         "hero": 8
+      },
+      "s-neon": {
+        "thin": 7,
+        "base": 10,
+        "hero": 14,
+        "rail": 16
       },
       "s-tech": {
         "thin": 3.5,
