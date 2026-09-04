@@ -7,6 +7,7 @@
   --text-it:#6f4bd8; --ovl-it:#0f766e; --aud-it:#8a5a12; --sfx-it:#8f2f52;
   --radius:8px;
   --h-top:50px; --h-tl:320px; --w-lib:236px; --w-preview:42vw;
+  --w-inspector-min:460px;
   --tl-name-w:118px;
 }
 *{box-sizing:border-box}
@@ -57,12 +58,12 @@ kbd{background:var(--panel3);border:1px solid var(--line2);border-radius:4px;
 @keyframes sp{to{transform:rotate(360deg)}}
 
 #app{display:grid;
-  grid-template-columns:var(--w-lib) minmax(460px,1fr) var(--w-preview);
+  grid-template-columns:var(--w-lib) minmax(var(--w-inspector-min),1fr) var(--w-preview);
   grid-template-rows:var(--h-top) minmax(0,1fr) var(--h-tl);height:100vh}
 
 /* ---------------------------------------------------------------- topbar */
 .topbar{display:flex;grid-column:1/-1;grid-row:1;align-items:center;gap:14px;padding:0 12px;
-  background:var(--panel);border-bottom:1px solid var(--line)}
+  background:var(--panel);border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden}
 .brand{font-weight:700;letter-spacing:.5px;color:var(--accent)}
 .proj{display:flex;flex-direction:column;line-height:1.15;min-width:0}
 .proj b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px}
@@ -301,9 +302,19 @@ kbd{background:var(--panel3);border:1px solid var(--line2);border-radius:4px;
 body.resizing{cursor:col-resize;user-select:none}
 body.resizing-y{cursor:row-resize;user-select:none}
 
+@media (max-width:1300px){
+  :root{--w-lib:176px;--w-preview:40vw;--w-inspector-min:330px;--h-tl:280px;--tl-name-w:104px}
+  .lib-body{padding:7px}.insp-body{padding-left:9px;padding-right:9px}
+}
 @media (max-width:1100px){
-  :root{--w-lib:190px;--w-preview:38vw;--tl-name-w:104px}
+  :root{--w-lib:142px;--w-preview:40vw;--w-inspector-min:280px;--h-tl:240px;--tl-name-w:92px}
   .stage-top{gap:6px}.stage-top .chk{font-size:0}.zoomctl{width:130px}
+  .topbar{gap:8px}.topbar .proj span{display:none}.lib-tabs{padding:4px}.lib-body{padding:5px}
+  .f{grid-template-columns:70px 1fr}.tl-toolbar{min-height:38px;padding:4px 6px}
+}
+@media (max-height:760px){
+  :root{--h-tl:230px}
+  .insp-body{padding-bottom:30px}.canvas-wrap{padding:7px}
 }
 :root { --export-gap: 14px; }
 .export-card { max-height: 90vh; overflow: auto; }

@@ -23,7 +23,7 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-from . import studio, util
+from . import media, studio, util
 
 GITIGNORE = """# Lo que es de cada máquina, no del proyecto.
 local.json
@@ -234,14 +234,12 @@ def preparar(project_dir, duenio, nombre=None, url=None):
         prox = s.get("proxy")
         if not prox or not Path(prox).exists():
             continue
-        p = Path(prox)
-        if p.parent.resolve() == destino.resolve():
-            continue
         destino.mkdir(parents=True, exist_ok=True)
-        nuevo = destino / p.name
-        if not nuevo.exists():
-            nuevo.write_bytes(p.read_bytes())
+        nuevo = media.build_review_proxy(s, destino)
         s["proxy"] = str(nuevo)
+        for stale in destino.glob("%s-*.mp4" % s["id"]):
+            if stale.resolve() != nuevo.resolve():
+                stale.unlink()
         movidos += 1
     for clave, sub, ext in (("waveform", "waveform", ".bin"),
                             ("filmstrip", "filmstrip", ".jpg")):

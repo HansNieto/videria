@@ -15,6 +15,7 @@ PEAKS_PER_SEC = 40
 THUMB_H = 48
 THUMB_COLS = 20
 THUMB_MAX = 240
+REVIEW_PROXY_VERSION = "browser-sdr-v1"
 
 
 @lru_cache(maxsize=2)
@@ -91,6 +92,49 @@ def build_proxy(source, cache_dir, height=540, force=False):
             if enc != encoders[-1]:
                 util.eprint("    nvenc fallo, reintento con libx264")
     raise RuntimeError("No se pudo generar el proxy de %s: %s" % (source["name"], last))
+
+
+def build_review_proxy(source, out_dir, height=540, force=False):
+    """Proxy H.264/SDR que abre en WebView2 aunque el equipo no tenga HEVC.
+
+    Es exclusivamente para revisar. El render final sigue leyendo el original
+    y conserva su perfil HDR cuando se elige «Color original».
+    """
+    out_dir = Path(out_dir)
+    out = out_dir / ("%s-%s.mp4" % (source["id"], REVIEW_PROXY_VERSION))
+    if out.exists() and not force and out.stat().st_size > 1024:
+        return out
+    input_path = Path(source.get("path") or "")
+    if not input_path.is_file():
+        input_path = Path(source.get("proxy") or "")
+    if not input_path.is_file():
+        raise RuntimeError("No hay video para crear el proxy compatible de %s" % source["name"])
+    info = color.metadata(input_path)
+    target_h = min(height, info.get("display_height") or height)
+    base = [util.FFMPEG, "-hide_banner", "-loglevel", "error", "-y",
+            "-i", str(input_path), "-map", "0:v:0",
+            "-vf", color.input_filter(input_path, mode="sdr") +
+                   ",scale=-2:%d:flags=lanczos" % target_h,
+            "-pix_fmt", "yuv420p", "-force_key_frames", "expr:gte(t,n_forced*1)"]
+    audio = (["-map", "0:a:0?", "-c:a", "aac", "-b:a", "128k", "-ac", "2"]
+             if source.get("has_audio") else ["-an"])
+    encoders = ["nvenc", "x264"] if nvenc_available("h264") else ["x264"]
+    out.parent.mkdir(parents=True, exist_ok=True)
+    last = None
+    for encoder in encoders:
+        video = (["-c:v", "h264_nvenc", "-preset", "p4", "-rc", "vbr",
+                  "-cq", "24", "-b:v", "0"] if encoder == "nvenc" else
+                 ["-c:v", "libx264", "-preset", "veryfast", "-crf", "24"])
+        try:
+            util.run(base + video + audio + color.SDR_TAGS +
+                     ["-movflags", "+faststart", str(out)])
+            return out
+        except RuntimeError as exc:
+            last = exc
+            if out.exists():
+                out.unlink()
+    raise RuntimeError("No se pudo crear el proxy compatible de %s: %s" %
+                       (source["name"], last))
 
 
 # ------------------------------------------------------------ waveform

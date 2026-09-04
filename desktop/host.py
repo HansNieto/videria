@@ -16,7 +16,7 @@ from werkzeug.serving import make_server
 
 from vcutlib import server as studio_server
 
-VERSION = "2.4.0"
+VERSION = "2.4.1"
 RELEASES_URL = "https://github.com/HansNieto/videria/releases"
 GITHUB_REPO = re.compile(r"https://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+?)(?:\.git)?/?$")
 
