@@ -1,0 +1,52 @@
+{
+  "01_ventas_cuello_botella.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video18-proyecto\\motion-overlays\\frames\\01_ventas_cuello_botella",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "las ventas aumentan pero casi todas las decisiones dependen de ti"
+  },
+  "02_informacion_dispersa.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video18-proyecto\\motion-overlays\\frames\\02_informacion_dispersa",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "información repartida entre archivos conversaciones y distintas personas causa confusiones"
+  },
+  "03_reaccion_urgente.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video18-proyecto\\motion-overlays\\frames\\03_reaccion_urgente",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "equipo reacciona a pedidos olvidados errores y problemas que pudieron prevenirse"
+  },
+  "04_crecimiento_desigual.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video18-proyecto\\motion-overlays\\frames\\04_crecimiento_desigual",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "aumentó el trabajo pero los procesos trabajadores y herramientas no crecieron al mismo ritmo"
+  },
+  "05_crecer_con_orden.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video18-proyecto\\motion-overlays\\frames\\05_crecer_con_orden",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "crecer con orden significa definir quien se encarga centralizar información y trabajar claro"
+  }
+}

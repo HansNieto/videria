@@ -1,0 +1,63 @@
+{
+  "source": "s002",
+  "name": "IMG_0152.MOV",
+  "fingerprint": "8fb10076db2556ff",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 2.3,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.0,
+      "end": 1.46,
+      "text": "que la mayoría de apps que usas.",
+      "avg_logprob": -0.5063,
+      "no_speech_prob": 0.4824,
+      "words": [
+        {
+          "w": "que",
+          "s": 0.0,
+          "e": 0.16,
+          "p": 0.514
+        },
+        {
+          "w": "la",
+          "s": 0.16,
+          "e": 0.28,
+          "p": 0.951
+        },
+        {
+          "w": "mayoría",
+          "s": 0.28,
+          "e": 0.7,
+          "p": 0.991
+        },
+        {
+          "w": "de",
+          "s": 0.7,
+          "e": 0.92,
+          "p": 0.989
+        },
+        {
+          "w": "apps",
+          "s": 0.92,
+          "e": 1.12,
+          "p": 0.875
+        },
+        {
+          "w": "que",
+          "s": 1.12,
+          "e": 1.26,
+          "p": 0.981
+        },
+        {
+          "w": "usas.",
+          "s": 1.26,
+          "e": 1.46,
+          "p": 0.841
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "source": "s009",
+  "name": "IMG_0143.MOV",
+  "fingerprint": "d497375575072b76",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 3.765,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.0,
+      "end": 3.1,
+      "text": "Otra señal es que casi todo se resuelve con urgencia.",
+      "avg_logprob": -0.1969,
+      "no_speech_prob": 0.0063,
+      "words": [
+        {
+          "w": "Otra",
+          "s": 0.0,
+          "e": 0.46,
+          "p": 0.857
+        },
+        {
+          "w": "señal",
+          "s": 0.46,
+          "e": 0.88,
+          "p": 0.984
+        },
+        {
+          "w": "es",
+          "s": 0.88,
+          "e": 1.06,
+          "p": 0.956
+        },
+        {
+          "w": "que",
+          "s": 1.06,
+          "e": 1.18,
+          "p": 0.995
+        },
+        {
+          "w": "casi",
+          "s": 1.18,
+          "e": 1.52,
+          "p": 0.984
+        },
+        {
+          "w": "todo",
+          "s": 1.52,
+          "e": 1.86,
+          "p": 0.989
+        },
+        {
+          "w": "se",
+          "s": 1.86,
+          "e": 2.1,
+          "p": 0.992
+        },
+        {
+          "w": "resuelve",
+          "s": 2.1,
+          "e": 2.5,
+          "p": 0.966
+        },
+        {
+          "w": "con",
+          "s": 2.5,
+          "e": 2.64,
+          "p": 0.952
+        },
+        {
+          "w": "urgencia.",
+          "s": 2.64,
+          "e": 3.1,
+          "p": 0.989
+        }
+      ]
+    }
+  ]
+}

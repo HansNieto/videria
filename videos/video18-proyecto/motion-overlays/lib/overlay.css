@@ -1,0 +1,420 @@
+/* ==========================================================================
+   motion-overlays — base de estilos
+   Lienzo adaptable, fondo SIEMPRE transparente. Nada aquí puede tapar el video.
+   ========================================================================== */
+
+:root {
+  /* base */
+  --ink:        #0B1220;
+  --paper:      #FFFFFF;
+  --line:       rgba(255,255,255,.94);
+  --line-2:     rgba(255,255,255,.55);   /* trazo secundario / estructura */
+  --line-3:     rgba(255,255,255,.30);   /* guías, rejilla, punteados      */
+  --muted:      rgba(255,255,255,.58);
+
+  /* acento y semánticos */
+  --accent:     #5B8CFF;
+  --accent-2:   #8B7CFF;
+  --ok:         #2FD08A;
+  --warn:       #FFB020;
+  --bad:        #FF5D5D;
+  --gold:       #F2C14E;
+
+  /* superficies translúcidas (nunca opacas) */
+  --fill-1:      rgba(10,14,24,.55);
+  --fill-2:      rgba(255,255,255,.06);
+  --fill-accent: rgba(91,140,255,.16);
+  --fill-ok:     rgba(47,208,138,.16);
+  --fill-bad:    rgba(255,93,93,.16);
+  --fill-gold:   rgba(242,193,78,.16);
+  --fill-warn:   rgba(255,176,32,.16);
+
+  /* sombras transparentes: separan del metraje sin introducir cajas */
+  --shadow-soft: drop-shadow(0 8px 24px rgba(0,0,0,.45));
+  --shadow-hard: drop-shadow(0 2px 6px rgba(0,0,0,.6));
+
+  /* geometría */
+  --r-s: 8px; --r-m: 14px; --r-l: 22px;
+  --u: 8px;
+
+  /* --- GROSOR DE TRAZO -----------------------------------------------------
+     Estos valores están en px del LIENZO DE SALIDA, no en unidades locales del SVG.
+     Un módulo con transform="translate(960,540) scale(1.44)" multiplicaría por
+     1.44 cualquier stroke-width literal: lo declarado dejaría de ser lo que se
+     ve. overlay.js mide la escala real del módulo (getCTM) y la publica en
+     --mscale; las reglas .st dividen por ella. Resultado: el número declarado
+     es el número de píxeles que salen en el render, escales como escales.
+     Mínimos medidos sobre metraje comprimido (ver design-system.md §5):
+       6 px  → legible en 16:9 a 1080p
+       9 px  → legible en móvil / vertical / metraje con mucho detalle
+     -------------------------------------------------------------------------- */
+  --sw:       6;
+  --sw-thin:  4;
+  --sw-hero:  8;
+  --sw-rail: 14;
+
+  /* Escala del módulo respecto al lienzo. overlay.js la mide con getCTM() y la
+     sobrescribe en #stage. El 1 de aquí es el fallback: sin él, un documento sin
+     #stage dejaría el calc() inválido y todos los trazos caerían a 1px. */
+  --mscale: 1;
+  --canvas-w: 1920px;
+  --canvas-h: 1080px;
+
+  --font: system-ui, "Segoe UI Variable Display", "Segoe UI", Inter, Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "SF Mono", "Roboto Mono", monospace;
+}
+
+/* --- fondo transparente: regla crítica ---------------------------------- */
+html, body {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- fondos de revisión / croma (solo con ?bg=…) ------------------------ */
+body.bg-dark    { background: #12161C; }
+body.bg-light   { background: #E8ECF2; }
+body.bg-photo   { background:
+    radial-gradient(120% 90% at 20% 10%, #4a5b73 0%, #26313f 55%, #131820 100%); }
+body.bg-checker {
+  background-color: #2a2f37;
+  background-image:
+    linear-gradient(45deg, #363c46 25%, transparent 25%, transparent 75%, #363c46 75%),
+    linear-gradient(45deg, #363c46 25%, transparent 25%, transparent 75%, #363c46 75%);
+  background-size: 48px 48px;
+  background-position: 0 0, 24px 24px;
+}
+body.bg-green   { background: #00E000; }
+body.bg-magenta { background: #FF00FF; }
+
+/* --- lienzo -------------------------------------------------------------- */
+#stage {
+  /* overlay.js lo sobrescribe con la escala real del módulo (ver :root). */
+  --mscale: 1;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: var(--canvas-w);
+  height: var(--canvas-h);
+  transform-origin: 50% 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+}
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+
+/* --- encuadre del módulo (cambia la posición sin tocar la animación) ----- */
+.frame        { transform: translate(0px, 0px); }
+.pos-center   { transform: translate(0px, 0px); }
+.pos-left     { transform: translate(-330px, 0px); }
+.pos-right    { transform: translate(330px, 0px); }
+.pos-top      { transform: translate(0px, -170px); }
+.pos-bottom   { transform: translate(0px, 170px); }
+.pos-left-top { transform: translate(-330px, -150px); }
+
+/* Desplazamientos proporcionados para lienzo vertical 1080×1920. La escena
+   conserva la misma API de encuadre sin salir del margen seguro. */
+#stage.is-vertical .pos-left     { transform: translate(-150px, 0px); }
+#stage.is-vertical .pos-right    { transform: translate(150px, 0px); }
+#stage.is-vertical .pos-top      { transform: translate(0px, -260px); }
+#stage.is-vertical .pos-bottom   { transform: translate(0px, 260px); }
+#stage.is-vertical .pos-left-top { transform: translate(-130px, -230px); }
+
+/* El grupo .module lleva su propio transform="translate(960,540)".
+   NO lo animes con GSAP (sobrescribiría esa colocación): anima sus hijos. */
+.module { filter: var(--shadow-soft); }
+
+/* --- trazo base ----------------------------------------------------------
+   IMPORTANTE: en un elemento con .st, el color y el grosor van SIEMPRE por
+   clase (.c-*, .f-*, .dot, .hero, .thin). Un atributo stroke="…" / fill="…" /
+   stroke-width="…" es un atributo de presentación y el CSS de .st lo anula.
+   -------------------------------------------------------------------------- */
+.st {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: calc(var(--sw) / var(--mscale));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.st.thin  { stroke-width: calc(var(--sw-thin) / var(--mscale)); }
+.st.hero  { stroke-width: calc(var(--sw-hero) / var(--mscale)); }
+.st.dim   { stroke: var(--line-2); }
+.st.ghost { stroke: var(--line-3); }
+.st.dash  { stroke-dasharray: 6 10; }
+
+.f-accent { fill: var(--fill-accent); }
+.f-ok     { fill: var(--fill-ok); }
+.f-bad    { fill: var(--fill-bad); }
+.f-gold   { fill: var(--fill-gold); }
+.f-warn   { fill: var(--fill-warn); }
+.f-panel  { fill: var(--fill-1); }
+.f-soft   { fill: var(--fill-2); }
+
+.c-accent { stroke: var(--accent); }
+.c-ok     { stroke: var(--ok); }
+.c-bad    { stroke: var(--bad); }
+.c-warn   { stroke: var(--warn); }
+.c-gold   { stroke: var(--gold); }
+.c-line   { stroke: var(--line); }
+.c-dim    { stroke: var(--line-2); }
+
+/* rellenos sólidos (puntos, nodos, cabezas de flecha) */
+.dot        { fill: var(--line); stroke: none; }
+.dot.accent { fill: var(--accent); }
+.dot.ok     { fill: var(--ok); }
+.dot.bad    { fill: var(--bad); }
+.dot.warn   { fill: var(--warn); }
+.dot.gold   { fill: var(--gold); }
+.dot.dim    { fill: var(--line-2); }
+
+/* --- tipografía (texto SVG en unidades del lienzo) ----------------------- */
+text { font-family: var(--font); fill: var(--line); }
+
+.num {
+  font-size: 96px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+}
+.num.sm  { font-size: 56px; font-weight: 600; letter-spacing: -.01em; }
+.num.xs  { font-size: 38px; font-weight: 600; }
+
+.tag {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  fill: var(--muted);
+}
+.micro {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  fill: var(--line-3);
+}
+
+.t-accent { fill: var(--accent); }
+.t-ok     { fill: var(--ok); }
+.t-bad    { fill: var(--bad); }
+.t-warn   { fill: var(--warn); }
+.t-gold   { fill: var(--gold); }
+.t-line   { fill: var(--line); }
+.t-ink    { fill: var(--ink); }
+
+/* --- utilidades ---------------------------------------------------------- */
+.wc      { will-change: transform; }
+.shadow  { filter: var(--shadow-soft); }
+.shadow-h{ filter: var(--shadow-hard); }
+/* .o = objeto animado de primer nivel. Overlay.audit() comprueba que todos
+   los .o estén invisibles en t=0 y t=fin. */
+.o { }
+
+/* --- HUD de revisión (tecla H; nunca aparece en el render) --------------- */
+#hud {
+  position: fixed; left: 16px; bottom: 14px; z-index: 9;
+  font: 500 13px/1.5 var(--font); letter-spacing: .06em;
+  color: rgba(255,255,255,.9); background: rgba(8,11,16,.72);
+  border: 1px solid rgba(255,255,255,.14); border-radius: 8px;
+  padding: 7px 11px; display: none; pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+body.hud #hud { display: block; }
+
+/* ==========================================================================
+   PACKS DE ESTILO
+   La clase va en #stage:  <div id="stage" class="s-tech">
+   Cambia el acabado sin tocar la animación. Los filtros y degradados que
+   usan estos packs los inyecta overlay.js, así que siempre están disponibles.
+
+   s-line    línea mínima (por defecto, no necesita clase)
+   s-tech    editorial técnico / blueprint
+   s-bold    trazo grueso editorial
+   s-hand    dibujado a mano
+   s-iso     isométrico
+   s-soft3d  3D suave (vector con volumen)
+   s-flat    flat humanista (corporate memphis adaptado a overlay)
+   s-neon    neón editorial premium para vertical y redes
+   s-sticker3d ilustración 3D construida por capas
+
+   Nota: s-iso, s-soft3d y s-flat además cambian CÓMO se dibuja la escena.
+   Ver references/visual-styles.md antes de construir con ellos.
+   ========================================================================== */
+
+/* --- 2 · editorial técnico ---------------------------------------------- */
+.s-tech               { --sw: 5; --sw-thin: 3.5; --sw-hero: 7; }
+.s-tech text          { font-family: var(--mono); }
+.s-tech .tag          { letter-spacing: .2em; font-weight: 500; }
+.s-tech .micro        { letter-spacing: .16em; }
+.s-tech .num          { font-weight: 500; letter-spacing: 0; }
+.s-tech .f-panel      { fill: rgba(10,14,24,.40); }
+.s-tech .module       { filter: var(--shadow-hard); }
+.s-tech .guide        { fill: none; stroke: var(--line-3);
+                        stroke-width: calc(3 / var(--mscale));
+                        stroke-dasharray: 4 9; }
+
+/* --- 3 · trazo grueso editorial ----------------------------------------- */
+/* Grosores medidos: es el único pack calibrado para móvil y vertical, donde el
+   lienzo se ve a ~430 px de ancho y un trazo de 11 px cae a ~2.5 px reales. */
+.s-bold               { --sw: 11; --sw-thin: 7; --sw-hero: 15; --sw-rail: 18; }
+.s-bold .st.dim       { stroke: rgba(255,255,255,.78); }
+.s-bold .st.ghost     { stroke: rgba(255,255,255,.45); }
+.s-bold .st.dash      { stroke-dasharray: 12 18; }
+.s-bold .dot.dim      { fill: rgba(255,255,255,.78); }
+.s-bold .micro        { fill: rgba(255,255,255,.62); }
+.s-bold .tag          { font-weight: 700; letter-spacing: .1em; fill: var(--line); }
+.s-bold .num          { font-weight: 800; }
+.s-bold .f-panel      { fill: rgba(8,11,18,.72); }
+.s-bold .module       { filter: drop-shadow(0 6px 0 rgba(0,0,0,.26))
+                                drop-shadow(0 2px 9px rgba(0,0,0,.42)); }
+
+/* --- 4 · dibujado a mano ------------------------------------------------ */
+.s-hand .module       { filter: url(#ovRoughen) var(--shadow-soft); }
+.s-hand               { --sw: 7; --sw-thin: 5; --sw-hero: 10; }
+.s-hand .st           { stroke-linecap: round; stroke-linejoin: round; }
+.s-hand .tag          { letter-spacing: .1em; }
+
+/* --- 5 · isométrico ------------------------------------------------------ */
+/* .iso proyecta un grupo al plano isométrico; .iso-face / .iso-side dan volumen */
+.s-iso .iso           { transform: matrix(.866, .5, -.866, .5, 0, 0); }
+.s-iso .iso-face      { fill: rgba(255,255,255,.10); }
+.s-iso .iso-side      { fill: rgba(255,255,255,.05); }
+.s-iso .iso-top       { fill: rgba(255,255,255,.16); }
+.s-iso                { --sw: 5.5; --sw-thin: 4; --sw-hero: 7; }
+.s-iso .st.ghost      { stroke: rgba(255,255,255,.38); }
+.s-iso .module        { filter: drop-shadow(0 18px 30px rgba(0,0,0,.5)); }
+
+/* --- 6 · 3D suave -------------------------------------------------------- */
+.s-soft3d .solid      { fill: url(#ovSoft); stroke: none; }
+.s-soft3d .solid.accent { fill: url(#ovSoftAccent); }
+.s-soft3d .solid.gold   { fill: url(#ovSoftGold); }
+.s-soft3d .solid.ok     { fill: url(#ovSoftOk); }
+.s-soft3d .solid.warn   { fill: url(#ovSoftWarn); }
+.s-soft3d .solid.bad    { fill: url(#ovSoftBad); }
+.s-soft3d .solid.glass  { fill: url(#ovSoftGlass); }
+.s-soft3d .solid.dark   { fill: url(#ovSoftDark); }
+.s-soft3d .spec       { fill: url(#ovSpec); stroke: none; }
+/* carriles y conexiones: en masa, un trazo de 10-14px, nunca un pelo */
+.s-soft3d             { --sw: 5; --sw-thin: 4; --sw-hero: 6.5; --sw-rail: 16; }
+.s-soft3d .rail       { fill: none; stroke: rgba(255,255,255,.26);
+                        stroke-width: calc(var(--sw-rail) / var(--mscale));
+                        stroke-linecap: round; }
+.s-soft3d .rail.on    { stroke: rgba(255,255,255,.42); }
+.s-soft3d .st         { stroke: rgba(255,255,255,.62); }
+.s-soft3d .st.ghost   { stroke: rgba(255,255,255,.38); }
+.s-soft3d .module     { filter: drop-shadow(0 14px 26px rgba(0,0,0,.5)); }
+
+/* --- 7 · flat humanista (memphis adaptado) ------------------------------- */
+.s-flat {
+  --accent: #FF7A5C; --accent-2: #2E5BFF; --ok: #17C08B;
+  --warn: #FFC24B;   --bad: #F0544F;      --gold: #FFC24B;
+}
+.s-flat .solid        { fill: var(--accent); stroke: none; }
+.s-flat .solid.alt    { fill: var(--accent-2); }
+.s-flat .solid.soft   { fill: rgba(255,255,255,.88); }
+.s-flat               { --sw: 9; --sw-thin: 6; --sw-hero: 12; }
+.s-flat .st.dim       { stroke: rgba(255,255,255,.72); }
+.s-flat .st.ghost     { stroke: rgba(255,255,255,.45); }
+.s-flat .tag          { fill: var(--line); font-weight: 700; letter-spacing: .08em; }
+.s-flat .module       { filter: drop-shadow(0 10px 22px rgba(0,0,0,.42)); }
+
+/* --- 8 · neón editorial premium -----------------------------------------
+   No se ilumina todo: cada nodo conserva un frente nítido y una sola aura.
+   Los filtros tienen regiones amplias para no recortar el resplandor. */
+.s-neon {
+  --accent: #36DEFF;
+  --accent-2: #347BFF;
+  --bad: #FF4353;
+  --line: rgba(248,252,255,.98);
+  --line-2: rgba(220,239,255,.78);
+  --line-3: rgba(104,219,255,.56);
+  --fill-1: rgba(4,12,28,.62);
+  --fill-2: rgba(16,40,72,.34);
+  --fill-accent: rgba(31,132,255,.23);
+  --fill-bad: rgba(255,45,65,.20);
+  --sw: 10;
+  --sw-thin: 7;
+  --sw-hero: 14;
+  --sw-rail: 16;
+}
+.s-neon .module { filter: drop-shadow(0 12px 26px rgba(0,0,0,.58)); }
+.s-neon .glass-panel {
+  fill: url(#ovNeonGlass);
+  stroke: rgba(224,246,255,.92);
+  stroke-width: calc(var(--sw-thin) / var(--mscale));
+}
+.s-neon .neon-cyan  { filter: url(#ovGlowCyan); }
+.s-neon .neon-blue  { filter: url(#ovGlowBlue); }
+.s-neon .neon-red   { filter: url(#ovGlowRed); }
+.s-neon .soft-halo  { fill: url(#ovNeonHalo); stroke: none; }
+.s-neon .soft-danger{ fill: url(#ovNeonDanger); stroke: none; }
+.s-neon .route {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: calc(var(--sw-rail) / var(--mscale));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.s-neon .route.dash {
+  stroke-width: calc(var(--sw-thin) / var(--mscale));
+  stroke-dasharray: 10 24;
+}
+.s-neon .ring-dash {
+  fill: none;
+  stroke: var(--bad);
+  stroke-width: calc(var(--sw-thin) / var(--mscale));
+  stroke-dasharray: 4 15;
+}
+.s-neon .tag { font-weight: 750; letter-spacing: .08em; fill: var(--line); }
+.s-neon .num { font-weight: 800; }
+
+/* --- 9 · sticker 3D construido ------------------------------------------
+   El acabado imita una ilustración 3D limpia, pero cada capa sigue siendo
+   vectorial e independiente para poder construirse al ritmo de la narración. */
+.s-sticker3d {
+  --accent: #13CFFF;
+  --accent-2: #1266E8;
+  --bad: #F42E3D;
+  --line: #FFFFFF;
+  --line-2: rgba(255,255,255,.82);
+  --line-3: rgba(19,207,255,.72);
+  --sw: 10;
+  --sw-thin: 7;
+  --sw-hero: 14;
+  --sw-rail: 18;
+}
+.s-sticker3d .module { filter: drop-shadow(0 14px 24px rgba(0,12,38,.34)); }
+.s-sticker3d .sticker-object { filter: url(#ovStickerShadow); }
+.s-sticker3d .sticker-depth { fill: #073783; stroke: none; }
+.s-sticker3d .sticker-rim { fill: url(#ovStickerWhite); stroke: #FFFFFF;
+  stroke-width: calc(var(--sw-thin) / var(--mscale)); }
+.s-sticker3d .sticker-blue { fill: url(#ovStickerBlue); stroke: #0A3E8E;
+  stroke-width: calc(var(--sw-thin) / var(--mscale)); }
+.s-sticker3d .sticker-cyan { fill: url(#ovStickerCyan); stroke: #0752A6;
+  stroke-width: calc(var(--sw-thin) / var(--mscale)); }
+.s-sticker3d .sticker-red { fill: url(#ovStickerRed); stroke: #94142B;
+  stroke-width: calc(var(--sw-thin) / var(--mscale)); }
+.s-sticker3d .sticker-white { fill: url(#ovStickerWhite); stroke: rgba(8,43,99,.24);
+  stroke-width: calc(var(--sw-thin) / var(--mscale)); }
+.s-sticker3d .sticker-shine { fill: url(#ovStickerShine); stroke: none; }
+.s-sticker3d .sticker-route { fill: none; stroke: var(--accent);
+  stroke-width: calc(var(--sw-rail) / var(--mscale));
+  stroke-linecap: round; stroke-linejoin: round; }
+.s-sticker3d .sticker-route.dash { stroke-dasharray: 18 22; }
+.s-sticker3d .sticker-route-depth { fill: none; stroke: #0754AC;
+  stroke-width: calc((var(--sw-rail) + 8) / var(--mscale));
+  stroke-linecap: round; stroke-linejoin: round; }
+.s-sticker3d .sticker-impact { fill: var(--bad); stroke: none; }
+.s-sticker3d .num { font-weight: 850; fill: #FFFFFF;
+  filter: drop-shadow(0 5px 0 rgba(6,42,99,.72)); }

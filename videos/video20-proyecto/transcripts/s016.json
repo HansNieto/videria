@@ -1,0 +1,69 @@
+{
+  "source": "s016",
+  "name": "IMG_0183.MOV",
+  "fingerprint": "13e7e8b798202cc6",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 6.565,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.57,
+      "end": 5.77,
+      "text": "después considera la complejidad, urgencia y los riesgos.",
+      "avg_logprob": -0.2667,
+      "no_speech_prob": 0.0885,
+      "words": [
+        {
+          "w": "después",
+          "s": 0.57,
+          "e": 1.57,
+          "p": 0.408
+        },
+        {
+          "w": "considera",
+          "s": 1.57,
+          "e": 3.33,
+          "p": 0.903
+        },
+        {
+          "w": "la",
+          "s": 3.33,
+          "e": 3.47,
+          "p": 0.982
+        },
+        {
+          "w": "complejidad,",
+          "s": 3.47,
+          "e": 4.33,
+          "p": 0.997
+        },
+        {
+          "w": "urgencia",
+          "s": 4.49,
+          "e": 4.91,
+          "p": 0.956
+        },
+        {
+          "w": "y",
+          "s": 4.91,
+          "e": 5.15,
+          "p": 0.927
+        },
+        {
+          "w": "los",
+          "s": 5.15,
+          "e": 5.33,
+          "p": 0.983
+        },
+        {
+          "w": "riesgos.",
+          "s": 5.33,
+          "e": 5.77,
+          "p": 0.996
+        }
+      ]
+    }
+  ]
+}

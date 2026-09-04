@@ -1,0 +1,2674 @@
+{
+  "vcut_version": 1,
+  "name": "video19-proyecto",
+  "created_at": "2026-09-04T02:17:57+00:00",
+  "updated_at": "2026-09-04T02:28:55+00:00",
+  "input": {
+    "paths": [
+      "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19"
+    ],
+    "sort": "name",
+    "recursive": false
+  },
+  "config": {
+    "pause": 0.55,
+    "pad_in": 0.12,
+    "pad_out": 0.22,
+    "min_dur": 0.18,
+    "max_utt": 14.0,
+    "lookahead": 8,
+    "window": 90.0,
+    "sim_ratio": 0.68,
+    "contain": 0.8,
+    "prefix": 0.6
+  },
+  "sequence": {
+    "fps": 30.0,
+    "width": 1080,
+    "height": 1920
+  },
+  "sources": [
+    {
+      "id": "s001",
+      "index": 1,
+      "name": "IMG_0151.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0151.MOV",
+      "duration": 2.466667,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 2657848,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:11:53.000000Z",
+      "recorded_ts": 1786144313.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s001-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s001.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s001.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 4,
+        "tw": 28,
+        "th": 48,
+        "interval": 0.6167
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s002",
+      "index": 2,
+      "name": "IMG_0152.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0152.MOV",
+      "duration": 2.3,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 2493272,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:12:47.000000Z",
+      "recorded_ts": 1786144367.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s002-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s002.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s002.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 4,
+        "tw": 28,
+        "th": 48,
+        "interval": 0.575
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s003",
+      "index": 3,
+      "name": "IMG_0153.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0153.MOV",
+      "duration": 11.266667,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 12401234,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:12:56.000000Z",
+      "recorded_ts": 1786144376.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s003-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s003.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s003.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 11,
+        "tw": 28,
+        "th": 48,
+        "interval": 1.0242
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s004",
+      "index": 4,
+      "name": "IMG_0154.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0154.MOV",
+      "duration": 12.0,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 13678417,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:13:16.000000Z",
+      "recorded_ts": 1786144396.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s004-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s004.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s004.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 12,
+        "tw": 28,
+        "th": 48,
+        "interval": 1.0
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s005",
+      "index": 5,
+      "name": "IMG_0155.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0155.MOV",
+      "duration": 7.2317,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 9368956,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:13:38.000000Z",
+      "recorded_ts": 1786144418.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s005-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s005.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s005.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 7,
+        "tw": 28,
+        "th": 48,
+        "interval": 1.0331
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s006",
+      "index": 6,
+      "name": "IMG_0156.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0156.MOV",
+      "duration": 7.1,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 11761384,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:14:00.000000Z",
+      "recorded_ts": 1786144440.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s006-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s006.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s006.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 7,
+        "tw": 28,
+        "th": 48,
+        "interval": 1.0143
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s007",
+      "index": 7,
+      "name": "IMG_0157.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0157.MOV",
+      "duration": 2.066667,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 3503240,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:14:14.000000Z",
+      "recorded_ts": 1786144454.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s007-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s007.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s007.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 4,
+        "tw": 28,
+        "th": 48,
+        "interval": 0.5167
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s008",
+      "index": 8,
+      "name": "IMG_0158.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0158.MOV",
+      "duration": 5.798333,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 8102060,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:14:40.000000Z",
+      "recorded_ts": 1786144480.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s008-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s008.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s008.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 5,
+        "tw": 28,
+        "th": 48,
+        "interval": 1.1597
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s009",
+      "index": 9,
+      "name": "IMG_0159.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0159.MOV",
+      "duration": 21.2667,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 30852371,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:14:51.000000Z",
+      "recorded_ts": 1786144491.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s009-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s009.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s009.jpg",
+        "cols": 20,
+        "rows": 2,
+        "count": 21,
+        "tw": 28,
+        "th": 48,
+        "interval": 1.0127
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s010",
+      "index": 10,
+      "name": "IMG_0160.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0160.MOV",
+      "duration": 2.966667,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 3983653,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:15:20.000000Z",
+      "recorded_ts": 1786144520.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s010-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s010.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s010.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 4,
+        "tw": 28,
+        "th": 48,
+        "interval": 0.7417
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s011",
+      "index": 11,
+      "name": "IMG_0161.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0161.MOV",
+      "duration": 4.466667,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 5988331,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:15:26.000000Z",
+      "recorded_ts": 1786144526.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s011-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s011.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s011.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 4,
+        "tw": 28,
+        "th": 48,
+        "interval": 1.1167
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s012",
+      "index": 12,
+      "name": "IMG_0162.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0162.MOV",
+      "duration": 20.1,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 30302414,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:15:48.000000Z",
+      "recorded_ts": 1786144548.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s012-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s012.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s012.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 20,
+        "tw": 28,
+        "th": 48,
+        "interval": 1.005
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s013",
+      "index": 13,
+      "name": "IMG_0163.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0163.MOV",
+      "duration": 0.633333,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 644101,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:16:22.000000Z",
+      "recorded_ts": 1786144582.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s013-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s013.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s013.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 4,
+        "tw": 28,
+        "th": 48,
+        "interval": 0.1583
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s014",
+      "index": 14,
+      "name": "IMG_0164.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0164.MOV",
+      "duration": 5.465,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 9085550,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:16:30.000000Z",
+      "recorded_ts": 1786144590.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s014-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s014.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s014.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 5,
+        "tw": 28,
+        "th": 48,
+        "interval": 1.093
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s015",
+      "index": 15,
+      "name": "IMG_0165.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0165.MOV",
+      "duration": 24.608333,
+      "fps": 29.989841,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 35257848,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:16:44.000000Z",
+      "recorded_ts": 1786144604.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s015-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s015.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s015.jpg",
+        "cols": 20,
+        "rows": 2,
+        "count": 24,
+        "tw": 28,
+        "th": 48,
+        "interval": 1.0253
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s016",
+      "index": 16,
+      "name": "IMG_0166.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0166.MOV",
+      "duration": 2.765,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 3570436,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:17:35.000000Z",
+      "recorded_ts": 1786144655.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s016-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s016.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s016.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 4,
+        "tw": 28,
+        "th": 48,
+        "interval": 0.6913
+      },
+      "tiene_original": false
+    },
+    {
+      "id": "s017",
+      "index": 17,
+      "name": "IMG_0167.MOV",
+      "path": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19\\IMG_0167.MOV",
+      "duration": 17.4317,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "rotation": 90,
+      "vcodec": "hevc",
+      "acodec": "aac",
+      "pix_fmt": "yuv420p10le",
+      "has_audio": true,
+      "has_video": true,
+      "size": 25986610,
+      "start_timecode": "00:00:00:00",
+      "recorded_at": "2026-08-07T23:18:05.000000Z",
+      "recorded_ts": 1786144685.0,
+      "needs_proxy": true,
+      "proxy": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\proxy\\s017-original-v3.mp4",
+      "waveform": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\waveform\\s017.bin",
+      "filmstrip": {
+        "url": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\cache\\filmstrip\\s017.jpg",
+        "cols": 20,
+        "rows": 1,
+        "count": 17,
+        "tw": 28,
+        "th": 48,
+        "interval": 1.0254
+      },
+      "tiene_original": false
+    }
+  ],
+  "segments": [
+    {
+      "id": "u0001",
+      "source": "s001",
+      "source_index": 1,
+      "in": 1.85,
+      "out": 2.467,
+      "speech_in": 0.9,
+      "speech_out": 2.26,
+      "text": "Está con flash? No, no",
+      "conf": 0.671,
+      "words": [
+        {
+          "w": "Está",
+          "s": 0.9,
+          "e": 1.28
+        },
+        {
+          "w": "con",
+          "s": 1.28,
+          "e": 1.44
+        },
+        {
+          "w": "flash?",
+          "s": 1.44,
+          "e": 1.66
+        },
+        {
+          "w": "No,",
+          "s": 2.0,
+          "e": 2.16
+        },
+        {
+          "w": "no",
+          "s": 2.16,
+          "e": 2.26
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": true,
+      "reason": "apagada por revision",
+      "dur": 0.617,
+      "t": null
+    },
+    {
+      "id": "u0002",
+      "source": "s002",
+      "source_index": 2,
+      "in": 0.0,
+      "out": 1.68,
+      "speech_in": 0.0,
+      "speech_out": 1.46,
+      "text": "que la mayoría de apps que usas.",
+      "conf": 0.877,
+      "words": [
+        {
+          "w": "que",
+          "s": 0.0,
+          "e": 0.16
+        },
+        {
+          "w": "la",
+          "s": 0.16,
+          "e": 0.28
+        },
+        {
+          "w": "mayoría",
+          "s": 0.28,
+          "e": 0.7
+        },
+        {
+          "w": "de",
+          "s": 0.7,
+          "e": 0.92
+        },
+        {
+          "w": "apps",
+          "s": 0.92,
+          "e": 1.12
+        },
+        {
+          "w": "que",
+          "s": 1.12,
+          "e": 1.26
+        },
+        {
+          "w": "usas.",
+          "s": 1.26,
+          "e": 1.46
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": "g001",
+      "take_index": 1,
+      "take_count": 3,
+      "locked": false,
+      "reason": "toma descartada (1/3)",
+      "dur": 1.68,
+      "t": null
+    },
+    {
+      "id": "u0003",
+      "source": "s003",
+      "source_index": 3,
+      "in": 0.35,
+      "out": 6.17,
+      "speech_in": 0.47,
+      "speech_out": 5.95,
+      "text": "¿Sabías que la mayoría de apps que usas todos los días no funcionarían sin las APIs?",
+      "conf": 0.93,
+      "words": [
+        {
+          "w": "¿Sabías",
+          "s": 0.47,
+          "e": 1.25
+        },
+        {
+          "w": "que",
+          "s": 1.25,
+          "e": 1.45
+        },
+        {
+          "w": "la",
+          "s": 1.45,
+          "e": 1.63
+        },
+        {
+          "w": "mayoría",
+          "s": 1.63,
+          "e": 1.89
+        },
+        {
+          "w": "de",
+          "s": 1.89,
+          "e": 2.05
+        },
+        {
+          "w": "apps",
+          "s": 2.05,
+          "e": 2.25
+        },
+        {
+          "w": "que",
+          "s": 2.25,
+          "e": 2.35
+        },
+        {
+          "w": "usas",
+          "s": 2.35,
+          "e": 2.61
+        },
+        {
+          "w": "todos",
+          "s": 2.61,
+          "e": 2.87
+        },
+        {
+          "w": "los",
+          "s": 2.87,
+          "e": 3.07
+        },
+        {
+          "w": "días",
+          "s": 3.07,
+          "e": 3.57
+        },
+        {
+          "w": "no",
+          "s": 3.75,
+          "e": 4.11
+        },
+        {
+          "w": "funcionarían",
+          "s": 4.11,
+          "e": 5.13
+        },
+        {
+          "w": "sin",
+          "s": 5.21,
+          "e": 5.47
+        },
+        {
+          "w": "las",
+          "s": 5.47,
+          "e": 5.69
+        },
+        {
+          "w": "APIs?",
+          "s": 5.69,
+          "e": 5.95
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": "g001",
+      "take_index": 2,
+      "take_count": 3,
+      "locked": false,
+      "reason": "toma descartada (2/3)",
+      "dur": 5.82,
+      "t": null
+    },
+    {
+      "id": "u0004",
+      "source": "s003",
+      "source_index": 3,
+      "in": 7.32,
+      "out": 10.62,
+      "speech_in": 7.44,
+      "speech_out": 10.4,
+      "text": "Y probablemente las usas pero no te diste cuenta.",
+      "conf": 0.882,
+      "words": [
+        {
+          "w": "Y",
+          "s": 7.44,
+          "e": 7.6
+        },
+        {
+          "w": "probablemente",
+          "s": 7.6,
+          "e": 8.52
+        },
+        {
+          "w": "las",
+          "s": 8.52,
+          "e": 8.96
+        },
+        {
+          "w": "usas",
+          "s": 8.96,
+          "e": 9.4
+        },
+        {
+          "w": "pero",
+          "s": 9.4,
+          "e": 9.64
+        },
+        {
+          "w": "no",
+          "s": 9.64,
+          "e": 9.84
+        },
+        {
+          "w": "te",
+          "s": 9.84,
+          "e": 9.92
+        },
+        {
+          "w": "diste",
+          "s": 9.92,
+          "e": 10.16
+        },
+        {
+          "w": "cuenta.",
+          "s": 10.16,
+          "e": 10.4
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": true,
+      "reason": "apagada por revision",
+      "dur": 3.3,
+      "t": null
+    },
+    {
+      "id": "u0005",
+      "source": "s004",
+      "source_index": 4,
+      "in": 2.33,
+      "out": 10.05,
+      "speech_in": 2.45,
+      "speech_out": 9.83,
+      "text": "Sabías que la mayoría de apps que usas todos los días no funcionarían sin las APIs y probablemente no te diste cuenta.",
+      "conf": 0.907,
+      "words": [
+        {
+          "w": "Sabías",
+          "s": 2.45,
+          "e": 2.97
+        },
+        {
+          "w": "que",
+          "s": 2.97,
+          "e": 3.13
+        },
+        {
+          "w": "la",
+          "s": 3.13,
+          "e": 3.25
+        },
+        {
+          "w": "mayoría",
+          "s": 3.25,
+          "e": 3.59
+        },
+        {
+          "w": "de",
+          "s": 3.59,
+          "e": 3.75
+        },
+        {
+          "w": "apps",
+          "s": 3.75,
+          "e": 3.93
+        },
+        {
+          "w": "que",
+          "s": 3.93,
+          "e": 4.07
+        },
+        {
+          "w": "usas",
+          "s": 4.07,
+          "e": 4.37
+        },
+        {
+          "w": "todos",
+          "s": 4.37,
+          "e": 4.63
+        },
+        {
+          "w": "los",
+          "s": 4.63,
+          "e": 4.87
+        },
+        {
+          "w": "días",
+          "s": 4.87,
+          "e": 5.29
+        },
+        {
+          "w": "no",
+          "s": 5.29,
+          "e": 5.61
+        },
+        {
+          "w": "funcionarían",
+          "s": 5.61,
+          "e": 6.17
+        },
+        {
+          "w": "sin",
+          "s": 6.17,
+          "e": 6.39
+        },
+        {
+          "w": "las",
+          "s": 6.39,
+          "e": 6.65
+        },
+        {
+          "w": "APIs",
+          "s": 6.65,
+          "e": 6.99
+        },
+        {
+          "w": "y",
+          "s": 7.07,
+          "e": 8.21
+        },
+        {
+          "w": "probablemente",
+          "s": 8.21,
+          "e": 8.95
+        },
+        {
+          "w": "no",
+          "s": 8.95,
+          "e": 9.15
+        },
+        {
+          "w": "te",
+          "s": 9.15,
+          "e": 9.31
+        },
+        {
+          "w": "diste",
+          "s": 9.31,
+          "e": 9.59
+        },
+        {
+          "w": "cuenta.",
+          "s": 9.59,
+          "e": 9.83
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": "g001",
+      "take_index": 3,
+      "take_count": 3,
+      "locked": false,
+      "reason": "toma elegida (3/3)",
+      "dur": 7.72,
+      "t": 0.0
+    },
+    {
+      "id": "u0006",
+      "source": "s005",
+      "source_index": 5,
+      "in": 0.0,
+      "out": 1.55,
+      "speech_in": 0.0,
+      "speech_out": 1.66,
+      "text": "imagina que estas en un restaurante,",
+      "conf": 0.836,
+      "words": [
+        {
+          "w": "imagina",
+          "s": 0.0,
+          "e": 0.28
+        },
+        {
+          "w": "que",
+          "s": 0.28,
+          "e": 0.5
+        },
+        {
+          "w": "estas",
+          "s": 0.5,
+          "e": 0.62
+        },
+        {
+          "w": "en",
+          "s": 0.62,
+          "e": 0.8
+        },
+        {
+          "w": "un",
+          "s": 0.8,
+          "e": 0.92
+        },
+        {
+          "w": "restaurante,",
+          "s": 0.92,
+          "e": 1.66
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": false,
+      "reason": "habla",
+      "dur": 1.55,
+      "t": 7.72
+    },
+    {
+      "id": "u0007",
+      "source": "s005",
+      "source_index": 5,
+      "in": 2.31,
+      "out": 6.73,
+      "speech_in": 2.43,
+      "speech_out": 6.51,
+      "text": "tu eres el cliente, la cocina es el servidor y el mesero es la API.",
+      "conf": 0.93,
+      "words": [
+        {
+          "w": "tu",
+          "s": 2.43,
+          "e": 2.55
+        },
+        {
+          "w": "eres",
+          "s": 2.55,
+          "e": 2.89
+        },
+        {
+          "w": "el",
+          "s": 2.89,
+          "e": 3.09
+        },
+        {
+          "w": "cliente,",
+          "s": 3.09,
+          "e": 3.69
+        },
+        {
+          "w": "la",
+          "s": 3.79,
+          "e": 3.91
+        },
+        {
+          "w": "cocina",
+          "s": 3.91,
+          "e": 4.21
+        },
+        {
+          "w": "es",
+          "s": 4.21,
+          "e": 4.33
+        },
+        {
+          "w": "el",
+          "s": 4.33,
+          "e": 4.45
+        },
+        {
+          "w": "servidor",
+          "s": 4.45,
+          "e": 4.93
+        },
+        {
+          "w": "y",
+          "s": 4.93,
+          "e": 5.41
+        },
+        {
+          "w": "el",
+          "s": 5.41,
+          "e": 5.57
+        },
+        {
+          "w": "mesero",
+          "s": 5.57,
+          "e": 5.93
+        },
+        {
+          "w": "es",
+          "s": 5.93,
+          "e": 6.13
+        },
+        {
+          "w": "la",
+          "s": 6.13,
+          "e": 6.29
+        },
+        {
+          "w": "API.",
+          "s": 6.29,
+          "e": 6.51
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": false,
+      "reason": "habla",
+      "dur": 4.42,
+      "t": 9.27
+    },
+    {
+      "id": "u0008",
+      "source": "s006",
+      "source_index": 6,
+      "in": 0.0,
+      "out": 6.6,
+      "speech_in": 0.0,
+      "speech_out": 6.38,
+      "text": "que tú le pides una hamburguesa al mesero. Él lleva el pedido a la cocina y regresa con la comida.",
+      "conf": 0.918,
+      "words": [
+        {
+          "w": "que",
+          "s": 0.0,
+          "e": 0.58
+        },
+        {
+          "w": "tú",
+          "s": 0.58,
+          "e": 0.82
+        },
+        {
+          "w": "le",
+          "s": 0.82,
+          "e": 1.02
+        },
+        {
+          "w": "pides",
+          "s": 1.02,
+          "e": 1.2
+        },
+        {
+          "w": "una",
+          "s": 1.2,
+          "e": 1.42
+        },
+        {
+          "w": "hamburguesa",
+          "s": 1.42,
+          "e": 1.88
+        },
+        {
+          "w": "al",
+          "s": 1.88,
+          "e": 2.02
+        },
+        {
+          "w": "mesero.",
+          "s": 2.02,
+          "e": 2.6
+        },
+        {
+          "w": "Él",
+          "s": 3.06,
+          "e": 3.24
+        },
+        {
+          "w": "lleva",
+          "s": 3.24,
+          "e": 3.46
+        },
+        {
+          "w": "el",
+          "s": 3.46,
+          "e": 3.64
+        },
+        {
+          "w": "pedido",
+          "s": 3.64,
+          "e": 3.9
+        },
+        {
+          "w": "a",
+          "s": 3.9,
+          "e": 3.96
+        },
+        {
+          "w": "la",
+          "s": 3.96,
+          "e": 4.12
+        },
+        {
+          "w": "cocina",
+          "s": 4.12,
+          "e": 4.66
+        },
+        {
+          "w": "y",
+          "s": 5.0,
+          "e": 5.44
+        },
+        {
+          "w": "regresa",
+          "s": 5.44,
+          "e": 5.82
+        },
+        {
+          "w": "con",
+          "s": 5.82,
+          "e": 5.96
+        },
+        {
+          "w": "la",
+          "s": 5.96,
+          "e": 6.14
+        },
+        {
+          "w": "comida.",
+          "s": 6.14,
+          "e": 6.38
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": false,
+      "reason": "habla",
+      "dur": 6.6,
+      "t": 13.69
+    },
+    {
+      "id": "u0009",
+      "source": "s007",
+      "source_index": 7,
+      "in": 0.0,
+      "out": 1.62,
+      "speech_in": 0.0,
+      "speech_out": 1.4,
+      "text": "si hace exactamente eso.",
+      "conf": 0.708,
+      "words": [
+        {
+          "w": "si",
+          "s": 0.0,
+          "e": 0.1
+        },
+        {
+          "w": "hace",
+          "s": 0.1,
+          "e": 0.44
+        },
+        {
+          "w": "exactamente",
+          "s": 0.44,
+          "e": 1.14
+        },
+        {
+          "w": "eso.",
+          "s": 1.14,
+          "e": 1.4
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": false,
+      "reason": "habla",
+      "dur": 1.62,
+      "t": 20.29
+    },
+    {
+      "id": "u0010",
+      "source": "s008",
+      "source_index": 8,
+      "in": 0.0,
+      "out": 5.25,
+      "speech_in": 0.0,
+      "speech_out": 5.03,
+      "text": "Sigue una solicitud de una aplicación, la lleva al servidor y regresa con la respuesta.",
+      "conf": 0.912,
+      "words": [
+        {
+          "w": "Sigue",
+          "s": 0.0,
+          "e": 0.16
+        },
+        {
+          "w": "una",
+          "s": 0.16,
+          "e": 0.46
+        },
+        {
+          "w": "solicitud",
+          "s": 0.46,
+          "e": 1.02
+        },
+        {
+          "w": "de",
+          "s": 1.02,
+          "e": 1.18
+        },
+        {
+          "w": "una",
+          "s": 1.18,
+          "e": 1.36
+        },
+        {
+          "w": "aplicación,",
+          "s": 1.36,
+          "e": 2.08
+        },
+        {
+          "w": "la",
+          "s": 2.43,
+          "e": 2.57
+        },
+        {
+          "w": "lleva",
+          "s": 2.57,
+          "e": 2.73
+        },
+        {
+          "w": "al",
+          "s": 2.73,
+          "e": 2.87
+        },
+        {
+          "w": "servidor",
+          "s": 2.87,
+          "e": 3.37
+        },
+        {
+          "w": "y",
+          "s": 3.37,
+          "e": 3.95
+        },
+        {
+          "w": "regresa",
+          "s": 3.95,
+          "e": 4.39
+        },
+        {
+          "w": "con",
+          "s": 4.39,
+          "e": 4.53
+        },
+        {
+          "w": "la",
+          "s": 4.53,
+          "e": 4.71
+        },
+        {
+          "w": "respuesta.",
+          "s": 4.71,
+          "e": 5.03
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": "g002",
+      "take_index": 1,
+      "take_count": 5,
+      "locked": false,
+      "reason": "toma descartada (1/5)",
+      "dur": 5.25,
+      "t": null
+    },
+    {
+      "id": "u0011",
+      "source": "s009",
+      "source_index": 9,
+      "in": 0.0,
+      "out": 2.7,
+      "speech_in": 0.0,
+      "speech_out": 2.48,
+      "text": "recibe la solicitud de una aplicación,",
+      "conf": 0.922,
+      "words": [
+        {
+          "w": "recibe",
+          "s": 0.0,
+          "e": 0.74
+        },
+        {
+          "w": "la",
+          "s": 0.74,
+          "e": 0.86
+        },
+        {
+          "w": "solicitud",
+          "s": 0.86,
+          "e": 1.38
+        },
+        {
+          "w": "de",
+          "s": 1.38,
+          "e": 1.52
+        },
+        {
+          "w": "una",
+          "s": 1.52,
+          "e": 1.68
+        },
+        {
+          "w": "aplicación,",
+          "s": 1.68,
+          "e": 2.48
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": "g002",
+      "take_index": 2,
+      "take_count": 5,
+      "locked": false,
+      "reason": "toma descartada (2/5)",
+      "dur": 2.7,
+      "t": null
+    },
+    {
+      "id": "u0012",
+      "source": "s009",
+      "source_index": 9,
+      "in": 5.94,
+      "out": 8.2,
+      "speech_in": 6.06,
+      "speech_out": 7.98,
+      "text": "recibe la solicitud de una aplicación,",
+      "conf": 0.963,
+      "words": [
+        {
+          "w": "recibe",
+          "s": 6.06,
+          "e": 6.26
+        },
+        {
+          "w": "la",
+          "s": 6.26,
+          "e": 6.4
+        },
+        {
+          "w": "solicitud",
+          "s": 6.4,
+          "e": 6.96
+        },
+        {
+          "w": "de",
+          "s": 6.96,
+          "e": 7.1
+        },
+        {
+          "w": "una",
+          "s": 7.1,
+          "e": 7.24
+        },
+        {
+          "w": "aplicación,",
+          "s": 7.24,
+          "e": 7.98
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": "g002",
+      "take_index": 3,
+      "take_count": 5,
+      "locked": false,
+      "reason": "toma descartada (3/5)",
+      "dur": 2.26,
+      "t": null
+    },
+    {
+      "id": "u0013",
+      "source": "s009",
+      "source_index": 9,
+      "in": 8.44,
+      "out": 9.98,
+      "speech_in": 8.56,
+      "speech_out": 9.76,
+      "text": "la lleves al",
+      "conf": 0.471,
+      "words": [
+        {
+          "w": "la",
+          "s": 8.56,
+          "e": 8.58
+        },
+        {
+          "w": "lleves",
+          "s": 8.56,
+          "e": 8.96
+        },
+        {
+          "w": "al",
+          "s": 8.96,
+          "e": 9.76
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": true,
+      "reason": "apagada por revision",
+      "dur": 1.54,
+      "t": null
+    },
+    {
+      "id": "u0014",
+      "source": "s009",
+      "source_index": 9,
+      "in": 10.55,
+      "out": 12.91,
+      "speech_in": 10.67,
+      "speech_out": 12.69,
+      "text": "server, recibe la respuesta de una aplicación.",
+      "conf": 0.625,
+      "words": [
+        {
+          "w": "server,",
+          "s": 10.67,
+          "e": 10.73
+        },
+        {
+          "w": "recibe",
+          "s": 10.97,
+          "e": 11.27
+        },
+        {
+          "w": "la",
+          "s": 11.27,
+          "e": 11.35
+        },
+        {
+          "w": "respuesta",
+          "s": 11.35,
+          "e": 11.79
+        },
+        {
+          "w": "de",
+          "s": 11.79,
+          "e": 11.93
+        },
+        {
+          "w": "una",
+          "s": 11.93,
+          "e": 12.13
+        },
+        {
+          "w": "aplicación.",
+          "s": 12.13,
+          "e": 12.69
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": "g002",
+      "take_index": 4,
+      "take_count": 5,
+      "locked": false,
+      "reason": "toma descartada (4/5)",
+      "dur": 2.36,
+      "t": null
+    },
+    {
+      "id": "u0015",
+      "source": "s009",
+      "source_index": 9,
+      "in": 14.85,
+      "out": 20.62,
+      "speech_in": 14.97,
+      "speech_out": 20.4,
+      "text": "Recibe una solicitud de una aplicación la lleva al server y devuelve la respuesta.",
+      "conf": 0.832,
+      "words": [
+        {
+          "w": "Recibe",
+          "s": 14.97,
+          "e": 15.45
+        },
+        {
+          "w": "una",
+          "s": 15.45,
+          "e": 15.79
+        },
+        {
+          "w": "solicitud",
+          "s": 15.79,
+          "e": 16.43
+        },
+        {
+          "w": "de",
+          "s": 16.43,
+          "e": 16.59
+        },
+        {
+          "w": "una",
+          "s": 16.59,
+          "e": 16.75
+        },
+        {
+          "w": "aplicación",
+          "s": 16.75,
+          "e": 17.37
+        },
+        {
+          "w": "la",
+          "s": 17.37,
+          "e": 17.75
+        },
+        {
+          "w": "lleva",
+          "s": 17.75,
+          "e": 18.07
+        },
+        {
+          "w": "al",
+          "s": 18.07,
+          "e": 18.25
+        },
+        {
+          "w": "server",
+          "s": 18.25,
+          "e": 18.71
+        },
+        {
+          "w": "y",
+          "s": 18.86,
+          "e": 19.52
+        },
+        {
+          "w": "devuelve",
+          "s": 19.52,
+          "e": 19.88
+        },
+        {
+          "w": "la",
+          "s": 19.88,
+          "e": 20.14
+        },
+        {
+          "w": "respuesta.",
+          "s": 20.14,
+          "e": 20.4
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": "g002",
+      "take_index": 5,
+      "take_count": 5,
+      "locked": false,
+      "reason": "toma elegida (5/5)",
+      "dur": 5.77,
+      "t": 21.91
+    },
+    {
+      "id": "u0016",
+      "source": "s010",
+      "source_index": 10,
+      "in": 0.0,
+      "out": 2.3,
+      "speech_in": 0.0,
+      "speech_out": 2.08,
+      "text": "cuando la aplicación del clima muestra",
+      "conf": 0.952,
+      "words": [
+        {
+          "w": "cuando",
+          "s": 0.0,
+          "e": 0.3
+        },
+        {
+          "w": "la",
+          "s": 0.3,
+          "e": 0.52
+        },
+        {
+          "w": "aplicación",
+          "s": 0.52,
+          "e": 0.96
+        },
+        {
+          "w": "del",
+          "s": 0.96,
+          "e": 1.12
+        },
+        {
+          "w": "clima",
+          "s": 1.12,
+          "e": 1.62
+        },
+        {
+          "w": "muestra",
+          "s": 1.62,
+          "e": 2.08
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": "g003",
+      "take_index": 1,
+      "take_count": 3,
+      "locked": false,
+      "reason": "toma descartada (1/3)",
+      "dur": 2.3,
+      "t": null
+    },
+    {
+      "id": "u0017",
+      "source": "s011",
+      "source_index": 11,
+      "in": 0.0,
+      "out": 3.82,
+      "speech_in": 0.0,
+      "speech_out": 3.6,
+      "text": "Por ejemplo, cuando la app del clima muestra la temperatura de tu ciudad.",
+      "conf": 0.927,
+      "words": [
+        {
+          "w": "Por",
+          "s": 0.0,
+          "e": 0.08
+        },
+        {
+          "w": "ejemplo,",
+          "s": 0.08,
+          "e": 0.46
+        },
+        {
+          "w": "cuando",
+          "s": 0.82,
+          "e": 0.9
+        },
+        {
+          "w": "la",
+          "s": 0.9,
+          "e": 1.1
+        },
+        {
+          "w": "app",
+          "s": 1.1,
+          "e": 1.32
+        },
+        {
+          "w": "del",
+          "s": 1.32,
+          "e": 1.54
+        },
+        {
+          "w": "clima",
+          "s": 1.54,
+          "e": 1.94
+        },
+        {
+          "w": "muestra",
+          "s": 1.94,
+          "e": 2.32
+        },
+        {
+          "w": "la",
+          "s": 2.32,
+          "e": 2.52
+        },
+        {
+          "w": "temperatura",
+          "s": 2.52,
+          "e": 3.04
+        },
+        {
+          "w": "de",
+          "s": 3.04,
+          "e": 3.26
+        },
+        {
+          "w": "tu",
+          "s": 3.26,
+          "e": 3.34
+        },
+        {
+          "w": "ciudad.",
+          "s": 3.34,
+          "e": 3.6
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": "g003",
+      "take_index": 2,
+      "take_count": 3,
+      "locked": false,
+      "reason": "toma descartada (2/3)",
+      "dur": 3.82,
+      "t": null
+    },
+    {
+      "id": "u0018",
+      "source": "s012",
+      "source_index": 12,
+      "in": 5.57,
+      "out": 10.98,
+      "speech_in": 5.69,
+      "speech_out": 10.76,
+      "text": "le hace la petición mediante la API y recibe los resultados en segundos",
+      "conf": 0.919,
+      "words": [
+        {
+          "w": "le",
+          "s": 5.69,
+          "e": 6.09
+        },
+        {
+          "w": "hace",
+          "s": 6.09,
+          "e": 6.29
+        },
+        {
+          "w": "la",
+          "s": 6.29,
+          "e": 6.47
+        },
+        {
+          "w": "petición",
+          "s": 6.47,
+          "e": 7.01
+        },
+        {
+          "w": "mediante",
+          "s": 7.01,
+          "e": 7.35
+        },
+        {
+          "w": "la",
+          "s": 7.35,
+          "e": 7.57
+        },
+        {
+          "w": "API",
+          "s": 7.57,
+          "e": 7.87
+        },
+        {
+          "w": "y",
+          "s": 8.36,
+          "e": 9.14
+        },
+        {
+          "w": "recibe",
+          "s": 9.14,
+          "e": 9.46
+        },
+        {
+          "w": "los",
+          "s": 9.46,
+          "e": 9.68
+        },
+        {
+          "w": "resultados",
+          "s": 9.68,
+          "e": 10.0
+        },
+        {
+          "w": "en",
+          "s": 10.0,
+          "e": 10.2
+        },
+        {
+          "w": "segundos",
+          "s": 10.2,
+          "e": 10.76
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": false,
+      "reason": "habla",
+      "dur": 5.41,
+      "t": 27.68
+    },
+    {
+      "id": "u0019",
+      "source": "s012",
+      "source_index": 12,
+      "in": 11.84,
+      "out": 12.61,
+      "speech_in": 11.61,
+      "speech_out": 12.39,
+      "text": "acá dice",
+      "conf": 0.579,
+      "words": [
+        {
+          "w": "acá",
+          "s": 11.61,
+          "e": 12.15
+        },
+        {
+          "w": "dice",
+          "s": 12.15,
+          "e": 12.39
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": true,
+      "reason": "apagada por revision",
+      "dur": 0.77,
+      "t": null
+    },
+    {
+      "id": "u0020",
+      "source": "s012",
+      "source_index": 12,
+      "in": 14.74,
+      "out": 18.54,
+      "speech_in": 14.86,
+      "speech_out": 18.62,
+      "text": "no pero dije por ejemplo tu dices no de no y vuelvo a decir por ejemplo mira revisa",
+      "conf": 0.752,
+      "words": [
+        {
+          "w": "no",
+          "s": 14.86,
+          "e": 15.3
+        },
+        {
+          "w": "pero",
+          "s": 15.3,
+          "e": 15.44
+        },
+        {
+          "w": "dije",
+          "s": 15.44,
+          "e": 15.76
+        },
+        {
+          "w": "por",
+          "s": 15.76,
+          "e": 15.96
+        },
+        {
+          "w": "ejemplo",
+          "s": 15.96,
+          "e": 16.22
+        },
+        {
+          "w": "tu",
+          "s": 16.22,
+          "e": 16.38
+        },
+        {
+          "w": "dices",
+          "s": 16.38,
+          "e": 16.58
+        },
+        {
+          "w": "no",
+          "s": 16.58,
+          "e": 16.7
+        },
+        {
+          "w": "de",
+          "s": 16.7,
+          "e": 16.78
+        },
+        {
+          "w": "no",
+          "s": 16.78,
+          "e": 16.88
+        },
+        {
+          "w": "y",
+          "s": 16.88,
+          "e": 17.0
+        },
+        {
+          "w": "vuelvo",
+          "s": 17.0,
+          "e": 17.18
+        },
+        {
+          "w": "a",
+          "s": 17.18,
+          "e": 17.24
+        },
+        {
+          "w": "decir",
+          "s": 17.24,
+          "e": 17.32
+        },
+        {
+          "w": "por",
+          "s": 17.32,
+          "e": 17.46
+        },
+        {
+          "w": "ejemplo",
+          "s": 17.46,
+          "e": 17.68
+        },
+        {
+          "w": "mira",
+          "s": 17.68,
+          "e": 17.94
+        },
+        {
+          "w": "revisa",
+          "s": 17.94,
+          "e": 18.62
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": true,
+      "reason": "apagada por revision",
+      "dur": 3.8,
+      "t": null
+    },
+    {
+      "id": "u0021",
+      "source": "s014",
+      "source_index": 14,
+      "in": 0.61,
+      "out": 4.33,
+      "speech_in": 0.73,
+      "speech_out": 4.11,
+      "text": "Por ejemplo, cuando la app del clima muestra la temperatura de tu ciudad.",
+      "conf": 0.946,
+      "words": [
+        {
+          "w": "Por",
+          "s": 0.73,
+          "e": 1.07
+        },
+        {
+          "w": "ejemplo,",
+          "s": 1.07,
+          "e": 1.35
+        },
+        {
+          "w": "cuando",
+          "s": 1.59,
+          "e": 1.65
+        },
+        {
+          "w": "la",
+          "s": 1.65,
+          "e": 1.83
+        },
+        {
+          "w": "app",
+          "s": 1.83,
+          "e": 2.05
+        },
+        {
+          "w": "del",
+          "s": 2.05,
+          "e": 2.23
+        },
+        {
+          "w": "clima",
+          "s": 2.23,
+          "e": 2.51
+        },
+        {
+          "w": "muestra",
+          "s": 2.51,
+          "e": 2.83
+        },
+        {
+          "w": "la",
+          "s": 2.83,
+          "e": 3.01
+        },
+        {
+          "w": "temperatura",
+          "s": 3.01,
+          "e": 3.51
+        },
+        {
+          "w": "de",
+          "s": 3.51,
+          "e": 3.73
+        },
+        {
+          "w": "tu",
+          "s": 3.73,
+          "e": 3.83
+        },
+        {
+          "w": "ciudad.",
+          "s": 3.83,
+          "e": 4.11
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": "g003",
+      "take_index": 3,
+      "take_count": 3,
+      "locked": false,
+      "reason": "toma elegida (3/3)",
+      "dur": 3.72,
+      "t": 33.09
+    },
+    {
+      "id": "u0022",
+      "source": "s015",
+      "source_index": 15,
+      "in": 0.0,
+      "out": 7.11,
+      "speech_in": 0.0,
+      "speech_out": 6.89,
+      "text": "En resumen, el API es el puente que permite que se comuniquen entre diferentes",
+      "conf": 0.903,
+      "words": [
+        {
+          "w": "En",
+          "s": 0.0,
+          "e": 0.26
+        },
+        {
+          "w": "resumen,",
+          "s": 0.26,
+          "e": 0.62
+        },
+        {
+          "w": "el",
+          "s": 0.84,
+          "e": 0.86
+        },
+        {
+          "w": "API",
+          "s": 0.86,
+          "e": 1.16
+        },
+        {
+          "w": "es",
+          "s": 1.21,
+          "e": 3.25
+        },
+        {
+          "w": "el",
+          "s": 3.25,
+          "e": 3.37
+        },
+        {
+          "w": "puente",
+          "s": 3.37,
+          "e": 4.09
+        },
+        {
+          "w": "que",
+          "s": 4.09,
+          "e": 4.31
+        },
+        {
+          "w": "permite",
+          "s": 4.31,
+          "e": 4.77
+        },
+        {
+          "w": "que",
+          "s": 4.77,
+          "e": 5.43
+        },
+        {
+          "w": "se",
+          "s": 5.43,
+          "e": 5.51
+        },
+        {
+          "w": "comuniquen",
+          "s": 5.51,
+          "e": 6.01
+        },
+        {
+          "w": "entre",
+          "s": 6.01,
+          "e": 6.21
+        },
+        {
+          "w": "diferentes",
+          "s": 6.21,
+          "e": 6.89
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": false,
+      "reason": "habla",
+      "dur": 7.11,
+      "t": 36.81
+    },
+    {
+      "id": "u0023",
+      "source": "s015",
+      "source_index": 15,
+      "in": 18.82,
+      "out": 24.14,
+      "speech_in": 18.62,
+      "speech_out": 23.92,
+      "text": "programas que se comuniquen entre sí.",
+      "conf": 0.742,
+      "words": [
+        {
+          "w": "programas",
+          "s": 18.62,
+          "e": 20.98
+        },
+        {
+          "w": "que",
+          "s": 20.98,
+          "e": 21.04
+        },
+        {
+          "w": "se",
+          "s": 21.04,
+          "e": 22.88
+        },
+        {
+          "w": "comuniquen",
+          "s": 22.88,
+          "e": 23.48
+        },
+        {
+          "w": "entre",
+          "s": 23.48,
+          "e": 23.72
+        },
+        {
+          "w": "sí.",
+          "s": 23.72,
+          "e": 23.92
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": false,
+      "reason": "habla",
+      "dur": 5.32,
+      "t": 43.92
+    },
+    {
+      "id": "u0024",
+      "source": "s016",
+      "source_index": 16,
+      "in": 0.0,
+      "out": 1.66,
+      "speech_in": 0.0,
+      "speech_out": 1.44,
+      "text": "a aprender más conceptos.",
+      "conf": 0.414,
+      "words": [
+        {
+          "w": "a",
+          "s": 0.0,
+          "e": 0.18
+        },
+        {
+          "w": "aprender",
+          "s": 0.18,
+          "e": 0.42
+        },
+        {
+          "w": "más",
+          "s": 0.42,
+          "e": 0.72
+        },
+        {
+          "w": "conceptos.",
+          "s": 0.72,
+          "e": 1.44
+        }
+      ],
+      "kind": "speech",
+      "enabled": false,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": true,
+      "reason": "apagada por revision",
+      "dur": 1.66,
+      "t": null
+    },
+    {
+      "id": "u0025",
+      "source": "s017",
+      "source_index": 17,
+      "in": 0.0,
+      "out": 6.83,
+      "speech_in": 0.12,
+      "speech_out": 6.61,
+      "text": "Si quieres aprender más conceptos de tecnología de forma sencilla,",
+      "conf": 0.864,
+      "words": [
+        {
+          "w": "Si",
+          "s": 0.12,
+          "e": 0.44
+        },
+        {
+          "w": "quieres",
+          "s": 0.44,
+          "e": 0.72
+        },
+        {
+          "w": "aprender",
+          "s": 0.72,
+          "e": 1.2
+        },
+        {
+          "w": "más",
+          "s": 1.2,
+          "e": 1.44
+        },
+        {
+          "w": "conceptos",
+          "s": 1.55,
+          "e": 4.69
+        },
+        {
+          "w": "de",
+          "s": 4.69,
+          "e": 4.71
+        },
+        {
+          "w": "tecnología",
+          "s": 4.69,
+          "e": 5.21
+        },
+        {
+          "w": "de",
+          "s": 5.21,
+          "e": 5.43
+        },
+        {
+          "w": "forma",
+          "s": 5.43,
+          "e": 5.75
+        },
+        {
+          "w": "sencilla,",
+          "s": 5.75,
+          "e": 6.61
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": false,
+      "reason": "habla",
+      "dur": 6.83,
+      "t": 49.24
+    },
+    {
+      "id": "u0026",
+      "source": "s017",
+      "source_index": 17,
+      "in": 8.01,
+      "out": 16.34,
+      "speech_in": 7.4,
+      "speech_out": 16.12,
+      "text": "síguenos y dinos en los comentarios cual quieres que expliquemos en el siguiente video.",
+      "conf": 0.916,
+      "words": [
+        {
+          "w": "síguenos",
+          "s": 7.4,
+          "e": 11.62
+        },
+        {
+          "w": "y",
+          "s": 11.76,
+          "e": 12.88
+        },
+        {
+          "w": "dinos",
+          "s": 12.88,
+          "e": 13.36
+        },
+        {
+          "w": "en",
+          "s": 13.36,
+          "e": 13.4
+        },
+        {
+          "w": "los",
+          "s": 13.4,
+          "e": 13.64
+        },
+        {
+          "w": "comentarios",
+          "s": 13.64,
+          "e": 13.98
+        },
+        {
+          "w": "cual",
+          "s": 13.98,
+          "e": 14.28
+        },
+        {
+          "w": "quieres",
+          "s": 14.28,
+          "e": 14.52
+        },
+        {
+          "w": "que",
+          "s": 14.52,
+          "e": 14.86
+        },
+        {
+          "w": "expliquemos",
+          "s": 14.86,
+          "e": 15.22
+        },
+        {
+          "w": "en",
+          "s": 15.22,
+          "e": 15.44
+        },
+        {
+          "w": "el",
+          "s": 15.44,
+          "e": 15.48
+        },
+        {
+          "w": "siguiente",
+          "s": 15.48,
+          "e": 15.8
+        },
+        {
+          "w": "video.",
+          "s": 15.8,
+          "e": 16.12
+        }
+      ],
+      "kind": "speech",
+      "enabled": true,
+      "group": null,
+      "take_index": 0,
+      "take_count": 0,
+      "locked": false,
+      "reason": "habla",
+      "dur": 8.33,
+      "t": 56.07
+    }
+  ],
+  "groups": [
+    {
+      "id": "g001",
+      "kind": "repeated_take",
+      "members": [
+        "u0002",
+        "u0003",
+        "u0005"
+      ],
+      "texts": [
+        "que la mayoría de apps que usas.",
+        "¿Sabías que la mayoría de apps que usas todos los días no funcionarían sin las APIs?",
+        "Sabías que la mayoría de apps que usas todos los días no funcionarían sin las APIs y probablemente no te diste cuenta."
+      ],
+      "scores": {
+        "u0002": 0.7694,
+        "u0003": 0.9755,
+        "u0005": 0.9674
+      },
+      "last": "u0005",
+      "best_scored": "u0003",
+      "chosen": "u0005",
+      "decided_by": "auto:last",
+      "links": [
+        {
+          "from": "u0002",
+          "to": "u0003",
+          "why": "contenida",
+          "score": 1.0
+        },
+        {
+          "from": "u0002",
+          "to": "u0005",
+          "why": "contenida",
+          "score": 1.0
+        },
+        {
+          "from": "u0003",
+          "to": "u0005",
+          "why": "repeticion",
+          "score": 0.842
+        }
+      ]
+    },
+    {
+      "id": "g002",
+      "kind": "repeated_take",
+      "members": [
+        "u0010",
+        "u0011",
+        "u0012",
+        "u0014",
+        "u0015"
+      ],
+      "texts": [
+        "Sigue una solicitud de una aplicación, la lleva al servidor y regresa con la respuesta.",
+        "recibe la solicitud de una aplicación,",
+        "recibe la solicitud de una aplicación,",
+        "server, recibe la respuesta de una aplicación.",
+        "Recibe una solicitud de una aplicación la lleva al server y devuelve la respuesta."
+      ],
+      "scores": {
+        "u0010": 0.9692,
+        "u0011": 0.7477,
+        "u0012": 0.762,
+        "u0014": 0.6813,
+        "u0015": 0.9412
+      },
+      "last": "u0015",
+      "best_scored": "u0010",
+      "chosen": "u0015",
+      "decided_by": "auto:last",
+      "links": [
+        {
+          "from": "u0010",
+          "to": "u0015",
+          "why": "repeticion",
+          "score": 0.759
+        },
+        {
+          "from": "u0011",
+          "to": "u0012",
+          "why": "repeticion",
+          "score": 1.0
+        },
+        {
+          "from": "u0011",
+          "to": "u0014",
+          "why": "repeticion",
+          "score": 0.769
+        },
+        {
+          "from": "u0011",
+          "to": "u0015",
+          "why": "contenida",
+          "score": 0.833
+        },
+        {
+          "from": "u0012",
+          "to": "u0014",
+          "why": "repeticion",
+          "score": 0.769
+        },
+        {
+          "from": "u0012",
+          "to": "u0015",
+          "why": "contenida",
+          "score": 0.833
+        }
+      ]
+    },
+    {
+      "id": "g003",
+      "kind": "repeated_take",
+      "members": [
+        "u0016",
+        "u0017",
+        "u0021"
+      ],
+      "texts": [
+        "cuando la aplicación del clima muestra",
+        "Por ejemplo, cuando la app del clima muestra la temperatura de tu ciudad.",
+        "Por ejemplo, cuando la app del clima muestra la temperatura de tu ciudad."
+      ],
+      "scores": {
+        "u0016": 0.7582,
+        "u0017": 0.9745,
+        "u0021": 0.9811
+      },
+      "last": "u0021",
+      "best_scored": "u0021",
+      "chosen": "u0021",
+      "decided_by": "auto:last",
+      "links": [
+        {
+          "from": "u0016",
+          "to": "u0017",
+          "why": "contenida",
+          "score": 0.833
+        },
+        {
+          "from": "u0016",
+          "to": "u0021",
+          "why": "contenida",
+          "score": 0.833
+        },
+        {
+          "from": "u0017",
+          "to": "u0021",
+          "why": "repeticion",
+          "score": 1.0
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "sources": 17,
+    "raw_duration": 149.93,
+    "cut_duration": 64.4,
+    "removed": 85.53,
+    "removed_pct": 57.0,
+    "segments_total": 26,
+    "segments_enabled": 12,
+    "timeline_duration": 64.4
+  },
+  "language": "es",
+  "notes": "Revisión manual: se retiraron la prueba de flash, repeticiones, fragmentos de toma y la corrección hablada fuera del guion."
+}

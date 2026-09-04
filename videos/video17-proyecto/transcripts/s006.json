@@ -1,0 +1,75 @@
+{
+  "source": "s006",
+  "name": "IMG_0124.MOV",
+  "fingerprint": "9bd9d24345073aab",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 4.6317,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.7,
+      "end": 3.9,
+      "text": "El caso contrario es enviar demasiada información de golpe.",
+      "avg_logprob": -0.2457,
+      "no_speech_prob": 0.0106,
+      "words": [
+        {
+          "w": "El",
+          "s": 0.7,
+          "e": 1.04,
+          "p": 0.647
+        },
+        {
+          "w": "caso",
+          "s": 1.04,
+          "e": 1.32,
+          "p": 0.997
+        },
+        {
+          "w": "contrario",
+          "s": 1.32,
+          "e": 1.68,
+          "p": 0.998
+        },
+        {
+          "w": "es",
+          "s": 1.68,
+          "e": 1.98,
+          "p": 0.963
+        },
+        {
+          "w": "enviar",
+          "s": 1.98,
+          "e": 2.3,
+          "p": 0.995
+        },
+        {
+          "w": "demasiada",
+          "s": 2.3,
+          "e": 2.88,
+          "p": 0.981
+        },
+        {
+          "w": "información",
+          "s": 2.88,
+          "e": 3.42,
+          "p": 0.994
+        },
+        {
+          "w": "de",
+          "s": 3.42,
+          "e": 3.66,
+          "p": 0.981
+        },
+        {
+          "w": "golpe.",
+          "s": 3.66,
+          "e": 3.9,
+          "p": 0.996
+        }
+      ]
+    }
+  ]
+}

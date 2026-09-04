@@ -1,0 +1,51 @@
+{
+  "source": "s011",
+  "name": "IMG_0129.MOV",
+  "fingerprint": "bf57fdd6cc5a3ec1",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 6.9,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.31,
+      "end": 2.73,
+      "text": "una buena respuesta debe facilitar",
+      "avg_logprob": -0.4152,
+      "no_speech_prob": 0.2051,
+      "words": [
+        {
+          "w": "una",
+          "s": 0.31,
+          "e": 0.81,
+          "p": 0.551
+        },
+        {
+          "w": "buena",
+          "s": 0.81,
+          "e": 1.27,
+          "p": 0.991
+        },
+        {
+          "w": "respuesta",
+          "s": 1.27,
+          "e": 1.79,
+          "p": 0.967
+        },
+        {
+          "w": "debe",
+          "s": 1.79,
+          "e": 2.15,
+          "p": 0.838
+        },
+        {
+          "w": "facilitar",
+          "s": 2.15,
+          "e": 2.73,
+          "p": 0.98
+        }
+      ]
+    }
+  ]
+}

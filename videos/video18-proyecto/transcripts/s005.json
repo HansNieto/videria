@@ -1,0 +1,111 @@
+{
+  "source": "s005",
+  "name": "IMG_0139.MOV",
+  "fingerprint": "271060d0d80abacc",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 5.566667,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.12,
+      "end": 4.84,
+      "text": "El negocio está creciendo, pero su forma de vender no, y eso termina generando retrasos.",
+      "avg_logprob": -0.1897,
+      "no_speech_prob": 0.0161,
+      "words": [
+        {
+          "w": "El",
+          "s": 0.12,
+          "e": 0.52,
+          "p": 0.713
+        },
+        {
+          "w": "negocio",
+          "s": 0.52,
+          "e": 0.82,
+          "p": 0.998
+        },
+        {
+          "w": "está",
+          "s": 0.82,
+          "e": 0.98,
+          "p": 0.833
+        },
+        {
+          "w": "creciendo,",
+          "s": 0.98,
+          "e": 1.44,
+          "p": 0.998
+        },
+        {
+          "w": "pero",
+          "s": 1.66,
+          "e": 1.7,
+          "p": 0.997
+        },
+        {
+          "w": "su",
+          "s": 1.7,
+          "e": 1.82,
+          "p": 0.99
+        },
+        {
+          "w": "forma",
+          "s": 1.82,
+          "e": 2.14,
+          "p": 0.996
+        },
+        {
+          "w": "de",
+          "s": 2.14,
+          "e": 2.28,
+          "p": 0.997
+        },
+        {
+          "w": "vender",
+          "s": 2.28,
+          "e": 2.54,
+          "p": 0.999
+        },
+        {
+          "w": "no,",
+          "s": 2.54,
+          "e": 2.8,
+          "p": 0.938
+        },
+        {
+          "w": "y",
+          "s": 2.96,
+          "e": 3.1,
+          "p": 0.985
+        },
+        {
+          "w": "eso",
+          "s": 3.1,
+          "e": 3.38,
+          "p": 0.993
+        },
+        {
+          "w": "termina",
+          "s": 3.38,
+          "e": 3.78,
+          "p": 0.941
+        },
+        {
+          "w": "generando",
+          "s": 3.78,
+          "e": 4.28,
+          "p": 0.996
+        },
+        {
+          "w": "retrasos.",
+          "s": 4.28,
+          "e": 4.84,
+          "p": 0.97
+        }
+      ]
+    }
+  ]
+}

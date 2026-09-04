@@ -1,0 +1,81 @@
+{
+  "source": "s007",
+  "name": "IMG_0141.MOV",
+  "fingerprint": "f945b06aed4f4edd",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 5.033333,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.0,
+      "end": 4.18,
+      "text": "Cuando esta termina repartida entre archivos, conversaciones y distintas personas",
+      "avg_logprob": -0.1981,
+      "no_speech_prob": 0.0084,
+      "words": [
+        {
+          "w": "Cuando",
+          "s": 0.0,
+          "e": 0.36,
+          "p": 0.803
+        },
+        {
+          "w": "esta",
+          "s": 0.36,
+          "e": 0.64,
+          "p": 0.488
+        },
+        {
+          "w": "termina",
+          "s": 0.64,
+          "e": 1.1,
+          "p": 0.997
+        },
+        {
+          "w": "repartida",
+          "s": 1.1,
+          "e": 1.66,
+          "p": 0.994
+        },
+        {
+          "w": "entre",
+          "s": 1.66,
+          "e": 1.9,
+          "p": 0.985
+        },
+        {
+          "w": "archivos,",
+          "s": 1.9,
+          "e": 2.42,
+          "p": 0.984
+        },
+        {
+          "w": "conversaciones",
+          "s": 2.64,
+          "e": 3.1,
+          "p": 0.997
+        },
+        {
+          "w": "y",
+          "s": 3.1,
+          "e": 3.38,
+          "p": 0.926
+        },
+        {
+          "w": "distintas",
+          "s": 3.38,
+          "e": 3.8,
+          "p": 0.991
+        },
+        {
+          "w": "personas",
+          "s": 3.8,
+          "e": 4.18,
+          "p": 0.998
+        }
+      ]
+    }
+  ]
+}

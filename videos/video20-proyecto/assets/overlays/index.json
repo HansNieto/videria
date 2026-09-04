@@ -1,0 +1,72 @@
+{
+  "01_precio_con_criterio.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video20-proyecto\\motion-overlays\\frames\\01_precio_con_criterio",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "no elijas una cantidad al azar ni copies directamente a la competencia"
+  },
+  "02_tiempo_del_servicio.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video20-proyecto\\motion-overlays\\frames\\02_tiempo_del_servicio",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "calcula todo el tiempo preparación reuniones ejecución correcciones y entrega del trabajo"
+  },
+  "03_suma_recursos.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video20-proyecto\\motion-overlays\\frames\\03_suma_recursos",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "suma recursos herramientas licencias materiales transportes y trabajo de otras personas"
+  },
+  "04_complejidad_y_riesgo.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video20-proyecto\\motion-overlays\\frames\\04_complejidad_y_riesgo",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "un trabajo con más cambios o responsabilidades no cuesta igual que uno sencillo complejidad urgencia riesgos"
+  },
+  "05_costo_margen_utilidad.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video20-proyecto\\motion-overlays\\frames\\05_costo_margen_utilidad",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "conoces el costo completo agrega un margen que permita generar utilidades invertir y mantener el negocio"
+  },
+  "06_paquetes_y_alcance.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video20-proyecto\\motion-overlays\\frames\\06_paquetes_y_alcance",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "define con claridad qué incluye el precio y crea paquetes para diferentes niveles de alcance"
+  },
+  "07_formula_final.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video20-proyecto\\motion-overlays\\frames\\07_formula_final",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "tu decisión debe considerar costos experiencia capacidad y el resultado que entregarás para fijar el precio"
+  }
+}

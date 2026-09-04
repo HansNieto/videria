@@ -1,0 +1,141 @@
+{
+  "source": "s013",
+  "name": "IMG_0131.MOV",
+  "fingerprint": "cff7130409b34497",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 8.065,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.22,
+      "end": 7.48,
+      "text": "Puedes recomendar una opción, confirmar disponibilidad o preguntar una cosa sencilla que te ayude a entender la consulta del cliente.",
+      "avg_logprob": -0.1797,
+      "no_speech_prob": 0.0024,
+      "words": [
+        {
+          "w": "Puedes",
+          "s": 0.22,
+          "e": 0.74,
+          "p": 0.881
+        },
+        {
+          "w": "recomendar",
+          "s": 0.74,
+          "e": 1.12,
+          "p": 0.98
+        },
+        {
+          "w": "una",
+          "s": 1.12,
+          "e": 1.28,
+          "p": 0.847
+        },
+        {
+          "w": "opción,",
+          "s": 1.28,
+          "e": 1.94,
+          "p": 0.965
+        },
+        {
+          "w": "confirmar",
+          "s": 2.08,
+          "e": 2.56,
+          "p": 0.955
+        },
+        {
+          "w": "disponibilidad",
+          "s": 2.56,
+          "e": 3.26,
+          "p": 0.907
+        },
+        {
+          "w": "o",
+          "s": 3.3,
+          "e": 3.84,
+          "p": 0.791
+        },
+        {
+          "w": "preguntar",
+          "s": 3.84,
+          "e": 4.3,
+          "p": 0.989
+        },
+        {
+          "w": "una",
+          "s": 4.3,
+          "e": 4.48,
+          "p": 0.924
+        },
+        {
+          "w": "cosa",
+          "s": 4.48,
+          "e": 4.74,
+          "p": 0.998
+        },
+        {
+          "w": "sencilla",
+          "s": 4.74,
+          "e": 5.2,
+          "p": 0.994
+        },
+        {
+          "w": "que",
+          "s": 5.2,
+          "e": 5.34,
+          "p": 0.98
+        },
+        {
+          "w": "te",
+          "s": 5.34,
+          "e": 5.52,
+          "p": 0.988
+        },
+        {
+          "w": "ayude",
+          "s": 5.52,
+          "e": 5.74,
+          "p": 0.989
+        },
+        {
+          "w": "a",
+          "s": 5.74,
+          "e": 5.92,
+          "p": 0.977
+        },
+        {
+          "w": "entender",
+          "s": 5.92,
+          "e": 6.18,
+          "p": 0.995
+        },
+        {
+          "w": "la",
+          "s": 6.18,
+          "e": 6.58,
+          "p": 0.978
+        },
+        {
+          "w": "consulta",
+          "s": 6.58,
+          "e": 7.02,
+          "p": 0.996
+        },
+        {
+          "w": "del",
+          "s": 7.02,
+          "e": 7.06,
+          "p": 0.746
+        },
+        {
+          "w": "cliente.",
+          "s": 7.06,
+          "e": 7.48,
+          "p": 0.997
+        }
+      ]
+    }
+  ]
+}

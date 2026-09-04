@@ -1,0 +1,52 @@
+{
+  "01_restaurante_api.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\motion-overlays\\frames\\01_restaurante_api",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "tú eres el cliente la cocina es el servidor y el mesero es la API"
+  },
+  "02_solicitud_respuesta.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\motion-overlays\\frames\\02_solicitud_respuesta",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "recibe una solicitud de una aplicación la lleva al server y devuelve la respuesta"
+  },
+  "03_resultado_segundos.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\motion-overlays\\frames\\03_resultado_segundos",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "hace la petición mediante la API y recibe los resultados en segundos"
+  },
+  "04_clima_api.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\motion-overlays\\frames\\04_clima_api",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "cuando la app del clima muestra la temperatura de tu ciudad"
+  },
+  "05_puente_programas.webm": {
+    "seq": {
+      "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\motion-overlays\\frames\\05_puente_programas",
+      "first": 0,
+      "fps": 30.0,
+      "frames": 151
+    },
+    "dur": 5.0,
+    "title": "la API es el puente que permite que diferentes programas se comuniquen entre sí"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "disable": [
+    "u0005",
+    "u0024",
+    "u0031",
+    "u0032",
+    "u0035",
+    "u0036",
+    "u0038"
+  ],
+  "trim": {
+    "u0003": {
+      "in": 4.09,
+      "out": 11.88
+    },
+    "u0020": {
+      "in": 16.35,
+      "out": 19.84
+    },
+    "u0023": {
+      "in": 5.5,
+      "out": 9.98
+    },
+    "u0024": {
+      "in": 1.0,
+      "out": 1.77
+    },
+    "u0026": {
+      "in": 1.41,
+      "out": 5.6
+    },
+    "u0028": {
+      "in": 26.93,
+      "out": 30.01
+    },
+    "u0030": {
+      "in": 0.96,
+      "out": 4.06
+    },
+    "u0032": {
+      "in": 1.65,
+      "out": 5.5
+    },
+    "u0035": {
+      "in": 10.48,
+      "out": 11.19
+    },
+    "u0038": {
+      "in": 0.82,
+      "out": 3.58
+    },
+    "u0012": {
+      "in": 3.58,
+      "out": 8.14
+    },
+    "u0039": {
+      "in": 6.78,
+      "out": 15.19
+    }
+  },
+  "notes": "Revisión manual: se retiraron falsos inicios, indicaciones de grabación y repeticiones; las listas y el cierre usan la segunda toma limpia."
+}

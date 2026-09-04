@@ -1,0 +1,151 @@
+{
+  "source": "s018",
+  "name": "IMG_0185.MOV",
+  "fingerprint": "04f61a47462ac604",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 24.798333,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 2.36,
+      "end": 19.62,
+      "text": "Una vez que conoces el costo completo, agregue un margen que te permita generar utilidades,",
+      "avg_logprob": -0.2284,
+      "no_speech_prob": 0.0184,
+      "words": [
+        {
+          "w": "Una",
+          "s": 2.36,
+          "e": 2.9,
+          "p": 0.747
+        },
+        {
+          "w": "vez",
+          "s": 2.9,
+          "e": 3.18,
+          "p": 0.996
+        },
+        {
+          "w": "que",
+          "s": 3.18,
+          "e": 3.48,
+          "p": 0.949
+        },
+        {
+          "w": "conoces",
+          "s": 3.48,
+          "e": 3.82,
+          "p": 0.979
+        },
+        {
+          "w": "el",
+          "s": 3.82,
+          "e": 4.0,
+          "p": 0.973
+        },
+        {
+          "w": "costo",
+          "s": 4.0,
+          "e": 4.4,
+          "p": 0.986
+        },
+        {
+          "w": "completo,",
+          "s": 4.4,
+          "e": 5.0,
+          "p": 0.998
+        },
+        {
+          "w": "agregue",
+          "s": 15.2,
+          "e": 16.9,
+          "p": 0.835
+        },
+        {
+          "w": "un",
+          "s": 16.9,
+          "e": 17.08,
+          "p": 0.994
+        },
+        {
+          "w": "margen",
+          "s": 17.08,
+          "e": 17.38,
+          "p": 0.966
+        },
+        {
+          "w": "que",
+          "s": 17.38,
+          "e": 17.54,
+          "p": 0.931
+        },
+        {
+          "w": "te",
+          "s": 17.54,
+          "e": 17.88,
+          "p": 0.97
+        },
+        {
+          "w": "permita",
+          "s": 17.88,
+          "e": 18.16,
+          "p": 0.881
+        },
+        {
+          "w": "generar",
+          "s": 18.16,
+          "e": 18.66,
+          "p": 0.991
+        },
+        {
+          "w": "utilidades,",
+          "s": 18.66,
+          "e": 19.62,
+          "p": 0.987
+        }
+      ]
+    },
+    {
+      "i": 1,
+      "start": 22.19,
+      "end": 23.89,
+      "text": "invertir y mantener el negocio.",
+      "avg_logprob": -0.2284,
+      "no_speech_prob": 0.0184,
+      "words": [
+        {
+          "w": "invertir",
+          "s": 22.19,
+          "e": 22.79,
+          "p": 0.994
+        },
+        {
+          "w": "y",
+          "s": 22.79,
+          "e": 22.93,
+          "p": 0.951
+        },
+        {
+          "w": "mantener",
+          "s": 22.93,
+          "e": 23.33,
+          "p": 0.996
+        },
+        {
+          "w": "el",
+          "s": 23.33,
+          "e": 23.57,
+          "p": 0.994
+        },
+        {
+          "w": "negocio.",
+          "s": 23.57,
+          "e": 23.89,
+          "p": 0.998
+        }
+      ]
+    }
+  ]
+}

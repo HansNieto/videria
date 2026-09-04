@@ -1,0 +1,181 @@
+{
+  "source": "s024",
+  "name": "IMG_0191.MOV",
+  "fingerprint": "823c019b29b0ef25",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 13.466667,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.0,
+      "end": 7.28,
+      "text": "Pero tu decisión, pero tu decisión también debe considerar costo requerir, pero tu decisión",
+      "avg_logprob": -0.2591,
+      "no_speech_prob": 0.1478,
+      "words": [
+        {
+          "w": "Pero",
+          "s": 0.0,
+          "e": 0.16,
+          "p": 0.641
+        },
+        {
+          "w": "tu",
+          "s": 0.16,
+          "e": 0.32,
+          "p": 0.977
+        },
+        {
+          "w": "decisión,",
+          "s": 0.32,
+          "e": 1.36,
+          "p": 0.926
+        },
+        {
+          "w": "pero",
+          "s": 1.73,
+          "e": 1.99,
+          "p": 0.454
+        },
+        {
+          "w": "tu",
+          "s": 1.99,
+          "e": 2.21,
+          "p": 0.991
+        },
+        {
+          "w": "decisión",
+          "s": 2.21,
+          "e": 2.73,
+          "p": 0.979
+        },
+        {
+          "w": "también",
+          "s": 2.73,
+          "e": 3.05,
+          "p": 0.888
+        },
+        {
+          "w": "debe",
+          "s": 3.05,
+          "e": 3.31,
+          "p": 0.964
+        },
+        {
+          "w": "considerar",
+          "s": 3.31,
+          "e": 4.09,
+          "p": 0.971
+        },
+        {
+          "w": "costo",
+          "s": 4.09,
+          "e": 4.63,
+          "p": 0.722
+        },
+        {
+          "w": "requerir,",
+          "s": 4.63,
+          "e": 5.65,
+          "p": 0.773
+        },
+        {
+          "w": "pero",
+          "s": 6.48,
+          "e": 6.6,
+          "p": 0.918
+        },
+        {
+          "w": "tu",
+          "s": 6.6,
+          "e": 6.78,
+          "p": 0.992
+        },
+        {
+          "w": "decisión",
+          "s": 6.78,
+          "e": 7.28,
+          "p": 0.991
+        }
+      ]
+    },
+    {
+      "i": 1,
+      "start": 7.28,
+      "end": 12.2,
+      "text": "también debe considerar costos, experiencia, capacidad y el resultado que entregarás.",
+      "avg_logprob": -0.2591,
+      "no_speech_prob": 0.1478,
+      "words": [
+        {
+          "w": "también",
+          "s": 7.28,
+          "e": 7.6,
+          "p": 0.941
+        },
+        {
+          "w": "debe",
+          "s": 7.6,
+          "e": 7.86,
+          "p": 0.973
+        },
+        {
+          "w": "considerar",
+          "s": 7.86,
+          "e": 8.64,
+          "p": 0.98
+        },
+        {
+          "w": "costos,",
+          "s": 8.64,
+          "e": 9.2,
+          "p": 0.822
+        },
+        {
+          "w": "experiencia,",
+          "s": 9.38,
+          "e": 9.9,
+          "p": 0.995
+        },
+        {
+          "w": "capacidad",
+          "s": 10.3,
+          "e": 10.6,
+          "p": 0.996
+        },
+        {
+          "w": "y",
+          "s": 10.6,
+          "e": 10.88,
+          "p": 0.897
+        },
+        {
+          "w": "el",
+          "s": 10.88,
+          "e": 11.04,
+          "p": 0.949
+        },
+        {
+          "w": "resultado",
+          "s": 11.04,
+          "e": 11.38,
+          "p": 0.997
+        },
+        {
+          "w": "que",
+          "s": 11.38,
+          "e": 11.66,
+          "p": 0.997
+        },
+        {
+          "w": "entregarás.",
+          "s": 11.66,
+          "e": 12.2,
+          "p": 0.932
+        }
+      ]
+    }
+  ]
+}

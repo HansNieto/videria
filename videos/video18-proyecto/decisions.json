@@ -1,0 +1,25 @@
+{
+  "disable": [
+    "u0010",
+    "u0013"
+  ],
+  "trim": {
+    "u0002": {
+      "in": 0.06,
+      "out": 2.34
+    },
+    "u0015": {
+      "in": 0.42,
+      "out": 5.46
+    },
+    "u0018": {
+      "in": 5.82,
+      "out": 7.66
+    },
+    "u0022": {
+      "in": 9.45,
+      "out": 12.59
+    }
+  },
+  "notes": "Revisión manual: se retiraron una repetición sobre las confusiones y una toma repetida sobre anticiparse."
+}

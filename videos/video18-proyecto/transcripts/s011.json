@@ -1,0 +1,99 @@
+{
+  "source": "s011",
+  "name": "IMG_0145.MOV",
+  "fingerprint": "748431a2957ccc3f",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 7.266667,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.95,
+      "end": 6.24,
+      "text": "El equipo deja de anticiparse y pasa el día reaccionando a pedidos olvidados.",
+      "avg_logprob": -0.2159,
+      "no_speech_prob": 0.0172,
+      "words": [
+        {
+          "w": "El",
+          "s": 0.95,
+          "e": 1.37,
+          "p": 0.492
+        },
+        {
+          "w": "equipo",
+          "s": 1.37,
+          "e": 1.91,
+          "p": 0.997
+        },
+        {
+          "w": "deja",
+          "s": 2.06,
+          "e": 2.74,
+          "p": 0.885
+        },
+        {
+          "w": "de",
+          "s": 2.74,
+          "e": 2.92,
+          "p": 0.998
+        },
+        {
+          "w": "anticiparse",
+          "s": 2.92,
+          "e": 3.56,
+          "p": 0.979
+        },
+        {
+          "w": "y",
+          "s": 3.56,
+          "e": 3.8,
+          "p": 0.844
+        },
+        {
+          "w": "pasa",
+          "s": 3.8,
+          "e": 3.96,
+          "p": 0.798
+        },
+        {
+          "w": "el",
+          "s": 3.96,
+          "e": 4.12,
+          "p": 0.997
+        },
+        {
+          "w": "día",
+          "s": 4.12,
+          "e": 4.32,
+          "p": 0.896
+        },
+        {
+          "w": "reaccionando",
+          "s": 4.32,
+          "e": 5.12,
+          "p": 0.98
+        },
+        {
+          "w": "a",
+          "s": 5.12,
+          "e": 5.3,
+          "p": 0.995
+        },
+        {
+          "w": "pedidos",
+          "s": 5.3,
+          "e": 5.6,
+          "p": 0.99
+        },
+        {
+          "w": "olvidados.",
+          "s": 5.6,
+          "e": 6.24,
+          "p": 0.984
+        }
+      ]
+    }
+  ]
+}

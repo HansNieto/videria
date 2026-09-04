@@ -1,0 +1,93 @@
+{
+  "source": "s012",
+  "name": "IMG_0130.MOV",
+  "fingerprint": "0c152069f30dc67f",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 7.333333,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.22,
+      "end": 4.66,
+      "text": "Una buena respuesta debe facilitar la consulta y facilitar el siguiente paso.",
+      "avg_logprob": -0.1804,
+      "no_speech_prob": 0.0072,
+      "words": [
+        {
+          "w": "Una",
+          "s": 0.22,
+          "e": 0.66,
+          "p": 0.754
+        },
+        {
+          "w": "buena",
+          "s": 0.66,
+          "e": 0.96,
+          "p": 0.988
+        },
+        {
+          "w": "respuesta",
+          "s": 0.96,
+          "e": 1.54,
+          "p": 0.984
+        },
+        {
+          "w": "debe",
+          "s": 1.54,
+          "e": 1.9,
+          "p": 0.979
+        },
+        {
+          "w": "facilitar",
+          "s": 1.9,
+          "e": 2.38,
+          "p": 0.98
+        },
+        {
+          "w": "la",
+          "s": 2.38,
+          "e": 2.58,
+          "p": 0.992
+        },
+        {
+          "w": "consulta",
+          "s": 2.58,
+          "e": 3.12,
+          "p": 0.998
+        },
+        {
+          "w": "y",
+          "s": 3.12,
+          "e": 3.38,
+          "p": 0.965
+        },
+        {
+          "w": "facilitar",
+          "s": 3.38,
+          "e": 3.8,
+          "p": 0.955
+        },
+        {
+          "w": "el",
+          "s": 3.8,
+          "e": 3.98,
+          "p": 0.959
+        },
+        {
+          "w": "siguiente",
+          "s": 3.98,
+          "e": 4.4,
+          "p": 0.994
+        },
+        {
+          "w": "paso.",
+          "s": 4.4,
+          "e": 4.66,
+          "p": 0.992
+        }
+      ]
+    }
+  ]
+}

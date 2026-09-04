@@ -1,0 +1,111 @@
+{
+  "source": "s002",
+  "name": "IMG_0136.MOV",
+  "fingerprint": "77322a6aa9ae8f4c",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 11.566667,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.18,
+      "end": 10.84,
+      "text": "Una señal aparece cuando las ventas aumentan, pero casi todas las decisiones dependen de ti.",
+      "avg_logprob": -0.2465,
+      "no_speech_prob": 0.0711,
+      "words": [
+        {
+          "w": "Una",
+          "s": 0.18,
+          "e": 0.66,
+          "p": 0.691
+        },
+        {
+          "w": "señal",
+          "s": 0.66,
+          "e": 1.04,
+          "p": 0.996
+        },
+        {
+          "w": "aparece",
+          "s": 1.04,
+          "e": 1.46,
+          "p": 0.993
+        },
+        {
+          "w": "cuando",
+          "s": 1.46,
+          "e": 2.34,
+          "p": 0.944
+        },
+        {
+          "w": "las",
+          "s": 5.94,
+          "e": 7.74,
+          "p": 0.258
+        },
+        {
+          "w": "ventas",
+          "s": 7.74,
+          "e": 8.14,
+          "p": 0.998
+        },
+        {
+          "w": "aumentan,",
+          "s": 8.14,
+          "e": 8.66,
+          "p": 0.994
+        },
+        {
+          "w": "pero",
+          "s": 8.72,
+          "e": 8.88,
+          "p": 0.987
+        },
+        {
+          "w": "casi",
+          "s": 8.88,
+          "e": 9.2,
+          "p": 0.981
+        },
+        {
+          "w": "todas",
+          "s": 9.2,
+          "e": 9.42,
+          "p": 0.993
+        },
+        {
+          "w": "las",
+          "s": 9.42,
+          "e": 9.68,
+          "p": 0.996
+        },
+        {
+          "w": "decisiones",
+          "s": 9.68,
+          "e": 10.16,
+          "p": 0.989
+        },
+        {
+          "w": "dependen",
+          "s": 10.16,
+          "e": 10.52,
+          "p": 0.989
+        },
+        {
+          "w": "de",
+          "s": 10.52,
+          "e": 10.74,
+          "p": 0.998
+        },
+        {
+          "w": "ti.",
+          "s": 10.74,
+          "e": 10.84,
+          "p": 0.967
+        }
+      ]
+    }
+  ]
+}

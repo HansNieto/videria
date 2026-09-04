@@ -1,0 +1,45 @@
+{
+  "source": "s007",
+  "name": "IMG_0157.MOV",
+  "fingerprint": "d48b9813bb6697f5",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 2.066667,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.0,
+      "end": 1.4,
+      "text": "si hace exactamente eso.",
+      "avg_logprob": -0.6632,
+      "no_speech_prob": 0.0199,
+      "words": [
+        {
+          "w": "si",
+          "s": 0.0,
+          "e": 0.1,
+          "p": 0.152
+        },
+        {
+          "w": "hace",
+          "s": 0.1,
+          "e": 0.44,
+          "p": 0.716
+        },
+        {
+          "w": "exactamente",
+          "s": 0.44,
+          "e": 1.14,
+          "p": 0.979
+        },
+        {
+          "w": "eso.",
+          "s": 1.14,
+          "e": 1.4,
+          "p": 0.985
+        }
+      ]
+    }
+  ]
+}

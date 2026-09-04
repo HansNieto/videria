@@ -1,0 +1,2074 @@
+{
+  "studio_version": 1,
+  "name": "video19-proyecto",
+  "created_at": "2026-09-04T02:22:23+00:00",
+  "updated_at": "2026-09-04T02:38:40+00:00",
+  "canvas": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "bg": "#000000"
+  },
+  "render": {
+    "encoder": "auto",
+    "quality": 20,
+    "loudnorm": true,
+    "loudnorm_i": -14.0,
+    "fit": "cover",
+    "draft_height": 720,
+    "audio_bitrate": "192k"
+  },
+  "styles": {
+    "capcut": {
+      "name": "CapCut apilado",
+      "font": "Inter-Black.ttf",
+      "size": 80,
+      "color": "#FFFFFF",
+      "keyword_font": "DancingScript-Bold.ttf",
+      "keyword_color": "#4A90E0",
+      "keyword_size_ratio": 1.5,
+      "line_height": 1.16,
+      "letter_spacing": 0,
+      "shadow": {
+        "opacity": 190,
+        "blur": 9,
+        "dx": 0,
+        "dy": 6,
+        "color": "#000000"
+      },
+      "outline": 0,
+      "outline_color": "#000000",
+      "box": {
+        "x": 0.5,
+        "y": 0.66,
+        "w": 0.86
+      },
+      "align": "center",
+      "max_lines": 3,
+      "max_words_line": 4,
+      "max_chars_line": 22,
+      "stack_only_with_keyword": true,
+      "reveal": "word",
+      "anim_in": "pop",
+      "anim_out": "none",
+      "anim_dur": 0.22
+    },
+    "titulo": {
+      "name": "Titular",
+      "font": "Anton-Regular.ttf",
+      "size": 104,
+      "color": "#FFFFFF",
+      "keyword_font": "Anton-Regular.ttf",
+      "keyword_color": "#FFD166",
+      "keyword_size_ratio": 1.0,
+      "line_height": 1.05,
+      "letter_spacing": 0,
+      "shadow": {
+        "opacity": 150,
+        "blur": 14,
+        "dx": 0,
+        "dy": 8,
+        "color": "#000000"
+      },
+      "outline": 0,
+      "outline_color": "#000000",
+      "box": {
+        "x": 0.5,
+        "y": 0.16,
+        "w": 0.9
+      },
+      "align": "center",
+      "max_lines": 3,
+      "max_words_line": 4,
+      "max_chars_line": 20,
+      "stack_only_with_keyword": false,
+      "reveal": "none",
+      "anim_in": "slide_up",
+      "anim_out": "fade",
+      "anim_dur": 0.3
+    },
+    "nota": {
+      "name": "Nota / etiqueta",
+      "font": "BebasNeue-Regular.ttf",
+      "size": 56,
+      "color": "#0D0F14",
+      "keyword_font": "BebasNeue-Regular.ttf",
+      "keyword_color": "#5B8CFF",
+      "keyword_size_ratio": 1.0,
+      "line_height": 1.1,
+      "letter_spacing": 2,
+      "shadow": {
+        "opacity": 0,
+        "blur": 0,
+        "dx": 0,
+        "dy": 0,
+        "color": "#000000"
+      },
+      "outline": 0,
+      "outline_color": "#000000",
+      "box": {
+        "x": 0.5,
+        "y": 0.85,
+        "w": 0.8
+      },
+      "align": "center",
+      "max_lines": 2,
+      "max_words_line": 5,
+      "max_chars_line": 26,
+      "stack_only_with_keyword": false,
+      "reveal": "none",
+      "anim_in": "pop",
+      "anim_out": "fade",
+      "anim_dur": 0.2,
+      "bg": {
+        "color": "#FFFFFF",
+        "opacity": 235,
+        "pad": 22,
+        "radius": 14
+      }
+    }
+  },
+  "tracks": [
+    {
+      "id": "t_sub",
+      "kind": "text",
+      "name": "Subtitulos",
+      "z": 20,
+      "hidden": false,
+      "locked": false,
+      "items": [
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0005",
+            "offset": 0.06
+          },
+          "dur": 3.14,
+          "lines": [
+            [
+              {
+                "w": "Sabías",
+                "s": 0.06,
+                "e": 0.58,
+                "key": false
+              },
+              {
+                "w": "que",
+                "s": 0.58,
+                "e": 0.74,
+                "key": false
+              },
+              {
+                "w": "la",
+                "s": 0.74,
+                "e": 0.86,
+                "key": false
+              },
+              {
+                "w": "mayoría",
+                "s": 0.86,
+                "e": 1.2,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "de",
+                "s": 1.2,
+                "e": 1.36,
+                "key": false
+              },
+              {
+                "w": "apps",
+                "s": 1.36,
+                "e": 1.54,
+                "key": false
+              },
+              {
+                "w": "que",
+                "s": 1.54,
+                "e": 1.68,
+                "key": false
+              },
+              {
+                "w": "usas",
+                "s": 1.68,
+                "e": 1.98,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "todos",
+                "s": 1.98,
+                "e": 2.24,
+                "key": false
+              },
+              {
+                "w": "los",
+                "s": 2.24,
+                "e": 2.48,
+                "key": false
+              },
+              {
+                "w": "días",
+                "s": 2.48,
+                "e": 2.9,
+                "key": false
+              },
+              {
+                "w": "no",
+                "s": 2.9,
+                "e": 3.22,
+                "key": false
+              }
+            ]
+          ],
+          "text": "Sabías que la mayoría de apps que usas todos los días no",
+          "x": null,
+          "y": null,
+          "id": "s0042"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0005",
+            "offset": 3.22
+          },
+          "dur": 0.76,
+          "lines": [
+            [
+              {
+                "w": "funcionarían",
+                "s": 0.06,
+                "e": 0.62,
+                "key": true
+              },
+              {
+                "w": "sin",
+                "s": 0.62,
+                "e": 0.84,
+                "key": false
+              }
+            ]
+          ],
+          "text": "funcionarían sin",
+          "x": null,
+          "y": null,
+          "id": "s0043"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0005",
+            "offset": 4.0
+          },
+          "dur": 3.72,
+          "lines": [
+            [
+              {
+                "w": "las",
+                "s": 0.06,
+                "e": 0.32,
+                "key": false
+              },
+              {
+                "w": "APIs",
+                "s": 0.32,
+                "e": 0.66,
+                "key": false
+              },
+              {
+                "w": "y",
+                "s": 0.74,
+                "e": 1.88,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "probablemente",
+                "s": 1.88,
+                "e": 2.62,
+                "key": true
+              },
+              {
+                "w": "no",
+                "s": 2.62,
+                "e": 2.82,
+                "key": false
+              },
+              {
+                "w": "te",
+                "s": 2.82,
+                "e": 2.98,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "diste",
+                "s": 2.98,
+                "e": 3.26,
+                "key": false
+              },
+              {
+                "w": "cuenta.",
+                "s": 3.26,
+                "e": 3.5,
+                "key": false
+              }
+            ]
+          ],
+          "text": "las APIs y probablemente no te diste cuenta.",
+          "x": null,
+          "y": null,
+          "id": "s0044"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0006",
+            "offset": 0.0
+          },
+          "dur": 1.55,
+          "lines": [
+            [
+              {
+                "w": "imagina",
+                "s": 0.0,
+                "e": 0.28,
+                "key": false
+              },
+              {
+                "w": "que",
+                "s": 0.28,
+                "e": 0.5,
+                "key": false
+              },
+              {
+                "w": "estas",
+                "s": 0.5,
+                "e": 0.62,
+                "key": false
+              },
+              {
+                "w": "en",
+                "s": 0.62,
+                "e": 0.8,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "un",
+                "s": 0.8,
+                "e": 0.92,
+                "key": false
+              },
+              {
+                "w": "restaurante,",
+                "s": 0.92,
+                "e": 1.55,
+                "key": true
+              }
+            ]
+          ],
+          "text": "imagina que estas en un restaurante,",
+          "x": null,
+          "y": null,
+          "id": "s0045"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0007",
+            "offset": 0.06
+          },
+          "dur": 3.48,
+          "lines": [
+            [
+              {
+                "w": "tu",
+                "s": 0.06,
+                "e": 0.18,
+                "key": false
+              },
+              {
+                "w": "eres",
+                "s": 0.18,
+                "e": 0.52,
+                "key": false
+              },
+              {
+                "w": "el",
+                "s": 0.52,
+                "e": 0.72,
+                "key": false
+              },
+              {
+                "w": "cliente,",
+                "s": 0.72,
+                "e": 1.32,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "la",
+                "s": 1.42,
+                "e": 1.54,
+                "key": false
+              },
+              {
+                "w": "cocina",
+                "s": 1.54,
+                "e": 1.84,
+                "key": false
+              },
+              {
+                "w": "es",
+                "s": 1.84,
+                "e": 1.96,
+                "key": false
+              },
+              {
+                "w": "el",
+                "s": 1.96,
+                "e": 2.08,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "servidor",
+                "s": 2.08,
+                "e": 2.56,
+                "key": true
+              },
+              {
+                "w": "y",
+                "s": 2.56,
+                "e": 3.04,
+                "key": false
+              },
+              {
+                "w": "el",
+                "s": 3.04,
+                "e": 3.2,
+                "key": false
+              },
+              {
+                "w": "mesero",
+                "s": 3.2,
+                "e": 3.56,
+                "key": false
+              }
+            ]
+          ],
+          "text": "tu eres el cliente, la cocina es el servidor y el mesero",
+          "x": null,
+          "y": null,
+          "id": "s0046"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0007",
+            "offset": 3.56
+          },
+          "dur": 0.34,
+          "lines": [
+            [
+              {
+                "w": "es",
+                "s": 0.06,
+                "e": 0.26,
+                "key": false
+              },
+              {
+                "w": "la",
+                "s": 0.26,
+                "e": 0.42,
+                "key": false
+              }
+            ]
+          ],
+          "text": "es la",
+          "x": null,
+          "y": null,
+          "id": "s0047"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0007",
+            "offset": 3.92
+          },
+          "dur": 0.5,
+          "lines": [
+            [
+              {
+                "w": "API.",
+                "s": 0.06,
+                "e": 0.28,
+                "key": false
+              }
+            ]
+          ],
+          "text": "API.",
+          "x": null,
+          "y": null,
+          "id": "s0048"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0008",
+            "offset": 0.0
+          },
+          "dur": 2.9,
+          "lines": [
+            [
+              {
+                "w": "que",
+                "s": 0.0,
+                "e": 0.58,
+                "key": false
+              },
+              {
+                "w": "tú",
+                "s": 0.58,
+                "e": 0.82,
+                "key": false
+              },
+              {
+                "w": "le",
+                "s": 0.82,
+                "e": 1.02,
+                "key": false
+              },
+              {
+                "w": "pides",
+                "s": 1.02,
+                "e": 1.2,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "una",
+                "s": 1.2,
+                "e": 1.42,
+                "key": false
+              },
+              {
+                "w": "hamburguesa",
+                "s": 1.42,
+                "e": 1.88,
+                "key": true
+              },
+              {
+                "w": "al",
+                "s": 1.88,
+                "e": 2.02,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "mesero.",
+                "s": 2.02,
+                "e": 2.6,
+                "key": false
+              }
+            ]
+          ],
+          "text": "que tú le pides una hamburguesa al mesero.",
+          "x": null,
+          "y": null,
+          "id": "s0049"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0008",
+            "offset": 3.0
+          },
+          "dur": 3.6,
+          "lines": [
+            [
+              {
+                "w": "Él",
+                "s": 0.06,
+                "e": 0.24,
+                "key": false
+              },
+              {
+                "w": "lleva",
+                "s": 0.24,
+                "e": 0.46,
+                "key": false
+              },
+              {
+                "w": "el",
+                "s": 0.46,
+                "e": 0.64,
+                "key": false
+              },
+              {
+                "w": "pedido",
+                "s": 0.64,
+                "e": 0.9,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "a",
+                "s": 0.9,
+                "e": 0.96,
+                "key": false
+              },
+              {
+                "w": "la",
+                "s": 0.96,
+                "e": 1.12,
+                "key": false
+              },
+              {
+                "w": "cocina",
+                "s": 1.12,
+                "e": 1.66,
+                "key": false
+              },
+              {
+                "w": "y",
+                "s": 2.0,
+                "e": 2.44,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "regresa",
+                "s": 2.44,
+                "e": 2.82,
+                "key": true
+              },
+              {
+                "w": "con",
+                "s": 2.82,
+                "e": 2.96,
+                "key": false
+              },
+              {
+                "w": "la",
+                "s": 2.96,
+                "e": 3.14,
+                "key": false
+              },
+              {
+                "w": "comida.",
+                "s": 3.14,
+                "e": 3.38,
+                "key": false
+              }
+            ]
+          ],
+          "text": "Él lleva el pedido a la cocina y regresa con la comida.",
+          "x": null,
+          "y": null,
+          "id": "s0050"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0009",
+            "offset": 0.0
+          },
+          "dur": 1.62,
+          "lines": [
+            [
+              {
+                "w": "si",
+                "s": 0.0,
+                "e": 0.1,
+                "key": false
+              },
+              {
+                "w": "hace",
+                "s": 0.1,
+                "e": 0.44,
+                "key": false
+              },
+              {
+                "w": "exactamente",
+                "s": 0.44,
+                "e": 1.14,
+                "key": true
+              }
+            ],
+            [
+              {
+                "w": "eso.",
+                "s": 1.14,
+                "e": 1.4,
+                "key": false
+              }
+            ]
+          ],
+          "text": "si hace exactamente eso.",
+          "x": null,
+          "y": null,
+          "id": "s0051"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0015",
+            "offset": 0.06
+          },
+          "dur": 4.53,
+          "lines": [
+            [
+              {
+                "w": "Recibe",
+                "s": 0.06,
+                "e": 0.54,
+                "key": false
+              },
+              {
+                "w": "una",
+                "s": 0.54,
+                "e": 0.88,
+                "key": false
+              },
+              {
+                "w": "solicitud",
+                "s": 0.88,
+                "e": 1.52,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "de",
+                "s": 1.52,
+                "e": 1.68,
+                "key": false
+              },
+              {
+                "w": "una",
+                "s": 1.68,
+                "e": 1.84,
+                "key": false
+              },
+              {
+                "w": "aplicación",
+                "s": 1.84,
+                "e": 2.46,
+                "key": true
+              },
+              {
+                "w": "la",
+                "s": 2.46,
+                "e": 2.84,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "lleva",
+                "s": 2.84,
+                "e": 3.16,
+                "key": false
+              },
+              {
+                "w": "al",
+                "s": 3.16,
+                "e": 3.34,
+                "key": false
+              },
+              {
+                "w": "server",
+                "s": 3.34,
+                "e": 3.8,
+                "key": false
+              },
+              {
+                "w": "y",
+                "s": 3.95,
+                "e": 4.61,
+                "key": false
+              }
+            ]
+          ],
+          "text": "Recibe una solicitud de una aplicación la lleva al server y",
+          "x": null,
+          "y": null,
+          "id": "s0052"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0015",
+            "offset": 4.61
+          },
+          "dur": 1.16,
+          "lines": [
+            [
+              {
+                "w": "devuelve",
+                "s": 0.06,
+                "e": 0.42,
+                "key": false
+              },
+              {
+                "w": "la",
+                "s": 0.42,
+                "e": 0.68,
+                "key": false
+              },
+              {
+                "w": "respuesta.",
+                "s": 0.68,
+                "e": 0.94,
+                "key": false
+              }
+            ]
+          ],
+          "text": "devuelve la respuesta.",
+          "x": null,
+          "y": null,
+          "id": "s0053"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0018",
+            "offset": 0.06
+          },
+          "dur": 4.29,
+          "lines": [
+            [
+              {
+                "w": "le",
+                "s": 0.06,
+                "e": 0.46,
+                "key": false
+              },
+              {
+                "w": "hace",
+                "s": 0.46,
+                "e": 0.66,
+                "key": false
+              },
+              {
+                "w": "la",
+                "s": 0.66,
+                "e": 0.84,
+                "key": false
+              },
+              {
+                "w": "petición",
+                "s": 0.84,
+                "e": 1.38,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "mediante",
+                "s": 1.38,
+                "e": 1.72,
+                "key": false
+              },
+              {
+                "w": "la",
+                "s": 1.72,
+                "e": 1.94,
+                "key": false
+              },
+              {
+                "w": "API",
+                "s": 1.94,
+                "e": 2.24,
+                "key": false
+              },
+              {
+                "w": "y",
+                "s": 2.73,
+                "e": 3.51,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "recibe",
+                "s": 3.51,
+                "e": 3.83,
+                "key": false
+              },
+              {
+                "w": "los",
+                "s": 3.83,
+                "e": 4.05,
+                "key": false
+              },
+              {
+                "w": "resultados",
+                "s": 4.05,
+                "e": 4.37,
+                "key": true
+              }
+            ]
+          ],
+          "text": "le hace la petición mediante la API y recibe los resultados",
+          "x": null,
+          "y": null,
+          "id": "s0054"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0018",
+            "offset": 4.37
+          },
+          "dur": 1.04,
+          "lines": [
+            [
+              {
+                "w": "en",
+                "s": 0.06,
+                "e": 0.26,
+                "key": false
+              },
+              {
+                "w": "segundos",
+                "s": 0.26,
+                "e": 0.82,
+                "key": false
+              }
+            ]
+          ],
+          "text": "en segundos",
+          "x": null,
+          "y": null,
+          "id": "s0055"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0021",
+            "offset": 0.06
+          },
+          "dur": 3.08,
+          "lines": [
+            [
+              {
+                "w": "Por",
+                "s": 0.06,
+                "e": 0.4,
+                "key": false
+              },
+              {
+                "w": "ejemplo,",
+                "s": 0.4,
+                "e": 0.68,
+                "key": false
+              },
+              {
+                "w": "cuando",
+                "s": 0.92,
+                "e": 0.98,
+                "key": false
+              },
+              {
+                "w": "la",
+                "s": 0.98,
+                "e": 1.16,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "app",
+                "s": 1.16,
+                "e": 1.38,
+                "key": false
+              },
+              {
+                "w": "del",
+                "s": 1.38,
+                "e": 1.56,
+                "key": false
+              },
+              {
+                "w": "clima",
+                "s": 1.56,
+                "e": 1.84,
+                "key": false
+              },
+              {
+                "w": "muestra",
+                "s": 1.84,
+                "e": 2.16,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "la",
+                "s": 2.16,
+                "e": 2.34,
+                "key": false
+              },
+              {
+                "w": "temperatura",
+                "s": 2.34,
+                "e": 2.84,
+                "key": true
+              },
+              {
+                "w": "de",
+                "s": 2.84,
+                "e": 3.06,
+                "key": false
+              },
+              {
+                "w": "tu",
+                "s": 3.06,
+                "e": 3.16,
+                "key": false
+              }
+            ]
+          ],
+          "text": "Por ejemplo, cuando la app del clima muestra la temperatura de tu",
+          "x": null,
+          "y": null,
+          "id": "s0056"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0021",
+            "offset": 3.16
+          },
+          "dur": 0.56,
+          "lines": [
+            [
+              {
+                "w": "ciudad.",
+                "s": 0.06,
+                "e": 0.34,
+                "key": false
+              }
+            ]
+          ],
+          "text": "ciudad.",
+          "x": null,
+          "y": null,
+          "id": "s0057"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0022",
+            "offset": 0.0
+          },
+          "dur": 5.43,
+          "lines": [
+            [
+              {
+                "w": "En",
+                "s": 0.0,
+                "e": 0.26,
+                "key": false
+              },
+              {
+                "w": "resumen,",
+                "s": 0.26,
+                "e": 0.62,
+                "key": false
+              },
+              {
+                "w": "el",
+                "s": 0.84,
+                "e": 0.86,
+                "key": false
+              },
+              {
+                "w": "API",
+                "s": 0.86,
+                "e": 1.16,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "es",
+                "s": 1.21,
+                "e": 3.25,
+                "key": false
+              },
+              {
+                "w": "el",
+                "s": 3.25,
+                "e": 3.37,
+                "key": false
+              },
+              {
+                "w": "puente",
+                "s": 3.37,
+                "e": 4.09,
+                "key": false
+              },
+              {
+                "w": "que",
+                "s": 4.09,
+                "e": 4.31,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "permite",
+                "s": 4.31,
+                "e": 4.77,
+                "key": false
+              },
+              {
+                "w": "que",
+                "s": 4.77,
+                "e": 5.43,
+                "key": false
+              },
+              {
+                "w": "se",
+                "s": 5.43,
+                "e": 5.51,
+                "key": false
+              }
+            ]
+          ],
+          "text": "En resumen, el API es el puente que permite que se",
+          "x": null,
+          "y": null,
+          "id": "s0058"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0022",
+            "offset": 5.45
+          },
+          "dur": 1.66,
+          "lines": [
+            [
+              {
+                "w": "comuniquen",
+                "s": 0.06,
+                "e": 0.56,
+                "key": true
+              },
+              {
+                "w": "entre",
+                "s": 0.56,
+                "e": 0.76,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "diferentes",
+                "s": 0.76,
+                "e": 1.44,
+                "key": false
+              }
+            ]
+          ],
+          "text": "comuniquen entre diferentes",
+          "x": null,
+          "y": null,
+          "id": "s0059"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0023",
+            "offset": 0.0
+          },
+          "dur": 5.32,
+          "lines": [
+            [
+              {
+                "w": "programas",
+                "s": 0.0,
+                "e": 2.16,
+                "key": false
+              },
+              {
+                "w": "que",
+                "s": 2.16,
+                "e": 2.22,
+                "key": false
+              },
+              {
+                "w": "se",
+                "s": 2.22,
+                "e": 4.06,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "comuniquen",
+                "s": 4.06,
+                "e": 4.66,
+                "key": true
+              },
+              {
+                "w": "entre",
+                "s": 4.66,
+                "e": 4.9,
+                "key": false
+              },
+              {
+                "w": "sí.",
+                "s": 4.9,
+                "e": 5.1,
+                "key": false
+              }
+            ]
+          ],
+          "text": "programas que se comuniquen entre sí.",
+          "x": null,
+          "y": null,
+          "id": "s0060"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0025",
+            "offset": 0.06
+          },
+          "dur": 5.61,
+          "lines": [
+            [
+              {
+                "w": "Si",
+                "s": 0.06,
+                "e": 0.38,
+                "key": false
+              },
+              {
+                "w": "quieres",
+                "s": 0.38,
+                "e": 0.66,
+                "key": false
+              },
+              {
+                "w": "aprender",
+                "s": 0.66,
+                "e": 1.14,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "más",
+                "s": 1.14,
+                "e": 1.38,
+                "key": false
+              },
+              {
+                "w": "conceptos",
+                "s": 1.49,
+                "e": 4.63,
+                "key": false
+              },
+              {
+                "w": "de",
+                "s": 4.63,
+                "e": 4.65,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "tecnología",
+                "s": 4.63,
+                "e": 5.15,
+                "key": true
+              },
+              {
+                "w": "de",
+                "s": 5.15,
+                "e": 5.37,
+                "key": false
+              },
+              {
+                "w": "forma",
+                "s": 5.37,
+                "e": 5.69,
+                "key": false
+              }
+            ]
+          ],
+          "text": "Si quieres aprender más conceptos de tecnología de forma",
+          "x": null,
+          "y": null,
+          "id": "s0061"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0025",
+            "offset": 5.69
+          },
+          "dur": 1.14,
+          "lines": [
+            [
+              {
+                "w": "sencilla,",
+                "s": 0.06,
+                "e": 0.92,
+                "key": false
+              }
+            ]
+          ],
+          "text": "sencilla,",
+          "x": null,
+          "y": null,
+          "id": "s0062"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0026",
+            "offset": 0.0
+          },
+          "dur": 6.77,
+          "lines": [
+            [
+              {
+                "w": "síguenos",
+                "s": 0.0,
+                "e": 3.61,
+                "key": false
+              },
+              {
+                "w": "y",
+                "s": 3.75,
+                "e": 4.87,
+                "key": false
+              },
+              {
+                "w": "dinos",
+                "s": 4.87,
+                "e": 5.35,
+                "key": false
+              },
+              {
+                "w": "en",
+                "s": 5.35,
+                "e": 5.39,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "los",
+                "s": 5.39,
+                "e": 5.63,
+                "key": false
+              },
+              {
+                "w": "comentarios",
+                "s": 5.63,
+                "e": 5.97,
+                "key": true
+              },
+              {
+                "w": "cual",
+                "s": 5.97,
+                "e": 6.27,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "quieres",
+                "s": 6.27,
+                "e": 6.51,
+                "key": false
+              },
+              {
+                "w": "que",
+                "s": 6.51,
+                "e": 6.85,
+                "key": false
+              }
+            ]
+          ],
+          "text": "síguenos y dinos en los comentarios cual quieres que",
+          "x": null,
+          "y": null,
+          "id": "s0063"
+        },
+        {
+          "kind": "text",
+          "auto": true,
+          "style": "capcut",
+          "anchor": {
+            "seg": "u0026",
+            "offset": 6.79
+          },
+          "dur": 1.54,
+          "lines": [
+            [
+              {
+                "w": "expliquemos",
+                "s": 0.06,
+                "e": 0.42,
+                "key": false
+              },
+              {
+                "w": "en",
+                "s": 0.42,
+                "e": 0.64,
+                "key": false
+              },
+              {
+                "w": "el",
+                "s": 0.64,
+                "e": 0.68,
+                "key": false
+              }
+            ],
+            [
+              {
+                "w": "siguiente",
+                "s": 0.68,
+                "e": 1.0,
+                "key": false
+              },
+              {
+                "w": "video.",
+                "s": 1.0,
+                "e": 1.32,
+                "key": false
+              }
+            ]
+          ],
+          "text": "expliquemos en el siguiente video.",
+          "x": null,
+          "y": null,
+          "id": "s0064"
+        }
+      ]
+    },
+    {
+      "id": "t_txt",
+      "kind": "text",
+      "name": "Titulos",
+      "z": 30,
+      "hidden": false,
+      "locked": false,
+      "items": []
+    },
+    {
+      "id": "t_ovl",
+      "kind": "overlay",
+      "name": "Overlays",
+      "z": 10,
+      "hidden": false,
+      "locked": false,
+      "items": [
+        {
+          "id": "o0071",
+          "kind": "overlay",
+          "auto": true,
+          "src": "assets/overlays/01_restaurante_api.webm",
+          "seq": {
+            "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\motion-overlays\\frames\\01_restaurante_api",
+            "first": 0,
+            "fps": 30.0,
+            "frames": 151
+          },
+          "anchor": {
+            "seg": "u0007",
+            "offset": 0.0
+          },
+          "dur": 5.0,
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.9741,
+          "opacity": 1.0,
+          "fade": 0.28,
+          "loop": false
+        },
+        {
+          "id": "o0072",
+          "kind": "overlay",
+          "auto": true,
+          "src": "assets/overlays/02_solicitud_respuesta.webm",
+          "seq": {
+            "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\motion-overlays\\frames\\02_solicitud_respuesta",
+            "first": 0,
+            "fps": 30.0,
+            "frames": 151
+          },
+          "anchor": {
+            "seg": "u0015",
+            "offset": 0.385
+          },
+          "dur": 5.0,
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.9303,
+          "opacity": 1.0,
+          "fade": 0.28,
+          "loop": false
+        },
+        {
+          "id": "o0073",
+          "kind": "overlay",
+          "auto": true,
+          "src": "assets/overlays/03_resultado_segundos.webm",
+          "seq": {
+            "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\motion-overlays\\frames\\03_resultado_segundos",
+            "first": 0,
+            "fps": 30.0,
+            "frames": 151
+          },
+          "anchor": {
+            "seg": "u0018",
+            "offset": 0.205
+          },
+          "dur": 5.0,
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.9741,
+          "opacity": 1.0,
+          "fade": 0.28,
+          "loop": false
+        },
+        {
+          "id": "o0074",
+          "kind": "overlay",
+          "auto": true,
+          "src": "assets/overlays/04_clima_api.webm",
+          "seq": {
+            "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\motion-overlays\\frames\\04_clima_api",
+            "first": 0,
+            "fps": 30.0,
+            "frames": 151
+          },
+          "anchor": {
+            "seg": "u0021",
+            "offset": 0.0
+          },
+          "dur": 5.0,
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.9303,
+          "opacity": 1.0,
+          "fade": 0.28,
+          "loop": false
+        },
+        {
+          "id": "o0075",
+          "kind": "overlay",
+          "auto": true,
+          "src": "assets/overlays/05_puente_programas.webm",
+          "seq": {
+            "dir": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\videos\\video19-proyecto\\motion-overlays\\frames\\05_puente_programas",
+            "first": 0,
+            "fps": 30.0,
+            "frames": 151
+          },
+          "anchor": {
+            "seg": "u0022",
+            "offset": 1.055
+          },
+          "dur": 5.0,
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.9741,
+          "opacity": 1.0,
+          "fade": 0.28,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "id": "t_mus",
+      "kind": "audio",
+      "name": "Musica",
+      "z": 0,
+      "hidden": false,
+      "locked": false,
+      "gain": -17.0,
+      "duck": true,
+      "items": []
+    },
+    {
+      "id": "t_sfx",
+      "kind": "audio",
+      "name": "SFX",
+      "z": 0,
+      "hidden": false,
+      "locked": false,
+      "gain": -5.0,
+      "duck": false,
+      "items": [
+        {
+          "id": "a0066",
+          "kind": "audio",
+          "auto": true,
+          "src": "@skill/assets/sfx/3_impacto.wav",
+          "gain": -5.0,
+          "dur": 0.9,
+          "anchor": {
+            "seg": "u0008",
+            "offset": -0.08,
+            "clamp": false
+          }
+        },
+        {
+          "id": "a0068",
+          "kind": "audio",
+          "auto": true,
+          "src": "@skill/assets/sfx/2_swish.wav",
+          "gain": -5.0,
+          "dur": 0.9,
+          "anchor": {
+            "seg": "u0018",
+            "offset": -0.08,
+            "clamp": false
+          }
+        },
+        {
+          "id": "a0070",
+          "kind": "audio",
+          "auto": true,
+          "src": "@skill/assets/sfx/5_clic.wav",
+          "gain": -5.0,
+          "dur": 0.9,
+          "anchor": {
+            "seg": "u0023",
+            "offset": -0.08,
+            "clamp": false
+          }
+        }
+      ]
+    }
+  ],
+  "clips": {
+    "u0004": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "ease": "inout"
+          },
+          {
+            "t": 3.3,
+            "scale": 1.22,
+            "x": 0.0,
+            "y": -0.08,
+            "ease": "inout"
+          }
+        ],
+        "preset": "push_lento"
+      }
+    },
+    "u0005": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "ease": "inout"
+          },
+          {
+            "t": 7.72,
+            "scale": 1.22,
+            "x": 0.0,
+            "y": -0.08,
+            "ease": "inout"
+          }
+        ],
+        "preset": "push_lento"
+      }
+    },
+    "u0006": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "ease": "inout"
+          },
+          {
+            "t": 0.22,
+            "scale": 1.24,
+            "x": 0.0,
+            "y": -0.12,
+            "ease": "back"
+          }
+        ],
+        "preset": "punch_in"
+      }
+    },
+    "u0007": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.12,
+            "x": -0.18,
+            "y": -0.12,
+            "ease": "inout"
+          },
+          {
+            "t": 4.42,
+            "scale": 1.3,
+            "x": 0.16,
+            "y": 0.1,
+            "ease": "linear"
+          }
+        ],
+        "preset": "ken_burns"
+      }
+    },
+    "u0008": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.14,
+            "x": 0.0,
+            "y": -0.06,
+            "ease": "inout"
+          }
+        ],
+        "preset": "reencuadre"
+      }
+    },
+    "u0009": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.28,
+            "x": 0.0,
+            "y": -0.1,
+            "ease": "inout"
+          },
+          {
+            "t": 1.62,
+            "scale": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "ease": "out"
+          }
+        ],
+        "preset": "pull_out"
+      }
+    },
+    "u0013": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "ease": "inout"
+          },
+          {
+            "t": 1.54,
+            "scale": 1.22,
+            "x": 0.0,
+            "y": -0.08,
+            "ease": "inout"
+          }
+        ],
+        "preset": "push_lento"
+      }
+    },
+    "u0015": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.0,
+            "x": 0,
+            "y": 0,
+            "ease": "inout"
+          },
+          {
+            "t": 0.16,
+            "scale": 1.09,
+            "x": 0,
+            "y": 0,
+            "ease": "out"
+          },
+          {
+            "t": 0.42,
+            "scale": 1.0,
+            "x": 0,
+            "y": 0,
+            "ease": "inout"
+          }
+        ],
+        "preset": "latido"
+      }
+    },
+    "u0018": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "ease": "inout"
+          },
+          {
+            "t": 5.41,
+            "scale": 1.22,
+            "x": 0.0,
+            "y": -0.08,
+            "ease": "inout"
+          }
+        ],
+        "preset": "push_lento"
+      }
+    },
+    "u0020": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.14,
+            "x": 0.0,
+            "y": -0.06,
+            "ease": "inout"
+          }
+        ],
+        "preset": "reencuadre"
+      }
+    },
+    "u0021": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "ease": "inout"
+          },
+          {
+            "t": 0.22,
+            "scale": 1.24,
+            "x": 0.0,
+            "y": -0.12,
+            "ease": "back"
+          }
+        ],
+        "preset": "punch_in"
+      }
+    },
+    "u0022": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.12,
+            "x": -0.18,
+            "y": -0.12,
+            "ease": "inout"
+          },
+          {
+            "t": 7.11,
+            "scale": 1.3,
+            "x": 0.16,
+            "y": 0.1,
+            "ease": "linear"
+          }
+        ],
+        "preset": "ken_burns"
+      }
+    },
+    "u0023": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.14,
+            "x": 0.0,
+            "y": -0.06,
+            "ease": "inout"
+          }
+        ],
+        "preset": "reencuadre"
+      }
+    },
+    "u0024": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "ease": "inout"
+          },
+          {
+            "t": 0.22,
+            "scale": 1.24,
+            "x": 0.0,
+            "y": -0.12,
+            "ease": "back"
+          }
+        ],
+        "preset": "punch_in"
+      }
+    },
+    "u0025": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.28,
+            "x": 0.0,
+            "y": -0.1,
+            "ease": "inout"
+          },
+          {
+            "t": 6.83,
+            "scale": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "ease": "out"
+          }
+        ],
+        "preset": "pull_out"
+      }
+    },
+    "u0026": {
+      "zoom": {
+        "kf": [
+          {
+            "t": 0.0,
+            "scale": 1.0,
+            "x": 0,
+            "y": 0,
+            "ease": "inout"
+          },
+          {
+            "t": 0.16,
+            "scale": 1.09,
+            "x": 0,
+            "y": 0,
+            "ease": "out"
+          },
+          {
+            "t": 0.42,
+            "scale": 1.0,
+            "x": 0,
+            "y": 0,
+            "ease": "inout"
+          }
+        ],
+        "preset": "latido"
+      }
+    }
+  },
+  "transitions": [
+    {
+      "id": "t0065",
+      "at_seg": "u0008",
+      "type": "punch_zoom",
+      "dur": 0.28,
+      "strength": 1.0,
+      "sfx": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\skills\\video-cut\\assets\\sfx\\3_impacto.wav",
+      "sfx_gain": -5.0
+    },
+    {
+      "id": "t0067",
+      "at_seg": "u0018",
+      "type": "whip",
+      "dur": 0.28,
+      "strength": 1.0,
+      "sfx": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\skills\\video-cut\\assets\\sfx\\2_swish.wav",
+      "sfx_gain": -5.0
+    },
+    {
+      "id": "t0069",
+      "at_seg": "u0023",
+      "type": "flash",
+      "dur": 0.28,
+      "strength": 1.0,
+      "sfx": "C:\\Users\\Hans\\Documents\\videria2.0\\videria\\skills\\video-cut\\assets\\sfx\\5_clic.wav",
+      "sfx_gain": -5.0
+    }
+  ],
+  "counter": 75
+}

@@ -1,0 +1,99 @@
+{
+  "source": "s001",
+  "name": "IMG_0135.MOV",
+  "fingerprint": "ca433932615e3317",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 5.3,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.63,
+      "end": 4.55,
+      "text": "Estas son algunas señales de que tu negocio está creciendo de forma descontrolada.",
+      "avg_logprob": -0.1361,
+      "no_speech_prob": 0.0155,
+      "words": [
+        {
+          "w": "Estas",
+          "s": 0.63,
+          "e": 1.15,
+          "p": 0.915
+        },
+        {
+          "w": "son",
+          "s": 1.15,
+          "e": 1.33,
+          "p": 0.996
+        },
+        {
+          "w": "algunas",
+          "s": 1.33,
+          "e": 1.59,
+          "p": 0.994
+        },
+        {
+          "w": "señales",
+          "s": 1.59,
+          "e": 1.99,
+          "p": 0.988
+        },
+        {
+          "w": "de",
+          "s": 1.99,
+          "e": 2.23,
+          "p": 0.97
+        },
+        {
+          "w": "que",
+          "s": 2.23,
+          "e": 2.35,
+          "p": 0.998
+        },
+        {
+          "w": "tu",
+          "s": 2.35,
+          "e": 2.53,
+          "p": 0.992
+        },
+        {
+          "w": "negocio",
+          "s": 2.53,
+          "e": 2.87,
+          "p": 0.999
+        },
+        {
+          "w": "está",
+          "s": 2.87,
+          "e": 3.03,
+          "p": 0.895
+        },
+        {
+          "w": "creciendo",
+          "s": 3.03,
+          "e": 3.43,
+          "p": 0.997
+        },
+        {
+          "w": "de",
+          "s": 3.43,
+          "e": 3.61,
+          "p": 0.997
+        },
+        {
+          "w": "forma",
+          "s": 3.61,
+          "e": 3.81,
+          "p": 0.992
+        },
+        {
+          "w": "descontrolada.",
+          "s": 3.81,
+          "e": 4.55,
+          "p": 0.996
+        }
+      ]
+    }
+  ]
+}

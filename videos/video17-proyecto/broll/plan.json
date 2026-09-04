@@ -1,0 +1,36 @@
+{
+  "plan": [
+    {
+      "seg": "u0001",
+      "query": "customer service smartphone messages",
+      "locale": "en-US",
+      "dur": 2.6,
+      "offset": 1.04,
+      "texto": "Estos son algunos errores que podrías estar cometiendo al atender una consulta."
+    },
+    {
+      "seg": "u0004",
+      "query": "online shopping customer support chat",
+      "locale": "en-US",
+      "dur": 2.6,
+      "offset": 0.6,
+      "texto": "Responder únicamente lo que preguntaron puede cortar la conversación."
+    },
+    {
+      "seg": "u0009",
+      "query": "overwhelmed person reading long phone message",
+      "locale": "en-US",
+      "dur": 2.6,
+      "offset": 0.47,
+      "texto": "El caso contrario es enviar demasiada información de golpe."
+    },
+    {
+      "seg": "u0020",
+      "query": "small business employee checking product inventory",
+      "locale": "en-US",
+      "dur": 1.6,
+      "offset": 0.3,
+      "texto": "Entender bien no consiste solamente en responder rápido."
+    }
+  ]
+}

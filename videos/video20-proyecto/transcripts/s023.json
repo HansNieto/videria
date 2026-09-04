@@ -1,0 +1,85 @@
+{
+  "source": "s023",
+  "name": "IMG_0190.MOV",
+  "fingerprint": "9d158b12f39ee059",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 16.6667,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 1.08,
+      "end": 4.1,
+      "text": "Los precios de mercado sirven como referencia.",
+      "avg_logprob": -0.3485,
+      "no_speech_prob": 0.0312,
+      "words": [
+        {
+          "w": "Los",
+          "s": 1.08,
+          "e": 1.58,
+          "p": 0.691
+        },
+        {
+          "w": "precios",
+          "s": 1.58,
+          "e": 1.86,
+          "p": 0.929
+        },
+        {
+          "w": "de",
+          "s": 1.86,
+          "e": 2.04,
+          "p": 0.697
+        },
+        {
+          "w": "mercado",
+          "s": 2.04,
+          "e": 2.48,
+          "p": 0.927
+        },
+        {
+          "w": "sirven",
+          "s": 2.48,
+          "e": 2.96,
+          "p": 0.991
+        },
+        {
+          "w": "como",
+          "s": 2.96,
+          "e": 3.26,
+          "p": 0.995
+        },
+        {
+          "w": "referencia.",
+          "s": 3.26,
+          "e": 4.1,
+          "p": 0.989
+        }
+      ]
+    },
+    {
+      "i": 1,
+      "start": 10.97,
+      "end": 11.57,
+      "text": "Agarra porfa.",
+      "avg_logprob": -0.3485,
+      "no_speech_prob": 0.0312,
+      "words": [
+        {
+          "w": "Agarra",
+          "s": 10.97,
+          "e": 11.23,
+          "p": 0.913
+        },
+        {
+          "w": "porfa.",
+          "s": 11.23,
+          "e": 11.57,
+          "p": 0.615
+        }
+      ]
+    }
+  ]
+}

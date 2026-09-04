@@ -1,0 +1,111 @@
+{
+  "source": "s016",
+  "name": "IMG_0134.MOV",
+  "fingerprint": "1a42bfa20ffff3ba",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 7.266667,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.12,
+      "end": 6.44,
+      "text": "Guarda este video y revisa si tus respuestas están solucionando consultas o simplemente cerrando conversaciones.",
+      "avg_logprob": -0.218,
+      "no_speech_prob": 0.0109,
+      "words": [
+        {
+          "w": "Guarda",
+          "s": 0.12,
+          "e": 0.62,
+          "p": 0.665
+        },
+        {
+          "w": "este",
+          "s": 0.62,
+          "e": 0.74,
+          "p": 0.981
+        },
+        {
+          "w": "video",
+          "s": 0.74,
+          "e": 1.06,
+          "p": 0.9
+        },
+        {
+          "w": "y",
+          "s": 1.06,
+          "e": 1.38,
+          "p": 0.968
+        },
+        {
+          "w": "revisa",
+          "s": 1.38,
+          "e": 1.64,
+          "p": 0.965
+        },
+        {
+          "w": "si",
+          "s": 1.64,
+          "e": 1.8,
+          "p": 0.992
+        },
+        {
+          "w": "tus",
+          "s": 1.8,
+          "e": 1.96,
+          "p": 0.911
+        },
+        {
+          "w": "respuestas",
+          "s": 1.96,
+          "e": 2.54,
+          "p": 0.991
+        },
+        {
+          "w": "están",
+          "s": 2.54,
+          "e": 3.1,
+          "p": 0.938
+        },
+        {
+          "w": "solucionando",
+          "s": 3.1,
+          "e": 3.76,
+          "p": 0.989
+        },
+        {
+          "w": "consultas",
+          "s": 3.76,
+          "e": 4.48,
+          "p": 0.991
+        },
+        {
+          "w": "o",
+          "s": 4.48,
+          "e": 4.8,
+          "p": 0.928
+        },
+        {
+          "w": "simplemente",
+          "s": 4.8,
+          "e": 5.36,
+          "p": 0.937
+        },
+        {
+          "w": "cerrando",
+          "s": 5.36,
+          "e": 5.8,
+          "p": 0.986
+        },
+        {
+          "w": "conversaciones.",
+          "s": 5.8,
+          "e": 6.44,
+          "p": 0.99
+        }
+      ]
+    }
+  ]
+}

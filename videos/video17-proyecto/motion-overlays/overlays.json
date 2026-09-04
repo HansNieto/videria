@@ -1,0 +1,17 @@
+{
+  "project": "17v2-proyecto",
+  "canvas": { "width": 1080, "height": 1920, "background": "transparent" },
+  "style": "s-sticker3d",
+  "narrationRate": 2.6,
+  "overlays": [
+    { "file": "01_precio_sin_contexto.html", "duration": 5.02, "concept": "Dar solo el precio no ayuda a decidir", "line": "Por ejemplo, si el cliente consulta por el precio y tú solo le das un número, no le estás ayudando a decidir ni le das una razón para continuar.", "cueIn": { "word": "cliente", "index": 4 }, "cueOut": { "word": "continuar", "index": 27 }, "suggestedSegment": "u0008", "placement": "tercio superior" },
+    { "file": "02_mensaje_sobrecarga.html", "duration": 5.02, "concept": "Demasiadas opciones confunden", "line": "Enviar un mensaje largo y genérico y lleno de opciones puede confundir al cliente en vez de ayudarlo a resolver su duda.", "cueIn": { "word": "mensaje", "index": 2 }, "cueOut": { "word": "duda", "index": 21 }, "suggestedSegment": "u0011", "placement": "tercio superior" },
+    { "file": "03_iniciativa_sin_direccion.html", "duration": 5.02, "concept": "La conversación queda sin dirección", "line": "En ese momento toda la iniciativa la toma el cliente y la conversación pierde dirección.", "cueIn": { "word": "iniciativa", "index": 5 }, "cueOut": { "word": "dirección", "index": 14 }, "suggestedSegment": "u0016", "placement": "tercio superior" },
+    { "file": "04_guiar_siguiente_paso.html", "duration": 5.02, "concept": "Opciones útiles llevan al siguiente paso", "line": "Puedes recomendar una opción, confirmar disponibilidad o preguntar una cosa sencilla que te ayude a entender la consulta del cliente.", "cueIn": { "word": "recomendar", "index": 2 }, "cueOut": { "word": "cliente", "index": 20 }, "suggestedSegment": "u0019", "placement": "tercio superior" }
+  ],
+  "deliberatelySkipped": [
+    { "segment": "u0001", "reason": "Introducción; el b-roll comunica mejor el contexto." },
+    { "segment": "u0025", "reason": "CTA final; se mantiene limpio para favorecer la lectura." }
+  ]
+}
+

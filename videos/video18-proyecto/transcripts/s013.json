@@ -1,0 +1,129 @@
+{
+  "source": "s013",
+  "name": "IMG_0147.MOV",
+  "fingerprint": "cab8165e190d1b66",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 18.333333,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.92,
+      "end": 17.0,
+      "text": "Esto ocurre porque aumentó el trabajo, pero los procesos, trabajadores y las herramientas no crecieron al mismo ritmo.",
+      "avg_logprob": -0.2103,
+      "no_speech_prob": 0.0801,
+      "words": [
+        {
+          "w": "Esto",
+          "s": 0.92,
+          "e": 1.44,
+          "p": 0.753
+        },
+        {
+          "w": "ocurre",
+          "s": 5.94,
+          "e": 8.58,
+          "p": 0.987
+        },
+        {
+          "w": "porque",
+          "s": 11.6,
+          "e": 11.84,
+          "p": 0.228
+        },
+        {
+          "w": "aumentó",
+          "s": 11.84,
+          "e": 12.32,
+          "p": 0.842
+        },
+        {
+          "w": "el",
+          "s": 12.32,
+          "e": 12.5,
+          "p": 0.989
+        },
+        {
+          "w": "trabajo,",
+          "s": 12.5,
+          "e": 12.76,
+          "p": 0.993
+        },
+        {
+          "w": "pero",
+          "s": 13.04,
+          "e": 13.1,
+          "p": 0.99
+        },
+        {
+          "w": "los",
+          "s": 13.1,
+          "e": 13.36,
+          "p": 0.966
+        },
+        {
+          "w": "procesos,",
+          "s": 13.36,
+          "e": 13.98,
+          "p": 0.995
+        },
+        {
+          "w": "trabajadores",
+          "s": 14.06,
+          "e": 14.58,
+          "p": 0.987
+        },
+        {
+          "w": "y",
+          "s": 14.58,
+          "e": 14.8,
+          "p": 0.923
+        },
+        {
+          "w": "las",
+          "s": 14.8,
+          "e": 15.0,
+          "p": 0.897
+        },
+        {
+          "w": "herramientas",
+          "s": 15.0,
+          "e": 15.54,
+          "p": 0.998
+        },
+        {
+          "w": "no",
+          "s": 15.54,
+          "e": 15.76,
+          "p": 0.922
+        },
+        {
+          "w": "crecieron",
+          "s": 15.76,
+          "e": 16.22,
+          "p": 0.979
+        },
+        {
+          "w": "al",
+          "s": 16.22,
+          "e": 16.42,
+          "p": 0.985
+        },
+        {
+          "w": "mismo",
+          "s": 16.42,
+          "e": 16.62,
+          "p": 0.989
+        },
+        {
+          "w": "ritmo.",
+          "s": 16.62,
+          "e": 17.0,
+          "p": 0.997
+        }
+      ]
+    }
+  ]
+}

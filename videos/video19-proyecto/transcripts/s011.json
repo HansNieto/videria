@@ -1,0 +1,99 @@
+{
+  "source": "s011",
+  "name": "IMG_0161.MOV",
+  "fingerprint": "f0faf10b3769d9e5",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 4.466667,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.0,
+      "end": 3.6,
+      "text": "Por ejemplo, cuando la app del clima muestra la temperatura de tu ciudad.",
+      "avg_logprob": -0.1927,
+      "no_speech_prob": 0.0138,
+      "words": [
+        {
+          "w": "Por",
+          "s": 0.0,
+          "e": 0.08,
+          "p": 0.307
+        },
+        {
+          "w": "ejemplo,",
+          "s": 0.08,
+          "e": 0.46,
+          "p": 0.999
+        },
+        {
+          "w": "cuando",
+          "s": 0.82,
+          "e": 0.9,
+          "p": 0.978
+        },
+        {
+          "w": "la",
+          "s": 0.9,
+          "e": 1.1,
+          "p": 0.99
+        },
+        {
+          "w": "app",
+          "s": 1.1,
+          "e": 1.32,
+          "p": 0.868
+        },
+        {
+          "w": "del",
+          "s": 1.32,
+          "e": 1.54,
+          "p": 0.971
+        },
+        {
+          "w": "clima",
+          "s": 1.54,
+          "e": 1.94,
+          "p": 0.991
+        },
+        {
+          "w": "muestra",
+          "s": 1.94,
+          "e": 2.32,
+          "p": 0.988
+        },
+        {
+          "w": "la",
+          "s": 2.32,
+          "e": 2.52,
+          "p": 0.994
+        },
+        {
+          "w": "temperatura",
+          "s": 2.52,
+          "e": 3.04,
+          "p": 0.998
+        },
+        {
+          "w": "de",
+          "s": 3.04,
+          "e": 3.26,
+          "p": 0.987
+        },
+        {
+          "w": "tu",
+          "s": 3.26,
+          "e": 3.34,
+          "p": 0.985
+        },
+        {
+          "w": "ciudad.",
+          "s": 3.34,
+          "e": 3.6,
+          "p": 0.995
+        }
+      ]
+    }
+  ]
+}

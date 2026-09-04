@@ -1,0 +1,69 @@
+{
+  "source": "s008",
+  "name": "IMG_0175.MOV",
+  "fingerprint": "7dbd745756591a60",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 5.865,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 2.59,
+      "end": 4.93,
+      "text": "calcula todo el tiempo que requiere el trabajo",
+      "avg_logprob": -0.4176,
+      "no_speech_prob": 0.0983,
+      "words": [
+        {
+          "w": "calcula",
+          "s": 2.59,
+          "e": 3.13,
+          "p": 0.678
+        },
+        {
+          "w": "todo",
+          "s": 3.13,
+          "e": 3.31,
+          "p": 0.987
+        },
+        {
+          "w": "el",
+          "s": 3.31,
+          "e": 3.53,
+          "p": 0.997
+        },
+        {
+          "w": "tiempo",
+          "s": 3.53,
+          "e": 3.77,
+          "p": 0.997
+        },
+        {
+          "w": "que",
+          "s": 3.77,
+          "e": 4.05,
+          "p": 0.988
+        },
+        {
+          "w": "requiere",
+          "s": 4.05,
+          "e": 4.39,
+          "p": 0.991
+        },
+        {
+          "w": "el",
+          "s": 4.39,
+          "e": 4.65,
+          "p": 0.909
+        },
+        {
+          "w": "trabajo",
+          "s": 4.65,
+          "e": 4.93,
+          "p": 0.994
+        }
+      ]
+    }
+  ]
+}

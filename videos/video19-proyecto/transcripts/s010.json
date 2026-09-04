@@ -1,0 +1,57 @@
+{
+  "source": "s010",
+  "name": "IMG_0160.MOV",
+  "fingerprint": "0dcb3ac95dd45537",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 2.966667,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.0,
+      "end": 2.08,
+      "text": "cuando la aplicación del clima muestra",
+      "avg_logprob": -0.2533,
+      "no_speech_prob": 0.0436,
+      "words": [
+        {
+          "w": "cuando",
+          "s": 0.0,
+          "e": 0.3,
+          "p": 0.785
+        },
+        {
+          "w": "la",
+          "s": 0.3,
+          "e": 0.52,
+          "p": 0.984
+        },
+        {
+          "w": "aplicación",
+          "s": 0.52,
+          "e": 0.96,
+          "p": 0.995
+        },
+        {
+          "w": "del",
+          "s": 0.96,
+          "e": 1.12,
+          "p": 0.961
+        },
+        {
+          "w": "clima",
+          "s": 1.12,
+          "e": 1.62,
+          "p": 0.995
+        },
+        {
+          "w": "muestra",
+          "s": 1.62,
+          "e": 2.08,
+          "p": 0.992
+        }
+      ]
+    }
+  ]
+}

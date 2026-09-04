@@ -1,0 +1,93 @@
+{
+  "source": "s009",
+  "name": "IMG_0176.MOV",
+  "fingerprint": "37dc1a66a3c9c687",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 7.1,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.95,
+      "end": 6.35,
+      "text": "incluyendo la preparación, las reuniones, la ejecución, las correcciones y la entrega.",
+      "avg_logprob": -0.1996,
+      "no_speech_prob": 0.0165,
+      "words": [
+        {
+          "w": "incluyendo",
+          "s": 0.95,
+          "e": 1.85,
+          "p": 0.973
+        },
+        {
+          "w": "la",
+          "s": 1.85,
+          "e": 2.15,
+          "p": 0.977
+        },
+        {
+          "w": "preparación,",
+          "s": 2.15,
+          "e": 2.85,
+          "p": 0.99
+        },
+        {
+          "w": "las",
+          "s": 3.13,
+          "e": 3.27,
+          "p": 0.975
+        },
+        {
+          "w": "reuniones,",
+          "s": 3.27,
+          "e": 3.69,
+          "p": 0.987
+        },
+        {
+          "w": "la",
+          "s": 3.87,
+          "e": 3.95,
+          "p": 0.965
+        },
+        {
+          "w": "ejecución,",
+          "s": 3.95,
+          "e": 4.71,
+          "p": 0.998
+        },
+        {
+          "w": "las",
+          "s": 4.95,
+          "e": 5.11,
+          "p": 0.995
+        },
+        {
+          "w": "correcciones",
+          "s": 5.11,
+          "e": 5.55,
+          "p": 0.957
+        },
+        {
+          "w": "y",
+          "s": 5.55,
+          "e": 5.79,
+          "p": 0.935
+        },
+        {
+          "w": "la",
+          "s": 5.79,
+          "e": 6.01,
+          "p": 0.995
+        },
+        {
+          "w": "entrega.",
+          "s": 6.01,
+          "e": 6.35,
+          "p": 1.0
+        }
+      ]
+    }
+  ]
+}

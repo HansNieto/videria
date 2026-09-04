@@ -1,0 +1,63 @@
+{
+  "source": "s014",
+  "name": "IMG_0132.MOV",
+  "fingerprint": "8aebf26ac6a1c15d",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 2.7,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.0,
+      "end": 2.02,
+      "text": "Entender bien no consiste en responder rápido.",
+      "avg_logprob": -0.369,
+      "no_speech_prob": 0.0459,
+      "words": [
+        {
+          "w": "Entender",
+          "s": 0.0,
+          "e": 0.32,
+          "p": 0.589
+        },
+        {
+          "w": "bien",
+          "s": 0.32,
+          "e": 0.48,
+          "p": 0.982
+        },
+        {
+          "w": "no",
+          "s": 0.48,
+          "e": 0.8,
+          "p": 0.904
+        },
+        {
+          "w": "consiste",
+          "s": 0.8,
+          "e": 1.08,
+          "p": 0.992
+        },
+        {
+          "w": "en",
+          "s": 1.08,
+          "e": 1.26,
+          "p": 0.996
+        },
+        {
+          "w": "responder",
+          "s": 1.26,
+          "e": 1.56,
+          "p": 0.997
+        },
+        {
+          "w": "rápido.",
+          "s": 1.56,
+          "e": 2.02,
+          "p": 0.996
+        }
+      ]
+    }
+  ]
+}

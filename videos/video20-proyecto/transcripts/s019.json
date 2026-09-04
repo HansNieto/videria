@@ -1,0 +1,93 @@
+{
+  "source": "s019",
+  "name": "IMG_0186.MOV",
+  "fingerprint": "cae2e405f1b4a062",
+  "language": "es",
+  "language_probability": 1.0,
+  "duration": 11.1,
+  "device": "cpu",
+  "segments": [
+    {
+      "i": 0,
+      "start": 0.98,
+      "end": 9.76,
+      "text": "Finalmente define de forma clara que es lo que incluye el servicio.",
+      "avg_logprob": -0.3246,
+      "no_speech_prob": 0.1111,
+      "words": [
+        {
+          "w": "Finalmente",
+          "s": 0.98,
+          "e": 2.06,
+          "p": 0.646
+        },
+        {
+          "w": "define",
+          "s": 4.64,
+          "e": 6.74,
+          "p": 0.637
+        },
+        {
+          "w": "de",
+          "s": 6.74,
+          "e": 6.96,
+          "p": 0.768
+        },
+        {
+          "w": "forma",
+          "s": 6.96,
+          "e": 7.26,
+          "p": 0.965
+        },
+        {
+          "w": "clara",
+          "s": 7.26,
+          "e": 8.14,
+          "p": 0.999
+        },
+        {
+          "w": "que",
+          "s": 8.14,
+          "e": 8.36,
+          "p": 0.586
+        },
+        {
+          "w": "es",
+          "s": 8.36,
+          "e": 8.38,
+          "p": 0.921
+        },
+        {
+          "w": "lo",
+          "s": 8.38,
+          "e": 8.56,
+          "p": 0.995
+        },
+        {
+          "w": "que",
+          "s": 8.56,
+          "e": 8.84,
+          "p": 0.998
+        },
+        {
+          "w": "incluye",
+          "s": 8.84,
+          "e": 9.12,
+          "p": 0.991
+        },
+        {
+          "w": "el",
+          "s": 9.12,
+          "e": 9.4,
+          "p": 0.992
+        },
+        {
+          "w": "servicio.",
+          "s": 9.4,
+          "e": 9.76,
+          "p": 0.99
+        }
+      ]
+    }
+  ]
+}
