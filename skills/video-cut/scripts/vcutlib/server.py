@@ -23,8 +23,8 @@ from flask import (Flask, abort, jsonify, request, send_file,
                    send_from_directory)
 from werkzeug.utils import secure_filename
 
-from . import (assbuild, exporters, library, media, plan, render, studio, subs,
-               textlayer, util)
+from . import (assbuild, exporters, ingest, library, media, plan, render,
+               studio, subs, textlayer, util)
 
 EDITOR_DIR = util.skill_root() / "editor"
 STUDIO_DIR = util.skill_root() / "studio"
@@ -74,6 +74,53 @@ def create_app(project_dir):
 
     def body():
         return request.get_json(force=True, silent=True) or {}
+
+    def register_video_source(path):
+        """Registra un archivo local como fuente y crea recursos de edición."""
+        project = load()
+        resolved = Path(path).resolve()
+        for known in project.get("sources", []):
+            if Path(known.get("path") or "").resolve() == resolved:
+                known["tiene_original"] = True
+                return project, known, []
+        built = ingest.build_sources([resolved], sort_by="none")
+        if not built:
+            abort(422, "no pude leer el video")
+        source = built[0]
+        used = {str(s.get("id")) for s in project.get("sources", [])}
+        number = 1
+        while "s%03d" % number in used:
+            number += 1
+        source["id"] = "s%03d" % number
+        source["index"] = max(
+            [int(s.get("index") or 0) for s in project.get("sources", [])] + [0]
+        ) + 1
+        source["tiene_original"] = True
+        source["original_embedded"] = True
+        warnings = []
+
+        # El proxy H.264 garantiza reproducción en WebView2/Chromium; el
+        # render conserva el archivo original copiado dentro del proyecto.
+        try:
+            source["proxy"] = str(media.build_review_proxy(
+                source, project_dir / "cache" / "proxy", height=1080))
+        except Exception as exc:  # el original aún puede ser compatible
+            warnings.append("No pude crear el proxy compatible: %s" % exc)
+        try:
+            if source.get("has_audio"):
+                wave = media.build_waveform(source, project_dir / "cache")
+                source["waveform"] = str(wave) if wave else None
+        except Exception as exc:
+            warnings.append("No pude crear la onda de audio: %s" % exc)
+        try:
+            source["filmstrip"] = media.build_filmstrip(
+                source, project_dir / "cache")
+        except Exception as exc:
+            warnings.append("No pude crear las miniaturas: %s" % exc)
+
+        project.setdefault("sources", []).append(source)
+        studio.save_project(project_dir, project, backup=True)
+        return project, source, warnings
 
     # ---------------------------------------------------------- estaticos
 
@@ -203,7 +250,12 @@ def create_app(project_dir):
 
     @app.route("/api/assets/import", methods=["POST"])
     def import_asset():
-        """Copia un archivo soltado en el navegador dentro del proyecto."""
+        """Copia un archivo soltado dentro del proyecto.
+
+        Un video puede tener dos usos distintos. En una pista visual sigue
+        siendo un overlay; al importarlo sobre una pista de video se registra
+        como fuente real para que tenga audio, trim, velocidad y render final.
+        """
         upload = request.files.get("file")
         if not upload or not upload.filename:
             abort(400, "falta el archivo")
@@ -236,7 +288,26 @@ def create_app(project_dir):
                  "size": size, "dir": "importados"}
         if duration:
             asset["dur"] = round(duration, 3)
-        return jsonify({"ok": True, "asset": asset, "category": category})
+        source = None
+        warnings = []
+        if kind == "video" and request.form.get("mode") == "clip":
+            with lock:
+                _, source, warnings = register_video_source(dest)
+
+        return jsonify({"ok": True, "asset": asset, "category": category,
+                        "source": source, "warnings": warnings})
+
+    @app.route("/api/sources/register", methods=["POST"])
+    def register_source():
+        """Convierte un video ya visible en la biblioteca en clip reutilizable."""
+        path = body().get("path") or ""
+        if not library.allowed(project_dir, path):
+            abort(403, "archivo fuera de las carpetas del proyecto")
+        if Path(path).suffix.lower() not in library.VIDEO_EXT:
+            abort(415, "el archivo no es un video")
+        with lock:
+            _, source, warnings = register_video_source(path)
+        return jsonify({"ok": True, "source": source, "warnings": warnings})
 
     # ---------------------------------------------------------- media
 

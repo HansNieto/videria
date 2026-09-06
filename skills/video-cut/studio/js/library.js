@@ -1,5 +1,4 @@
-/* Librería: tarjetas arrastrables a la timeline (o clic para aplicar a lo
-   seleccionado). Es el único sitio donde se crean items nuevos. */
+/* Librería e importación: crea capas creativas y clips de vídeo reales. */
 window.ST = window.ST || {};
 
 ST.library = (() => {
@@ -189,6 +188,76 @@ ST.library = (() => {
     return c ? c.seg : null;
   };
 
+  const VIDEO_FILE = /\.(webm|mp4|mkv|mov)$/i;
+
+  function fileKind(file) {
+    const type = (file.type || '').toLowerCase();
+    if (type.startsWith('video/') || VIDEO_FILE.test(file.name || '')) return 'video';
+    if (type.startsWith('audio/') || /\.(wav|mp3|m4a|aac|flac|ogg|opus)$/i.test(file.name || '')) return 'audio';
+    if (type.startsWith('image/') || /\.(png|webp|gif|jpe?g)$/i.test(file.name || '')) return 'image';
+    return null;
+  }
+
+  function nextSegmentId() {
+    const used = new Set((S.project.segments || []).map((x) => x.id));
+    let n = 1;
+    while (used.has('u' + String(n).padStart(4, '0'))) n++;
+    return 'u' + String(n).padStart(4, '0');
+  }
+
+  // A diferencia de un overlay, un clip vive en project.sources/segments.
+  // Eso hace que el reproductor y el render usen su video y su audio reales.
+  function addVideoClip(source, t, trackId) {
+    const target = st.track(trackId || '_video');
+    if (target && (target.kind !== 'video' || target.locked)) {
+      return ST.app.toast('Elegí una pista de vídeo desbloqueada', 'bad');
+    }
+    st.push();
+    st.pinClipPositions();
+    if (!(S.project.sources || []).some((x) => x.id === source.id)) {
+      S.project.sources.push(source);
+    }
+    S.sources[source.id] = source;
+    const dur = Math.max(0.1, +source.duration || 0.1);
+    const seg = {
+      id: nextSegmentId(), source: source.id, in: 0, out: dur,
+      dur: +dur.toFixed(3), enabled: true, text: '',
+    };
+    S.project.segments.push(seg);
+    st.setClip(seg.id, { start: +Math.max(0, t).toFixed(4),
+                         track: target?.id || '_video', gap_before: 0 });
+    st.resolve();
+    const snapped = st.snapTime(seg.id, Math.max(0, t), dur, S.snap);
+    const lane = st.placeClip(seg.id, snapped.time, target?.id || '_video', true);
+    st.resolve();
+    st.select('clip', seg.id);
+    ST.app.renderAll();
+    ST.player.seek(snapped.time);
+    ST.app.toast('Vídeo añadido con audio en “' + (lane?.name || 'Vídeo') + '”');
+    return seg;
+  }
+
+  async function addVideoPath(path, t, trackId) {
+    const key = String(path || '').replace(/\\/g, '/').toLowerCase();
+    let source = (S.project.sources || []).find((x) =>
+      String(x.path || '').replace(/\\/g, '/').toLowerCase() === key);
+    let warnings = [];
+    if (!source) {
+      ST.app.toast('Preparando vídeo, audio y miniaturas…');
+      const r = await fetch('/api/sources/register', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.error || j.description || ('HTTP ' + r.status));
+      source = j.source;
+      warnings = j.warnings || [];
+    }
+    const result = addVideoClip(source, t, trackId);
+    if (warnings.length) ST.app.toast(warnings[0], 'bad');
+    return result;
+  }
+
   function applyZoom(seg, presetId) {
     if (!seg) return ST.app.toast('No hay clip en el cabezal', 'bad');
     const preset = S.cat.zoom_presets.find((p) => p.id === presetId);
@@ -330,6 +399,10 @@ ST.library = (() => {
       // de overlays pero conservan su tamaño y su fundido de sticker.
       let cat = payload.cat;
       const trk = st.track(rowId);
+      if (payload.kind === 'video' && trk && trk.kind === 'video') {
+        return addVideoPath(payload.path, t, trk.id).catch((e) =>
+          ST.app.toast('No pude añadir el vídeo: ' + e.message, 'bad'));
+      }
       if (trk && trk.kind === 'audio') cat = trk.id === 't_sfx' ? 'sfx' : 'musica';
       else if (trk && trk.kind === 'overlay' && cat !== 'sticker') cat = 'overlay';
       if ((cat === 'sfx' || cat === 'musica') && payload.kind !== 'audio') {
@@ -349,24 +422,39 @@ ST.library = (() => {
     if (!list.length) return;
     let at = t;
     for (const file of list) {
-      const form = new FormData(); form.append('file', file);
+      const trk = st.track(rowId);
+      const guessed = fileKind(file);
+      const asClip = guessed === 'video' && (!trk || trk.kind === 'video');
+      if (trk && ((trk.kind === 'video' && guessed !== 'video') ||
+                  (trk.kind === 'audio' && guessed !== 'audio') ||
+                  (trk.kind === 'overlay' && !['image', 'video'].includes(guessed)) ||
+                  trk.kind === 'text')) {
+        ST.app.toast('“' + file.name + '” no corresponde a esa pista', 'bad');
+        continue;
+      }
+      const form = new FormData();
+      form.append('file', file);
+      if (asClip) form.append('mode', 'clip');
+      ST.app.toast(asClip ? 'Preparando vídeo, audio y miniaturas…' : 'Importando recurso…');
       try {
         const r = await fetch('/api/assets/import', { method: 'POST', body: form });
         const j = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(j.error || j.description || ('HTTP ' + r.status));
-        const trk = st.track(rowId);
-        if (trk && ((j.asset.kind === 'audio') !== (trk.kind === 'audio'))) {
-          ST.app.toast('El archivo se importó, pero esa capa no acepta ese tipo', 'bad');
-          continue;
+        if (j.source) {
+          addVideoClip(j.source, at, trk?.id || '_video');
+          at += 0.08;
+        } else {
+          const cat = j.asset.kind === 'audio'
+            ? (trk && trk.id === 't_sfx' ? 'sfx' : 'musica') : 'overlay';
+          addAsset(j.asset, cat, at, trk && trk.id);
+          at += 0.08;
         }
-        const cat = j.asset.kind === 'audio' ? (trk && trk.id === 't_sfx' ? 'sfx' : 'musica') : 'overlay';
-        addAsset(j.asset, cat, at, trk && trk.id);
-        at += 0.08;
         // El catálogo se refresca para que el archivo también aparezca en la biblioteca.
         if (!S.cat.library[j.category]) S.cat.library[j.category] = [];
         if (!S.cat.library[j.category].some((x) => x.path === j.asset.path)) {
           S.cat.library[j.category].push(j.asset);
         }
+        if ((j.warnings || []).length) ST.app.toast(j.warnings[0], 'bad');
       } catch (e) {
         ST.app.toast('No pude importar “' + file.name + '”: ' + e.message, 'bad');
       }
@@ -425,5 +513,6 @@ ST.library = (() => {
     render();
   }
 
-  return { bind, render, dropOn, importFiles, addText, applyZoom, applyTrans };
+  return { bind, render, dropOn, importFiles, addText, addVideoClip, addVideoPath,
+           applyZoom, applyTrans };
 })();

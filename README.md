@@ -58,6 +58,8 @@ se abre en el navegador:
   centrado en el corte, no una mezcla de dos clips.
 - **Música con ducking** — la música baja sola cuando hablás.
 - **Overlays** animados, stickers, velocidad por clip y corrección de color.
+- **Importación de video real**: MP4/MOV/MKV/WebM entran como clips con audio,
+  miniaturas y onda; se alinean en la pista principal o crean otra al superponerse.
 - **Render final** a MP4 con ffmpeg, con NVENC si tu GPU lo permite.
 
 Las dos fases viven en archivos separados a propósito: volver a analizar los

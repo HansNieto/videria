@@ -461,6 +461,11 @@ def resolve_paths(project, pdir):
         if original and Path(original).exists():
             s["path"] = original
             s["tiene_original"] = True
+        elif s.get("original_embedded") and Path(_abs(s.get("path"), pdir)).exists():
+            # Videos añadidos desde el Studio se copian dentro del proyecto.
+            # No son un proxy aunque su ruta sea relativa y compartible.
+            s["path"] = _abs(s.get("path"), pdir)
+            s["tiene_original"] = True
         else:
             s["path"] = _abs(s.get("path"), pdir)
             s["tiene_original"] = False

@@ -1,8 +1,10 @@
 import io
+import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "skills" / "video-cut" / "scripts"
@@ -46,6 +48,54 @@ class StudioRegressions(unittest.TestCase):
             self.assertTrue(imported.is_file())
             self.assertEqual(imported.parent.name, "importados")
             self.assertEqual(data["asset"]["kind"], "image")
+
+    def test_video_import_registers_real_source_for_clip_and_audio(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "project.json").write_text(json.dumps({
+                "name": "demo", "sources": [], "segments": [], "groups": [],
+                "input": {"paths": []}, "stats": {},
+            }), encoding="utf-8")
+
+            def fake_source(files, sort_by="name"):
+                path = Path(files[0])
+                return [{
+                    "id": "s001", "index": 1, "name": path.name,
+                    "path": str(path), "duration": 3.5, "fps": 30,
+                    "width": 1080, "height": 1920, "rotation": 0,
+                    "vcodec": "h264", "acodec": "aac", "pix_fmt": "yuv420p",
+                    "has_audio": True, "has_video": True, "size": path.stat().st_size,
+                    "needs_proxy": False, "proxy": None, "waveform": None,
+                    "filmstrip": None,
+                }]
+
+            app = server.create_app(root)
+            client = app.test_client()
+            with mock.patch.object(server.ingest, "build_sources", side_effect=fake_source), \
+                 mock.patch.object(server.media, "build_review_proxy",
+                                   return_value=root / "cache/proxy/s001.mp4"), \
+                 mock.patch.object(server.media, "build_waveform",
+                                   return_value=root / "cache/waveform/s001.bin"), \
+                 mock.patch.object(server.media, "build_filmstrip",
+                                   return_value={"url": str(root / "cache/filmstrip/s001.jpg"),
+                                                 "cols": 1, "rows": 1, "count": 1,
+                                                 "tw": 28, "th": 48, "interval": 3.5}):
+                response = client.post(
+                    "/api/assets/import",
+                    data={"file": (io.BytesIO(b"fake-mp4"), "clip extra.mp4"),
+                          "mode": "clip"},
+                    content_type="multipart/form-data",
+                )
+
+            self.assertEqual(response.status_code, 200)
+            data = response.get_json()
+            self.assertEqual(data["source"]["name"], "clip_extra.mp4")
+            self.assertTrue(data["source"]["has_audio"])
+            self.assertTrue(data["source"]["original_embedded"])
+            saved = json.loads((root / "project.json").read_text(encoding="utf-8"))
+            self.assertEqual(saved["sources"][0]["path"],
+                             "assets/importados/clip_extra.mp4")
+            self.assertEqual(saved["sources"][0]["proxy"], "cache/proxy/s001.mp4")
 
 
 if __name__ == "__main__":

@@ -172,15 +172,28 @@ ST.player = (() => {
     v.playsInline = true;
     v.muted = true;
     v.crossOrigin = 'anonymous';
+    v._usingProxy = !S.previewHQ;
     // Cuando no se está reproduciendo no hay bucle de dibujo, así que el
     // fotograma nuevo tras un salto hay que pintarlo al recibirlo: si no, el
     // canvas se queda con el anterior (o en negro la primera vez).
     for (const evt of ['seeked', 'loadeddata', 'canplay']) {
       v.addEventListener(evt, () => { if (!S.playing) paint(); });
     }
-    v.addEventListener('error', () => ST.app.toast(
-      'No pude cargar ' + ((S.sources[sid] || {}).name || sid) +
-      '. El original HDR/HEVC necesita soporte del equipo. Puedes desmarcar Original para usar el proxy de revisión (color aproximado).', 'bad'));
+    v.addEventListener('error', () => {
+      const source = S.sources[sid] || {};
+      // Si Chromium no entiende el original (por ejemplo HEVC), cambiar solo
+      // este elemento al proxy H.264. El render sigue leyendo el original.
+      if (!v._usingProxy && source.proxy) {
+        v._usingProxy = true;
+        v.src = '/api/media/' + sid;
+        v.load();
+        ST.app.toast('El original de ' + (source.name || sid) +
+          ' no es compatible con el reproductor; uso su proxy solo para previsualizar.');
+        return;
+      }
+      ST.app.toast('No pude cargar ' + (source.name || sid) +
+        '. Comprueba que el archivo o su proxy existan.', 'bad');
+    });
     document.getElementById('vhost').appendChild(v);
     VID[key] = v; ORDER.push(key);
     while (ORDER.length > MAX_VIDEOS) {
@@ -214,8 +227,10 @@ ST.player = (() => {
     const front = active.at(-1), badge = document.getElementById('badgeSrc');
     if (badge) {
       const source = front && S.sources[front.source];
+      const frontVideo = front && VID[front.seg];
       badge.textContent = front ? (source?.name || '') +
-        (S.previewHQ && source?.tiene_original !== false ? ' · Original' : ' · Proxy (color aproximado)') : '';
+        (!frontVideo?._usingProxy && S.previewHQ && source?.tiene_original !== false
+          ? ' · Original' : ' · Proxy de previsualización') : '';
     }
     const next = S.clips.filter(c => !c.hidden && c.t0 > S.t).sort((a,b) => a.t0-b.t0)[0];
     if (next && next.t0-S.t < 2) {
