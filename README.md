@@ -198,6 +198,12 @@ mover el plano y la rueda acerca) · `S` cortar en el cabezal · `D` apagar clip
 guardar · `B` borrador · `Ctrl+R` render · `+`/`−` zoom de timeline ·
 `Ctrl+rueda` zoom sobre el cursor.
 
+En el lienzo, selecciona un texto, imagen, sticker o motion graphic: arrastra
+para mover, usa los círculos de las esquinas para cambiar tamaño y el círculo
+`↻` para rotar. Al acercarse al centro o a los bordes de otro elemento aparecen
+guías magnéticas; `Alt` las ignora. El inspector permite escribir los valores
+exactos y aplicar entradas/salidas como zoom, pulso, deriva, destello y giro.
+
 ---
 
 ## Qué hay en este repo

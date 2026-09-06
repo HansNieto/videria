@@ -257,7 +257,7 @@ ST.library = (() => {
       kind: 'text', style: styleKey, auto: false,
       anchor, t: anchor ? undefined : +t.toFixed(3), dur: 2.2,
       lines: ST.text.wrap(words, style, S.tl.canvas.width, null),
-      text: 'Texto nuevo', x: null, y: null,
+      text: 'Texto nuevo', x: null, y: null, rotation: 0,
     });
     st.resolve();
     ST.app.renderAll();
@@ -292,6 +292,7 @@ ST.library = (() => {
         seq: a.seq || null,
         scale: cat === 'sticker' ? STICKER_SCALE : START_SCALE,
         opacity: 1, x: 0.5, y: cat === 'sticker' ? 0.3 : 0.42,
+        rotation: 0, anim_in: 'none', anim_out: 'none', anim_dur: 0.28,
         fade: cat === 'sticker' ? 0.12 : 0.2,
         loop: esVideo && !a.dur,
       });

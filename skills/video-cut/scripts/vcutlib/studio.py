@@ -531,6 +531,7 @@ DEFAULT_CLIP = {
     "flip": False,
     "fit": None,            # hereda de render.fit
     "mute": False,
+    "rotation": 0.0,        # grados alrededor del centro del lienzo
     "gap_before": 0.0,     # espacio negro/silencioso antes del clip
 }
 

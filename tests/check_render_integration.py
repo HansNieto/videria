@@ -33,6 +33,11 @@ def main():
             {'id':'b','source':'s2','in':0,'out':2,'enabled':True,'text':'AZUL'}]}
     tl=studio.new_timeline(project)
     tl['clips']={'a':{'start':0},'b':{'start':1,'track':'v2'}}
+    next(t for t in tl['tracks'] if t['id']=='t_ovl')['items'].append({
+        'id':'transform-qa','kind':'overlay','src':str(pdir/'s2.mp4'),
+        't':0.2,'dur':0.8,'x':0.16,'y':0.16,'scale':0.22,'rotation':24,
+        'opacity':0.9,'anim_in':'spin','anim_out':'flash','anim_dur':0.25,
+    })
     tl['tracks'].append({'id':'v2','kind':'video','name':'Vídeo superior','z':10,'items':[]})
     tl['render']['encoder']='x264'; tl['render']['loudnorm']=False
     util.write_json(pdir/'project.json',project)
@@ -49,7 +54,7 @@ def main():
     for t,channel in [(0.5,0),(1.5,2),(3.5,0)]:
         mean=np.frombuffer(frame(out,t),dtype=np.uint8).reshape(-1,3).mean(axis=0)
         assert mean[channel]>180 and mean[(channel+1)%3]<40, (t,mean)
-    print('PASS: render 720x1280 / 60 FPS, 4s; top blue layer and red restored; Rec.709; project unchanged',flush=True)
+    print('PASS: render 720x1280 / 60 FPS, overlay animado/rotado, capa azul y rojo restaurado; Rec.709; proyecto intacto',flush=True)
     # A late item extends the timeline; the gap must remain black, not compact.
     tl['clips']['b']['start']=6
     gapout=pdir/'gap-range.mp4'

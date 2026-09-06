@@ -48,7 +48,7 @@ ST.state = (() => {
     const raw = (S.tl.clips || {})[segId] || {};
     return Object.assign({
       speed: 1, volume: 0, zoom: null, look: null, flip: false,
-      fit: null, mute: false,
+      fit: null, mute: false, rotation: 0,
     }, raw);
   }
 

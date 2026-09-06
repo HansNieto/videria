@@ -151,7 +151,7 @@ ST.text = (() => {
   const lerp = (a, b, p) => a + (b - a) * p;
 
   function sampleAnim(kfs, p) {
-    const st = { s: 1, a: 1, dx: 0, dy: 0 };
+    const st = { s: 1, a: 1, dx: 0, dy: 0, r: 0 };
     if (!kfs || !kfs.length) return st;
     p = Math.max(0, Math.min(1, p));
     let prev = kfs[0];
@@ -159,7 +159,7 @@ ST.text = (() => {
       if (p <= cur[0]) {
         const span = cur[0] - prev[0];
         const q = span <= 1e-6 ? 0 : (p - prev[0]) / span;
-        for (const k of ['s', 'a', 'dx', 'dy']) {
+        for (const k of ['s', 'a', 'dx', 'dy', 'r']) {
           const a = prev[1][k] != null ? prev[1][k] : st[k];
           const b = cur[1][k] != null ? cur[1][k] : a;
           st[k] = lerp(a, b, q);
@@ -169,7 +169,7 @@ ST.text = (() => {
       prev = cur;
     }
     const last = kfs[kfs.length - 1][1];
-    for (const k of ['s', 'a', 'dx', 'dy']) if (last[k] != null) st[k] = last[k];
+    for (const k of ['s', 'a', 'dx', 'dy', 'r']) if (last[k] != null) st[k] = last[k];
     return st;
   }
 
@@ -190,7 +190,7 @@ ST.text = (() => {
     if (aOut !== 'none' && dOut > 0.01 && rel > dur - dOut) {
       return sampleAnim(kfsFor(aOut, true), (rel - (dur - dOut)) / dOut);
     }
-    return { s: 1, a: 1, dx: 0, dy: 0 };
+    return { s: 1, a: 1, dx: 0, dy: 0, r: 0 };
   }
 
   /* ------------------------------------------------------------ dibujo */
@@ -211,8 +211,19 @@ ST.text = (() => {
     const sh = style.shadow || {};
     const shOp = +sh.opacity || 0;
     const bg = style.bg || {};
+    const rotation = +item.rotation || 0;
+    const rawW = Math.max(...m.lines.map((l) => l.w));
+    const rawX0 = g.an === 7 ? g.ax : (g.an === 9 ? g.ax - rawW : g.ax - rawW / 2);
+    const originX = rawX0 + rawW / 2;
+    const originY = g.ys[0] + m.total_h / 2;
 
     const bounds = { x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 };
+    ctx.save();
+    if (Math.abs(rotation) > 1e-4) {
+      ctx.translate(originX, originY);
+      ctx.rotate(rotation * Math.PI / 180);
+      ctx.translate(-originX, -originY);
+    }
 
     if (+bg.opacity > 0) {
       const pad = (+bg.pad || 0) * s.k;
@@ -248,6 +259,7 @@ ST.text = (() => {
       const drawPass = (shadow) => {
         ctx.save();
         ctx.translate(cx + a.dx * W, cy + a.dy * H);
+        if (Math.abs(a.r) > 1e-4) ctx.rotate(a.r * Math.PI / 180);
         if (Math.abs(a.s - 1) > 1e-4) ctx.scale(a.s, a.s);
         ctx.translate(-cx, -cy);
         if (shadow) {
@@ -297,6 +309,7 @@ ST.text = (() => {
     });
     ctx.filter = 'none';
     ctx.globalAlpha = 1;
+    ctx.restore();
     if (bounds.x1 < bounds.x0) return null;
     return bounds;
   }
@@ -309,7 +322,9 @@ ST.text = (() => {
     const g = geom(item, style, W, H, m);
     const w = Math.max(...m.lines.map((l) => l.w));
     const x0 = g.an === 7 ? g.ax : (g.an === 9 ? g.ax - w : g.ax - w / 2);
-    return { x0, y0: g.ys[0], x1: x0 + w, y1: g.ys[0] + m.total_h };
+    return { x0, y0: g.ys[0], x1: x0 + w, y1: g.ys[0] + m.total_h,
+             cx: x0 + w / 2, cy: g.ys[0] + m.total_h / 2,
+             w, h: m.total_h, rotation: +item.rotation || 0 };
   }
 
   return { setAnims, ensureFont, preload, cssFont, famOf, metrics, wrap, geom,

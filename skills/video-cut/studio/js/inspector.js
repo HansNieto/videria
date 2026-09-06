@@ -48,6 +48,36 @@ ST.inspector = (() => {
     return f;
   }
 
+  /* Barra + casilla numérica: útil para transformaciones en las que hace
+     falta tanto probar a ojo como escribir un valor exacto. */
+  function sliderNumber(label, val, min, max, step, fmt, onInput) {
+    const pair = el('div', 'pair color-pair');
+    const range = el('input'), number = el('input');
+    range.type = 'range'; number.type = 'number';
+    for (const input of [range, number]) {
+      input.min = min; input.max = max; input.step = step; input.value = val;
+      input.setAttribute('aria-label', label + (input === number ? ' (valor)' : ' (barra)'));
+    }
+    const clean = (raw) => +clamp(Number(raw), min, max).toFixed(4);
+    const sync = (raw, done, keepTyped) => {
+      if (raw === '' || !Number.isFinite(Number(raw))) return;
+      const v = clean(raw);
+      range.value = v;
+      if (!keepTyped) number.value = v;
+      number.title = fmt(v);
+      onInput(v, done);
+    };
+    range.oninput = () => sync(range.value, false, false);
+    range.onchange = () => sync(range.value, true, false);
+    number.oninput = () => sync(number.value, false, true);
+    number.onchange = () => sync(number.value, true, false);
+    number.onblur = () => { if (number.value === '') number.value = range.value; };
+    pair.appendChild(range); pair.appendChild(number);
+    const f = field(label, pair);
+    f._set = (x) => { range.value = x; number.value = x; number.title = fmt(+x); };
+    return f;
+  }
+
   function select(label, opts, val, onChange) {
     const s = el('select');
     for (const o of opts) {
@@ -165,6 +195,11 @@ ST.inspector = (() => {
       'Los keyframes son en segundos desde el inicio del clip, así que sobreviven a un recorte. ' +
       'Escala 1 es el plano completo; 2 son píxeles reales del original.'));
     gz.appendChild(kfEditor(clip, kfs));
+    gz.appendChild(sliderNumber('rotación', +cfg.rotation || 0, -180, 180, 1,
+      (v) => Math.round(v) + '°', (v, done) => {
+        if (done) st.push();
+        st.setClip(seg, { rotation: +v.toFixed(2) }); commit(false);
+      }));
     gz.appendChild(el('div', 'lib-title', 'presets'));
     const pc = el('div', 'chips');
     for (const p of S.cat.zoom_presets) {
@@ -176,7 +211,9 @@ ST.inspector = (() => {
     gz.appendChild(pc);
     gz.appendChild(buttons([
       ['Keyframe aquí', () => addKfHere(clip), 'Añade un keyframe en el cabezal con el valor actual'],
-      ['Quitar zoom', () => { st.push(); st.setClip(seg, { zoom: null }); commit(); render(); }],
+      ['Restablecer', () => {
+        st.push(); st.setClip(seg, { zoom: null, rotation: 0 }); commit(); render();
+      }, 'Quita el zoom, el paneo y la rotación del clip'],
       ['A todos los clips', () => applyZoomToAll(seg),
        'Copia este zoom a todos los clips de la secuencia'],
     ]));
@@ -776,17 +813,21 @@ ST.inspector = (() => {
       (v, done) => { if (done) st.push(); it.x = +v.toFixed(4); commit(false); }));
     gp.appendChild(slider('y', by, 0, 1, 0.005, (v) => (v * 100).toFixed(1) + '%',
       (v, done) => { if (done) st.push(); it.y = +v.toFixed(4); commit(false); }));
-    gp.appendChild(slider('cuerpo', ovr(it, style, 'size'), 24, 200, 1,
+    gp.appendChild(sliderNumber('cuerpo', ovr(it, style, 'size'), 24, 240, 1,
       (v) => Math.round(v) + ' px', async (v, done) => {
         if (done) { st.push(); setOvr(it, 'size', Math.round(v)); await ST.app.rewrap(it); commit(); }
         else { setOvr(it, 'size', Math.round(v)); commit(false); }
+      }));
+    gp.appendChild(sliderNumber('rotación', +it.rotation || 0, -180, 180, 1,
+      (v) => Math.round(v) + '°', (v, done) => {
+        if (done) st.push(); it.rotation = +v.toFixed(2); commit(false);
       }));
     gp.appendChild(buttons([
       ['Centrar', () => { st.push(); it.x = 0.5; commit(); }],
       ['Arriba', () => { st.push(); it.y = 0.14; commit(); }],
       ['Medio', () => { st.push(); it.y = 0.45; commit(); }],
       ['Abajo', () => { st.push(); it.y = 0.66; commit(); }],
-      ['Como el estilo', () => { st.push(); it.x = null; it.y = null; commit(); }],
+      ['Como el estilo', () => { st.push(); it.x = null; it.y = null; it.rotation = 0; commit(); }],
     ]));
     frag.appendChild(gp);
 
@@ -832,7 +873,7 @@ ST.inspector = (() => {
     frag.appendChild(gs);
 
     const ga = grp('Animación');
-    const anims = Object.keys(S.cat.anims).map((a) => ({ value: a, label: a }));
+    const anims = animOptions();
     ga.appendChild(select('entrada', anims, it.anim_in || style.anim_in || 'none',
       (v) => { st.push(); it.anim_in = v; commit(false); }));
     ga.appendChild(select('salida', anims, it.anim_out || style.anim_out || 'none',
@@ -891,9 +932,14 @@ ST.inspector = (() => {
         'WebM sin secuencia: se verá bien acá pero el render le pondrá un ' +
         'fondo negro. Convertilo con: vcut overlays --project …'));
     }
-    g.appendChild(slider('escala', +it.scale || 1, 0.05, 3, 0.01,
+    g.appendChild(el('p', 'note',
+      'También podés mover, agrandar y rotar directamente desde los tiradores del lienzo.'));
+    g.appendChild(sliderNumber('escala', +it.scale || 1, 0.03, 5, 0.01,
       (v) => (v * 100).toFixed(0) + '%',
       (v, done) => { if (done) st.push(); it.scale = v; commit(false); }));
+    g.appendChild(sliderNumber('rotación', +it.rotation || 0, -180, 180, 1,
+      (v) => Math.round(v) + '°',
+      (v, done) => { if (done) st.push(); it.rotation = +v.toFixed(2); commit(false); }));
     g.appendChild(slider('opacidad', it.opacity != null ? +it.opacity : 1, 0, 1, 0.01,
       (v) => (v * 100).toFixed(0) + '%',
       (v, done) => { if (done) st.push(); it.opacity = v; commit(false); }));
@@ -910,11 +956,35 @@ ST.inspector = (() => {
     lp.onchange = () => { st.push(); it.loop = lp.checked; commit(); };
     g.appendChild(field('repetir', lp));
     frag.appendChild(g);
+
+    const ga = grp('Animación');
+    const anims = animOptions();
+    ga.appendChild(select('entrada', anims, it.anim_in || 'none',
+      (v) => { st.push(); it.anim_in = v; commit(false); }));
+    ga.appendChild(select('salida', anims, it.anim_out || 'none',
+      (v) => { st.push(); it.anim_out = v; commit(false); }));
+    ga.appendChild(sliderNumber('duración', it.anim_dur != null ? +it.anim_dur : 0.28,
+      0.05, 1.5, 0.01, (v) => v.toFixed(2) + ' s',
+      (v, done) => { if (done) st.push(); it.anim_dur = +v.toFixed(3); commit(false); }));
+    ga.appendChild(el('p', 'note',
+      'Pulso agranda con rebote; deriva mueve suavemente; destello parpadea y giro combina rotación y zoom.'));
+    frag.appendChild(ga);
     frag.appendChild(timingGroup(it, item));
     frag.appendChild(buttons([
       ['Borrar overlay', () => { st.push(); st.delItem(item.id); commit(); render(); }],
     ]));
     return frag;
+  }
+
+  const ANIM_LABELS = {
+    none: 'Ninguna', fade: 'Fundido', pop: 'Pop', zoom_in: 'Zoom desde lejos',
+    zoom_out: 'Zoom desde cerca', slide_up: 'Subir', slide_down: 'Bajar',
+    slide_left: 'Entrar desde derecha', slide_right: 'Entrar desde izquierda',
+    bounce: 'Rebote', pulse: 'Pulso', drift: 'Deriva suave', flash: 'Destello', spin: 'Giro',
+  };
+
+  function animOptions() {
+    return Object.keys(S.cat.anims).map((a) => ({ value: a, label: ANIM_LABELS[a] || a }));
   }
 
   function audioPanel(item) {

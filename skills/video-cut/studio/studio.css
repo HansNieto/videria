@@ -119,6 +119,7 @@ kbd{background:var(--panel3);border:1px solid var(--line2);border-radius:4px;
 .canvas-box.frame canvas{cursor:grab}
 .canvas-box.frame canvas:active{cursor:grabbing}
 .canvas-box.moving canvas{cursor:move}
+.canvas-box:not(.frame) canvas:hover{cursor:default}
 .vhost{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .vhost video{position:absolute;display:none;max-width:none}
 #view{position:relative;z-index:1}

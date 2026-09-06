@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'skills/video-cut/scripts'))
-from vcutlib import color, export_options, render, server, studio
+from vcutlib import assbuild, color, export_options, render, server, studio
 
 
 class ColorExportTests(unittest.TestCase):
@@ -49,6 +49,24 @@ class ColorExportTests(unittest.TestCase):
         tr=[{'type':'flash','t':1,'t0':0.8,'t1':1.2,'dur':0.4,'strength':1}]
         chain=','.join(render.fx_stages(tr,canvas,True))
         self.assertIn('between(T,',chain); self.assertIn('a=1023',chain)
+
+    def test_element_rotation_and_animation_are_shared_with_render(self):
+        canvas={'width':1080,'height':1920,'fps':30}
+        chain=render.clip_chain({'cfg':{'rotation':17},'speed':1},canvas,'cover')
+        self.assertIn('rotate=angle=17.000000*PI/180',chain)
+        self.assertIn('pulse',assbuild.ANIM)
+        self.assertIn('drift',assbuild.ANIM)
+        self.assertIn('flash',assbuild.ANIM)
+        self.assertIn('spin',assbuild.ANIM)
+        self.assertAlmostEqual(assbuild.sample_anim(assbuild.ANIM['spin'],0)['r'],-18)
+        expr,dynamic=render.item_anim_expr(
+            {'dur':2,'anim_in':'drift','anim_out':'none','anim_dur':0.4},'dx',0)
+        self.assertTrue(dynamic)
+        self.assertIn('if(lt(t,',expr)
+        tags=assbuild._anim_block([],0,1,300,100,200,1080,1920,True,
+                                  rotation=23,origin=(300,400))
+        self.assertIn('\\org(300.0,400.0)',tags)
+        self.assertIn('\\frz23.00',tags)
 
     def test_hdr_and_sdr_are_not_mapped_twice(self):
         hdr=color.to_sdr({'color_transfer':'arib-std-b67','color_primaries':'bt2020'})

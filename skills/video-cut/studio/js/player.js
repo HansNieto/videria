@@ -17,6 +17,7 @@ ST.player = (() => {
   let cv, ctx, box, wrap, k = 1, dispW = 0, dispH = 0;
   let raf = 0, lastTick = 0;
   let drag = null;
+  let snapLines = [];
 
   const dbToLin = (db) => Math.pow(10, (+db || 0) / 20);
   const clamp = st.clamp;
@@ -108,6 +109,19 @@ ST.player = (() => {
       px: clamp(pw(kfs, 'x', 0, rel), -1, 1),
       py: clamp(pw(kfs, 'y', 0, rel), -1, 1),
     };
+  }
+
+  function itemAnimAt(it, rel) {
+    const dur = Math.max(0.01, +it.dur || (+it.t_end || 0) - (+it.t || 0));
+    const ad = Math.min(+(it.anim_dur || 0.28), dur * 0.5);
+    const ain = it.anim_in || 'none', aout = it.anim_out || 'none';
+    if (ain !== 'none' && ad > 0.01 && rel < ad) {
+      return ST.text.sampleAnim(ST.text.kfsFor(ain), rel / ad);
+    }
+    if (aout !== 'none' && ad > 0.01 && rel > dur - ad) {
+      return ST.text.sampleAnim(ST.text.kfsFor(aout, true), (rel - dur + ad) / ad);
+    }
+    return { s: 1, a: 1, dx: 0, dy: 0, r: 0 };
   }
 
   /* Aporte de las transiciones geometricas, igual que render.geom_stage. */
@@ -385,6 +399,7 @@ ST.player = (() => {
         fl.push('url(#temperaturePreview)');
       }
       if (fl.length) ctx.filter = (ctx.filter === 'none' || !ctx.filter ? '' : ctx.filter + ' ') + fl.join(' ');
+      const rotation = +clip.cfg.rotation || 0;
       // Native <video> keeps the browser's HDR color-managed surface. Drawing
       // it to an ordinary 8-bit 2D canvas clips/maps HDR even with no filter.
       // Canvas is only used for explicit pixel/glitch effects; artwork stays
@@ -393,7 +408,9 @@ ST.player = (() => {
         const ratio = dispW / W;
         Object.assign(v.style, { display: 'block', width: dw*ratio+'px', height: dh*ratio+'px',
           left: (clip.cfg.flip ? W-dx-dw : dx)*ratio+'px', top: dy*ratio+'px',
-          transform: clip.cfg.flip ? 'scaleX(-1)' : 'none',
+          transform: (clip.cfg.flip ? 'scaleX(-1) ' : '') +
+                     (Math.abs(rotation) > 1e-4 ? 'rotate('+rotation+'deg)' : ''),
+          transformOrigin: 'center center',
           filter: fl.concat(g.blur > 0.4 ? ['blur('+g.blur*ratio*0.5+'px)'] : []).join(' ') || 'none' });
       } else if (g.pix > 3) {
         // Pixelado: se baja a un canvas chico y se sube sin suavizado.
@@ -402,11 +419,18 @@ ST.player = (() => {
         scratch.width = bw; scratch.height = bh;
         const s2 = scratch.getContext('2d');
         s2.setTransform(bw / W, 0, 0, bh / H, 0, 0);
-        s2.drawImage(v, dx, dy, dw, dh);
+        s2.save();
+        if (Math.abs(rotation) > 1e-4) {
+          s2.translate(W / 2, H / 2); s2.rotate(rotation * Math.PI / 180); s2.translate(-W / 2, -H / 2);
+        }
+        s2.drawImage(v, dx, dy, dw, dh); s2.restore();
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(scratch, 0, 0, W, H);
         ctx.imageSmoothingEnabled = true;
       } else {
+        if (Math.abs(rotation) > 1e-4) {
+          ctx.translate(W / 2, H / 2); ctx.rotate(rotation * Math.PI / 180); ctx.translate(-W / 2, -H / 2);
+        }
         ctx.drawImage(v, dx, dy, dw, dh);
         if (g.glitch > 1) {
           ctx.globalCompositeOperation = 'screen';
@@ -447,18 +471,23 @@ ST.player = (() => {
       const nw = o.kind === 'video' ? el.videoWidth : el.naturalWidth;
       const nh = o.kind === 'video' ? el.videoHeight : el.naturalHeight;
       if (!nw || !nh) continue;
-      const sc = +it.scale || 1;
+      const a = itemAnimAt(it, S.t - it.t);
+      const sc = (+it.scale || 1) * a.s;
       const w = nw * sc, h = nh * sc;
-      const x = (it.x != null ? +it.x : 0.5) * W - w / 2;
-      const y = (it.y != null ? +it.y : 0.5) * H - h / 2;
-      let a = it.opacity != null ? +it.opacity : 1;
+      const cx = (it.x != null ? +it.x : 0.5) * W + a.dx * W;
+      const cy = (it.y != null ? +it.y : 0.5) * H + a.dy * H;
+      let opacity = (it.opacity != null ? +it.opacity : 1) * a.a;
       const fd = +it.fade || 0;
       if (fd > 0.01) {
-        a *= Math.min(1, (S.t - it.t) / fd) * Math.min(1, (it.t_end - S.t) / fd);
+        opacity *= Math.min(1, (S.t - it.t) / fd) * Math.min(1, (it.t_end - S.t) / fd);
       }
-      ctx.globalAlpha = clamp(a, 0, 1);
-      ctx.drawImage(el, x, y, w, h);
-      ctx.globalAlpha = 1;
+      ctx.save();
+      ctx.globalAlpha = clamp(opacity, 0, 1);
+      ctx.translate(cx, cy);
+      const rotation = (+it.rotation || 0) + a.r;
+      if (Math.abs(rotation) > 1e-4) ctx.rotate(rotation * Math.PI / 180);
+      ctx.drawImage(el, -w / 2, -h / 2, w, h);
+      ctx.restore();
     }
 
     // texto
@@ -526,29 +555,22 @@ ST.player = (() => {
       ctx.fillText('zona TikTok', W * 0.84, H * 0.47);
       ctx.restore();
     }
-    // Caja del texto seleccionado y encuadre del clip en modo reencuadre.
+    // Guías magnéticas temporales. Sólo viven en el preview y desaparecen al
+    // soltar; el tirón sí queda guardado en x/y.
+    for (const guide of snapLines) {
+      ctx.save();
+      ctx.strokeStyle = guide.center ? '#ff4fc3' : '#35d6ff';
+      ctx.lineWidth = 1.5 * screenUnit();
+      ctx.setLineDash([7 * screenUnit(), 4 * screenUnit()]);
+      ctx.beginPath();
+      if (guide.axis === 'x') { ctx.moveTo(guide.value, 0); ctx.lineTo(guide.value, H); }
+      else { ctx.moveTo(0, guide.value); ctx.lineTo(W, guide.value); }
+      ctx.stroke(); ctx.restore();
+    }
+    // Caja y tiradores del elemento seleccionado.
     if (S.sel && S.sel.kind === 'item') {
       const it = S.items.find((x) => x.id === S.sel.id);
-      if (it && it.track_kind === 'text') {
-        const b = ST.text.hitBox(it, st.styleOf(it), W, H);
-        if (b) {
-          ctx.strokeStyle = '#5b8cff';
-          ctx.setLineDash([6 / k, 4 / k]);
-          ctx.strokeRect(b.x0 - 6, b.y0 - 6, b.x1 - b.x0 + 12, b.y1 - b.y0 + 12);
-          ctx.setLineDash([]);
-        }
-      } else if (it && it.track_kind === 'overlay') {
-        const o = OVL[it.id];
-        if (o && o.ok) {
-          const nw = o.kind === 'video' ? o.el.videoWidth : o.el.naturalWidth;
-          const nh = o.kind === 'video' ? o.el.videoHeight : o.el.naturalHeight;
-          const sc = +it.scale || 1;
-          const w = nw * sc, h = nh * sc;
-          ctx.strokeStyle = '#2fd4a4';
-          ctx.strokeRect((it.x != null ? it.x : 0.5) * W - w / 2,
-                         (it.y != null ? it.y : 0.5) * H - h / 2, w, h);
-        }
-      }
+      if (it) drawSelection(it, W, H);
     }
     if (S.mode === 'frame' && clip) {
       ctx.strokeStyle = '#8b5cf6cc';
@@ -574,6 +596,146 @@ ST.player = (() => {
     };
   }
 
+  const screenUnit = () => S.tl.canvas.width / Math.max(1, dispW);
+
+  function rotatePoint(x, y, degrees) {
+    const r = degrees * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
+    return { x: x * c - y * s, y: x * s + y * c };
+  }
+
+  function itemBox(it) {
+    const W = S.tl.canvas.width, H = S.tl.canvas.height;
+    if (!it) return null;
+    if (it.track_kind === 'text') {
+      const b = ST.text.hitBox(it, st.styleOf(it), W, H);
+      return b && { cx: b.cx, cy: b.cy, w: b.w, h: b.h, rotation: +it.rotation || 0 };
+    }
+    if (it.track_kind === 'overlay') {
+      const o = OVL[it.id];
+      if (!o || !o.ok) return null;
+      const nw = o.kind === 'video' ? o.el.videoWidth : o.el.naturalWidth;
+      const nh = o.kind === 'video' ? o.el.videoHeight : o.el.naturalHeight;
+      if (!nw || !nh) return null;
+      const sc = +it.scale || 1;
+      return { cx: (it.x != null ? +it.x : 0.5) * W,
+               cy: (it.y != null ? +it.y : 0.5) * H,
+               w: nw * sc, h: nh * sc, rotation: +it.rotation || 0 };
+    }
+    return null;
+  }
+
+  function boxPoint(b, lx, ly) {
+    const p = rotatePoint(lx, ly, b.rotation);
+    return { x: b.cx + p.x, y: b.cy + p.y };
+  }
+
+  function boxCorners(b, pad) {
+    const hw = b.w / 2 + (pad || 0), hh = b.h / 2 + (pad || 0);
+    return [boxPoint(b, -hw, -hh), boxPoint(b, hw, -hh),
+            boxPoint(b, hw, hh), boxPoint(b, -hw, hh)];
+  }
+
+  function boxBounds(b) {
+    const c = boxCorners(b, 0), xs = c.map((p) => p.x), ys = c.map((p) => p.y);
+    return { left: Math.min(...xs), right: Math.max(...xs),
+             top: Math.min(...ys), bottom: Math.max(...ys), cx: b.cx, cy: b.cy };
+  }
+
+  function pointInBox(p, b, margin) {
+    const q = rotatePoint(p.x - b.cx, p.y - b.cy, -b.rotation);
+    return Math.abs(q.x) <= b.w / 2 + margin && Math.abs(q.y) <= b.h / 2 + margin;
+  }
+
+  function selectionHandles(it) {
+    const b = itemBox(it);
+    if (!b) return null;
+    const u = screenUnit();
+    // Los eventos del canvas sólo llegan dentro del propio lienzo. Por eso
+    // los tiradores van apenas hacia adentro: siguen siendo accesibles cuando
+    // una imagen ocupa el 100 % del video.
+    const inset = Math.min(8 * u, b.w * 0.12, b.h * 0.12);
+    const W = S.tl.canvas.width, H = S.tl.canvas.height, margin = 10 * u;
+    const keepVisible = (p) => {
+      const dx = p.x - b.cx, dy = p.y - b.cy;
+      let q = 1;
+      if (dx > 0) q = Math.min(q, (W - margin - b.cx) / dx);
+      else if (dx < 0) q = Math.min(q, (margin - b.cx) / dx);
+      if (dy > 0) q = Math.min(q, (H - margin - b.cy) / dy);
+      else if (dy < 0) q = Math.min(q, (margin - b.cy) / dy);
+      q = clamp(q, 0.05, 1);
+      return { x: b.cx + dx * q, y: b.cy + dy * q };
+    };
+    const corners = boxCorners(b, -inset).map(keepVisible);
+    const rotate = keepVisible(boxPoint(
+      b, 0, -b.h / 2 + Math.max(30 * u, inset + 18 * u)));
+    return { box: b, inset, outline: boxCorners(b, 0), corners, rotate };
+  }
+
+  function drawSelection(it) {
+    const h = selectionHandles(it);
+    if (!h) return;
+    const u = screenUnit(), c = h.outline;
+    ctx.save();
+    ctx.strokeStyle = it.track_kind === 'text' ? '#5b8cff' : '#2fd4a4';
+    ctx.lineWidth = 1.5 * u;
+    ctx.beginPath(); ctx.moveTo(c[0].x, c[0].y);
+    for (let i = 1; i < 4; i++) ctx.lineTo(c[i].x, c[i].y);
+    ctx.closePath(); ctx.stroke();
+    const top = boxPoint(h.box, 0, -h.box.h / 2 + h.inset);
+    ctx.beginPath(); ctx.moveTo(top.x, top.y); ctx.lineTo(h.rotate.x, h.rotate.y); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    for (const p of h.corners) { ctx.beginPath(); ctx.arc(p.x, p.y, 5.5 * u, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    ctx.beginPath(); ctx.arc(h.rotate.x, h.rotate.y, 6.5 * u, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0b1220'; ctx.font = `bold ${9 * u}px system-ui,sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('↻', h.rotate.x, h.rotate.y);
+    ctx.restore();
+  }
+
+  function handleAt(p) {
+    if (!S.sel || S.sel.kind !== 'item') return null;
+    const it = S.items.find((x) => x.id === S.sel.id);
+    const h = selectionHandles(it);
+    if (!h) return null;
+    const radius = 13 * screenUnit();
+    if (Math.hypot(p.x - h.rotate.x, p.y - h.rotate.y) <= radius) return { kind: 'rotate', it, h };
+    for (const c of h.corners) {
+      if (Math.hypot(p.x - c.x, p.y - c.y) <= radius) return { kind: 'resize', it, h };
+    }
+    return null;
+  }
+
+  function snapItem(raw, id, disabled) {
+    snapLines = [];
+    if (disabled) return;
+    let moving = S.items.find((x) => x.id === id);
+    let mb = itemBox(moving);
+    if (!mb) return;
+    const W = S.tl.canvas.width, H = S.tl.canvas.height;
+    const threshold = 10 * screenUnit();
+    const tx = [{ v: W / 2, center: true }], ty = [{ v: H / 2, center: true }];
+    for (const other of S.items) {
+      if (other.id === id || S.t < other.t || S.t >= other.t_end) continue;
+      const ob = itemBox(other); if (!ob) continue;
+      const b = boxBounds(ob);
+      tx.push({ v: b.left }, { v: b.cx }, { v: b.right });
+      ty.push({ v: b.top }, { v: b.cy }, { v: b.bottom });
+    }
+    const pick = (own, targets) => {
+      let best = null;
+      for (const a of own) for (const target of targets) {
+        const d = target.v - a;
+        if (Math.abs(d) <= threshold && (!best || Math.abs(d) < Math.abs(best.d))) best = { d, target };
+      }
+      return best;
+    };
+    let b = boxBounds(mb);
+    const sx = pick([b.left, b.cx, b.right], tx);
+    if (sx) { raw.x = +((mb.cx + sx.d) / W).toFixed(4); snapLines.push({ axis: 'x', value: sx.target.v, center: sx.target.center }); st.resolve(); }
+    moving = S.items.find((x) => x.id === id); mb = itemBox(moving); b = mb && boxBounds(mb);
+    const sy = b && pick([b.top, b.cy, b.bottom], ty);
+    if (sy) { raw.y = +((mb.cy + sy.d) / H).toFixed(4); snapLines.push({ axis: 'y', value: sy.target.v, center: sy.target.center }); st.resolve(); }
+  }
+
   function itemAtPoint(p) {
     const W = S.tl.canvas.width, H = S.tl.canvas.height;
     // De arriba hacia abajo: gana el que se ve.
@@ -581,19 +743,11 @@ ST.player = (() => {
       const it = S.items[i];
       if (S.t < it.t || S.t >= it.t_end) continue;
       if (it.track_kind === 'text') {
-        const b = ST.text.hitBox(it, st.styleOf(it), W, H);
-        if (b && p.x >= b.x0 - 12 && p.x <= b.x1 + 12 && p.y >= b.y0 - 10 && p.y <= b.y1 + 10) return it;
+        const b = itemBox(it);
+        if (b && pointInBox(p, b, 12 * screenUnit())) return it;
       } else if (it.track_kind === 'overlay') {
-        const o = OVL[it.id];
-        if (!o || !o.ok) continue;
-        const nw = o.kind === 'video' ? o.el.videoWidth : o.el.naturalWidth;
-        const nh = o.kind === 'video' ? o.el.videoHeight : o.el.naturalHeight;
-        if (!nw) continue;
-        const sc = +it.scale || 1;
-        const w = nw * sc, h = nh * sc;
-        const x0 = (it.x != null ? it.x : 0.5) * W - w / 2;
-        const y0 = (it.y != null ? it.y : 0.5) * H - h / 2;
-        if (p.x >= x0 && p.x <= x0 + w && p.y >= y0 && p.y <= y0 + h) return it;
+        const b = itemBox(it);
+        if (b && pointInBox(p, b, 8 * screenUnit())) return it;
       }
     }
     return null;
@@ -611,6 +765,23 @@ ST.player = (() => {
       st.push();
       ev.preventDefault();
       return;
+    }
+    const handle = handleAt(p);
+    if (handle) {
+      const found = st.findItem(handle.it.id), raw = found.it;
+      if (!raw) return;
+      st.push(); snapLines = [];
+      if (handle.kind === 'rotate') {
+        drag = { kind: 'rotate', id: raw.id, cx: handle.h.box.cx, cy: handle.h.box.cy,
+                 start: Math.atan2(p.y - handle.h.box.cy, p.x - handle.h.box.cx),
+                 rotation: +raw.rotation || 0 };
+      } else {
+        drag = { kind: 'resize', id: raw.id, trackKind: handle.it.track_kind,
+                 cx: handle.h.box.cx, cy: handle.h.box.cy,
+                 dist: Math.max(1, Math.hypot(p.x - handle.h.box.cx, p.y - handle.h.box.cy)),
+                 scale: +raw.scale || 1, size: +(st.styleOf(handle.it).size || 80) };
+      }
+      box.classList.add('moving'); ev.preventDefault(); return;
     }
     const it = itemAtPoint(p);
     if (!it) { st.select(null); paint(); return; }
@@ -634,8 +805,29 @@ ST.player = (() => {
       it.x = +clamp(drag.cx + (p.x - drag.p.x) / drag.W, -0.4, 1.4).toFixed(4);
       it.y = +clamp(drag.cy + (p.y - drag.p.y) / drag.H, -0.4, 1.4).toFixed(4);
       st.resolve();
+      snapItem(it, drag.id, ev.altKey || S.snap === false);
       paint();
       ST.inspector.refreshValues();
+    } else if (drag.kind === 'rotate') {
+      const { it } = st.findItem(drag.id); if (!it) return;
+      const angle = Math.atan2(p.y - drag.cy, p.x - drag.cx);
+      let deg = drag.rotation + (angle - drag.start) * 180 / Math.PI;
+      if (!ev.altKey) {
+        const step = ev.shiftKey ? 45 : 15, near = Math.round(deg / step) * step;
+        if (Math.abs(near - deg) < 4) deg = near;
+      }
+      it.rotation = +(((deg + 180) % 360 + 360) % 360 - 180).toFixed(2);
+      st.resolve(); paint(); ST.inspector.refreshValues();
+    } else if (drag.kind === 'resize') {
+      const { it } = st.findItem(drag.id); if (!it) return;
+      const ratio = Math.max(0.04, Math.hypot(p.x - drag.cx, p.y - drag.cy) / drag.dist);
+      if (drag.trackKind === 'text') {
+        it.override = it.override || {};
+        it.override.size = +clamp(drag.size * ratio, 12, 400).toFixed(1);
+      } else {
+        it.scale = +clamp(drag.scale * ratio, 0.02, 8).toFixed(4);
+      }
+      st.resolve(); paint(); ST.inspector.refreshValues();
     } else if (drag.kind === 'frame') {
       const W = S.tl.canvas.width, H = S.tl.canvas.height;
       const z = drag.zm.z;
@@ -650,12 +842,20 @@ ST.player = (() => {
     }
   }
 
-  function onUp() {
+  async function onUp() {
     if (!drag) return;
+    const ended = drag;
     drag = null;
+    snapLines = [];
     box.classList.remove('moving');
+    if (ended.kind === 'resize' && ended.trackKind === 'text') {
+      const { it } = st.findItem(ended.id);
+      if (it) await ST.app.rewrap(it);
+      st.resolve(); st.markDirty(true);
+    }
     ST.timeline.render();
     ST.inspector.render();
+    paint();
   }
 
   function onWheel(ev) {

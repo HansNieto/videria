@@ -188,6 +188,44 @@ def _usable_seq(item):
     return seq
 
 
+def item_anim_expr(item, key, default, tvar="t"):
+    """Expresión FFmpeg de una animación de elemento en tiempo local.
+
+    La tabla canónica vive en assbuild para que texto, overlays, preview y
+    render compartan exactamente los mismos presets. Devuelve además si el
+    canal realmente cambia, para no añadir filtros caros cuando no hace falta.
+    """
+    dur = max(0.01, float(item.get("dur") or 0.01))
+    ad = min(float(item.get("anim_dur") or 0.28), dur * 0.5)
+    ain = item.get("anim_in") or "none"
+    aout = item.get("anim_out") or "none"
+    points = []
+
+    def add(t, value):
+        t = max(0.0, min(dur, float(t)))
+        value = float(value)
+        if points and abs(points[-1]["t"] - t) < 1e-6:
+            points[-1][key] = value
+        else:
+            points.append({"t": t, key: value, "ease": "linear"})
+
+    kin = assbuild.kfs_for(ain)
+    kout = assbuild.kfs_for(aout, out=True)
+    if kin and ad > 0.01:
+        for p, _vals in kin:
+            add(p * ad, assbuild.sample_anim(kin, p)[key])
+    else:
+        add(0, default)
+    add(ad if kin else 0, default)
+    add(dur - ad if kout else dur, default)
+    if kout and ad > 0.01:
+        for p, _vals in kout:
+            add(dur - ad + p * ad, assbuild.sample_anim(kout, p)[key])
+    points.sort(key=lambda p: p["t"])
+    dynamic = any(abs(float(p[key]) - float(default)) > 1e-4 for p in points)
+    return piecewise(points, key, default, tvar), dynamic
+
+
 def cover(tw, th):
     """Cadena que llena tw x th recortando lo que sobre."""
     return ("scale=%d:%d:force_original_aspect_ratio=increase:flags=lanczos,"
@@ -282,6 +320,9 @@ def clip_chain(clip, canvas, fit, high_depth=False):
     parts.append("setsar=1")
     if not zooming:
         parts.append("scale=%d:%d:flags=lanczos" % (W, H))
+    rotation = float(cfg.get("rotation") or 0.0)
+    if abs(rotation) > 1e-3:
+        parts.append("rotate=angle=%.6f*PI/180:ow=iw:oh=ih:c=black" % rotation)
     return ",".join(parts)
 
 
@@ -613,31 +654,46 @@ class Job:
                 else:
                     cmd += ["-i", str(src)]
             sc = float(it.get("scale") or 1.0) * W / self.res["canvas"]["width"]
+            sexpr, scale_anim = item_anim_expr(it, "s", 1.0, "t")
+            rexpr, rotate_anim = item_anim_expr(it, "r", 0.0, "t")
+            aexpr, alpha_anim = item_anim_expr(
+                it, "a", 1.0, "(T-%.4f)" % max(0.0, t))
             chain = [color.resource_filter(src, self.profile),
-                     "format=" + ("yuva420p10le" if high_depth else "yuva420p"),
-                     "setpts=PTS-STARTPTS+%.4f/TB" % max(0.0, t)]
-            if abs(sc - 1.0) > 1e-3:
-                chain.append("scale=iw*%.4f:ih*%.4f:flags=lanczos" % (sc, sc))
+                     "format=" + ("yuva420p10le" if high_depth else "yuva420p")]
+            if abs(sc - 1.0) > 1e-3 or scale_anim:
+                factor = "(%.6f)*(%s)" % (sc, sexpr)
+                chain.append("scale=w='max(2,ceil(iw*(%s)/2)*2)':"
+                             "h='max(2,ceil(ih*(%s)/2)*2)':eval=frame:flags=lanczos"
+                             % (factor, factor))
+            rotation = float(it.get("rotation") or 0.0)
+            if abs(rotation) > 1e-3 or rotate_anim:
+                angle = "((%.6f)+(%s))*PI/180" % (rotation, rexpr)
+                chain.append("rotate=angle='%s':ow='hypot(iw,ih)':"
+                             "oh='hypot(iw,ih)':c=black@0" % angle)
+            chain.append("setpts=PTS-STARTPTS+%.4f/TB" % max(0.0, t))
             op = float(it.get("opacity") if it.get("opacity") is not None else 1.0)
             fade = float(it.get("fade") or 0.0)
-            if high_depth and (op < 0.999 or fade > 0.01):
-                alpha = "alpha(X,Y)*%.4f" % max(0.0, op)
+            if op < 0.999 or fade > 0.01 or alpha_anim:
+                alpha = "alpha(X,Y)*%.4f*(%s)" % (max(0.0, op), aexpr)
                 if fade > 0.01:
                     alpha += "*clip((T-%.4f)/%.4f,0,1)*clip((%.4f-T)/%.4f,0,1)" % (max(0.0,t),fade,t+it["dur"],fade)
                 chain.append("geq=lum='lum(X,Y)':cb='cb(X,Y)':cr='cr(X,Y)':a='%s'" % alpha)
-            elif op < 0.999:
-                chain.append("colorchannelmixer=aa=%.3f" % max(0.0, op))
-            if fade > 0.01 and not high_depth:
-                chain.append("fade=t=in:st=%.4f:d=%.4f:alpha=1" % (max(0.0, t), fade))
-                chain.append("fade=t=out:st=%.4f:d=%.4f:alpha=1"
-                             % (max(0.0, t + it["dur"] - fade), fade))
             graph.append("[%d:v]%s[o%d]" % (idx, ",".join(chain), n))
             xf = float(it.get("x") if it.get("x") is not None else 0.5)
             yf = float(it.get("y") if it.get("y") is not None else 0.5)
-            graph.append("[%s][o%d]overlay=x='main_w*%.4f-overlay_w/2'"
-                         ":y='main_h*%.4f-overlay_h/2':eof_action=pass"
+            dxexpr, move_x = item_anim_expr(
+                it, "dx", 0.0, "(t-%.4f)" % max(0.0, t))
+            dyexpr, move_y = item_anim_expr(
+                it, "dy", 0.0, "(t-%.4f)" % max(0.0, t))
+            xout = "main_w*(%.6f%s)-overlay_w/2" % (
+                xf, "+(%s)" % dxexpr if move_x else "")
+            yout = "main_h*(%.6f%s)-overlay_h/2" % (
+                yf, "+(%s)" % dyexpr if move_y else "")
+            graph.append("[%s][o%d]overlay=x='%s'"
+                         ":y='%s':eof_action=pass"
                          ":format=%s:enable='between(t,%.4f,%.4f)'[vo%d]"
-                         % (vcur, n, xf, yf, overlay_format, max(0.0, t), t + it["dur"], n))
+                         % (vcur, n, xout, yout, overlay_format,
+                            max(0.0, t), t + it["dur"], n))
             vcur = "vo%d" % n
             idx += 1
 

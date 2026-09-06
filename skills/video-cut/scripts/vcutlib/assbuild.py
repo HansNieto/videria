@@ -40,6 +40,17 @@ ANIM = {
     "slide_right": [(0.0, {"dx": -0.09, "a": 0.0}), (1.0, {"dx": 0.0, "a": 1.0})],
     "bounce":      [(0.0, {"s": 0.86}), (0.42, {"s": 1.09}), (0.7, {"s": 0.97}),
                     (0.88, {"s": 1.02}), (1.0, {"s": 1.0})],
+    "pulse":       [(0.0, {"s": 0.82, "a": 0.0}), (0.58, {"s": 1.10, "a": 1.0}),
+                    (1.0, {"s": 1.0, "a": 1.0})],
+    "drift":       [(0.0, {"dx": -0.045, "dy": 0.018, "a": 0.0}),
+                    (0.72, {"dx": 0.008, "dy": -0.004, "a": 1.0}),
+                    (1.0, {"dx": 0.0, "dy": 0.0, "a": 1.0})],
+    "flash":       [(0.0, {"a": 0.0}), (0.30, {"a": 1.0}),
+                    (0.52, {"a": 0.32}), (0.76, {"a": 1.0}),
+                    (1.0, {"a": 1.0})],
+    "spin":        [(0.0, {"s": 0.82, "r": -18.0, "a": 0.0}),
+                    (0.72, {"s": 1.04, "r": 3.0, "a": 1.0}),
+                    (1.0, {"s": 1.0, "r": 0.0, "a": 1.0})],
 }
 
 REVEAL_FADE = 0.07      # cuanto tarda una palabra en aparecer, en segundos
@@ -84,7 +95,7 @@ def _lerp(a, b, p):
 
 def sample_anim(kfs, p):
     """Estado de una animacion en el progreso p (0..1)."""
-    st = {"s": 1.0, "a": 1.0, "dx": 0.0, "dy": 0.0}
+    st = {"s": 1.0, "a": 1.0, "dx": 0.0, "dy": 0.0, "r": 0.0}
     if not kfs:
         return st
     p = max(0.0, min(1.0, p))
@@ -276,15 +287,20 @@ def geom(item, style, W, H, metrics):
     return an, ax, ys
 
 
-def _anim_block(kfs, p0, p1, ms_span, cx, cy, W, H, allow_alpha):
+def _anim_block(kfs, p0, p1, ms_span, cx, cy, W, H, allow_alpha,
+                rotation=0.0, origin=None):
     r"""Tags de un evento que cubre el tramo de progreso [p0, p1].
 
     Los tiempos de `\t` son relativos al evento, y un evento puede caer en
     medio de la animacion (el revelado por palabra parte la tarjeta en muchos
     eventos cortos). Por eso todo se expresa en progreso y se remapea a ms.
     """
+    ox, oy = origin or (cx, cy)
     if not kfs or ms_span <= 0:
-        return "\\pos(%.1f,%.1f)" % (cx, cy)
+        tags = "\\pos(%.1f,%.1f)" % (cx, cy)
+        if abs(rotation) > 1e-3:
+            tags += "\\org(%.1f,%.1f)\\frz%.2f" % (ox, oy, rotation)
+        return tags
     span = max(1e-6, p1 - p0)
 
     def ms_at(p):
@@ -322,23 +338,39 @@ def _anim_block(kfs, p0, p1, ms_span, cx, cy, W, H, allow_alpha):
         tags.append("\\alpha%s" % ass_alpha(int(a0["a"] * 255)))
         tags.append("\\t(0,%d,\\alpha%s)"
                     % (ms_span, ass_alpha(int(a1["a"] * 255))))
+    r0 = rotation + a0["r"]
+    r1 = rotation + a1["r"]
+    if abs(r0) > 1e-3 or abs(r1) > 1e-3:
+        tags.append("\\org(%.1f,%.1f)\\frz%.2f" % (ox, oy, r0))
+        prev_p = p0
+        for p, vals in kfs:
+            if "r" not in vals or p <= p0 + 1e-6:
+                continue
+            end = min(p, p1)
+            rv = rotation + sample_anim(kfs, end)["r"]
+            tags.append("\\t(%d,%d,\\frz%.2f)"
+                        % (ms_at(prev_p), ms_at(end), rv))
+            prev_p = p
+            if p >= p1 - 1e-6:
+                break
     return "".join(tags)
 
 
 def _geo_for(s0, s1, dur, d_in, d_out, anim_in, anim_out, cx, cy, W, H,
-             allow_alpha):
+             allow_alpha, rotation=0.0, origin=None):
     """Elige que animacion toca en el tramo [s0, s1] del item."""
     ms = max(1, int(round((s1 - s0) * 1000)))
     if anim_in != "none" and d_in > 0.01 and s0 < d_in - 1e-6:
         return _anim_block(kfs_for(anim_in), s0 / d_in, min(1.0, s1 / d_in),
-                           ms, cx, cy, W, H, allow_alpha)
+                           ms, cx, cy, W, H, allow_alpha, rotation, origin)
     if anim_out != "none" and d_out > 0.01 and s1 > dur - d_out + 1e-6:
         w0 = dur - d_out
         return _anim_block(kfs_for(anim_out, out=True),
                            max(0.0, (s0 - w0) / d_out),
                            min(1.0, (s1 - w0) / d_out),
-                           ms, cx, cy, W, H, allow_alpha)
-    return "\\pos(%.1f,%.1f)" % (cx, cy)
+                           ms, cx, cy, W, H, allow_alpha, rotation, origin)
+    return _anim_block([], 0, 0, ms, cx, cy, W, H, allow_alpha,
+                       rotation, origin)
 
 
 # ------------------------------------------------------------ eventos
@@ -379,6 +411,15 @@ def text_events(doc, item, style, project_dir):
     scale = W / 1080.0
     metrics = textlayer.line_metrics(lines, style, W, project_dir)
     an, ax, ys = geom(item, style, W, H, metrics)
+    max_w = max(m["w"] for m in metrics["lines"])
+    if an == 7:
+        box_x0 = ax
+    elif an == 9:
+        box_x0 = ax - max_w
+    else:
+        box_x0 = ax - max_w / 2.0
+    origin = (box_x0 + max_w / 2.0, ys[0] + metrics["total_h"] / 2.0)
+    rotation = float(item.get("rotation") or 0.0)
     base_name = doc.style_for(style, project_dir)
 
     size = float(style.get("size") or 80) * scale
@@ -454,7 +495,8 @@ def text_events(doc, item, style, project_dir):
                 # anima igual para que no se despegue del texto.
                 sgeo = _geo_for(s0 - base_t, s1 - base_t, dur - base_t,
                                 d_in, d_out, anim_in, anim_out,
-                                ax + sh_dx, cy + sh_dy, W, H, allow_alpha)
+                                ax + sh_dx, cy + sh_dy, W, H, allow_alpha,
+                                rotation, origin)
                 sbody = _line_text(ln, shown, s0, size, ratio, bfam, kfam,
                                    sh_col, sh_col, reveal,
                                    force_alpha=ass_alpha(sh_op))
@@ -463,7 +505,7 @@ def text_events(doc, item, style, project_dir):
                         % (an, sgeo, sh_blur, sh_col, sbody))
             geo = _geo_for(s0 - base_t, s1 - base_t, dur - base_t,
                            d_in, d_out, anim_in, anim_out,
-                           ax, cy, W, H, allow_alpha)
+                           ax, cy, W, H, allow_alpha, rotation, origin)
             common = "\\an%d%s\\bord%.1f\\shad0" % (an, geo, bord)
             if bord > 0:
                 common += "\\3c%s" % bcol
@@ -499,12 +541,14 @@ def bg_events(doc, item, style, project_dir):
     else:
         x0 = ax - bw / 2.0
     y0 = ys[0] - pad
+    rotation = float(item.get("rotation") or 0.0)
+    ox, oy = x0 + bw / 2.0, y0 + bh / 2.0
     name = doc.style_for(style, project_dir)
     draw = "m 0 0 l %.0f 0 l %.0f %.0f l 0 %.0f" % (bw, bw, bh, bh)
     base_layer = max(0, int(float(item.get("z") or 0)) * 3)
     doc.add(base_layer, float(item["t"]), float(item["t"]) + float(item["dur"]), name,
-            "{\\an7\\pos(%.1f,%.1f)\\bord0\\shad0\\1c%s\\1a%s\\p1}%s{\\p0}"
-            % (x0, y0, ass_color(bg.get("color"), "#FFFFFF"),
+            "{\\an7\\pos(%.1f,%.1f)\\org(%.1f,%.1f)\\frz%.2f\\bord0\\shad0\\1c%s\\1a%s\\p1}%s{\\p0}"
+            % (x0, y0, ox, oy, rotation, ass_color(bg.get("color"), "#FFFFFF"),
                ass_alpha(int(bg.get("opacity") or 255)), draw))
 
 
