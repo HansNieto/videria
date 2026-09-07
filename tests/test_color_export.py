@@ -75,6 +75,17 @@ class ColorExportTests(unittest.TestCase):
         self.assertIn('tonemap=',color.to_sdr({'color_transfer':'smpte2084'}))
         self.assertNotIn('tonemap=',color.to_sdr({'color_transfer':'bt709'}))
 
+    def test_sdr_artwork_uses_hdr_graphics_white_not_dim_100_nits(self):
+        sdr={'color_transfer':'bt709','color_primaries':'bt709',
+             'color_space':'bt709','color_range':'pc','pix_fmt':'rgba'}
+        hlg=color.profile({'color_transfer':'arib-std-b67','color_primaries':'bt2020',
+                           'color_space':'bt2020nc','color_range':'tv',
+                           'pix_fmt':'yuv420p10le'})
+        with patch.object(color,'metadata',return_value=sdr):
+            chain=color.resource_filter('sticker.png',hlg)
+        self.assertIn('npl=203',chain)
+        self.assertNotIn('npl=100',chain)
+
     def test_export_does_not_mutate_canvas_and_validates(self):
         canvas={'width':1080,'height':1920,'fps':30}
         self.assertEqual(export_options.canvas_for(canvas,{'resolution':720,'fps':60}),

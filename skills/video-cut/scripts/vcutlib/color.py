@@ -5,6 +5,7 @@ from pathlib import Path
 from . import util
 
 CACHE_VERSION = "original-v3"
+HDR_GRAPHICS_WHITE_NITS = 203
 SDR_TAGS = ["-color_primaries", "bt709", "-color_trc", "bt709",
             "-colorspace", "bt709", "-color_range", "tv", "-map_metadata", "-1"]
 SDR_PARAMS = "setparams=range=limited:color_primaries=bt709:color_trc=bt709:colorspace=bt709"
@@ -86,7 +87,12 @@ def input_filter(path, target=None, mode="original"):
 
 
 def resource_filter(path, target):
-    """Map added SDR artwork into the HDR working space, never grade the camera."""
+    """Map SDR artwork into HDR at the standard graphics-white level.
+
+    SDR white is not HDR peak white. ITU-R BT.2408 defines graphics/reference
+    white as 203 cd/m2, which is 75% signal in HLG. Using 100 nits here made
+    stickers, PNG sequences and motion graphics look visibly dark.
+    """
     if not target["hdr"]:
         return "null"
     info = metadata(path)
@@ -96,6 +102,6 @@ def resource_filter(path, target):
     # Explicit input tags are needed for PNGs and other untagged SDR resources.
     # zscale preserves alpha in planar GBR; use 16-bit to keep transparent edges.
     return ("format=gbrap16le,zscale=primariesin=%s:transferin=%s:matrixin=gbr:rangein=full:"
-            "primaries=%s:transfer=%s:matrix=%s:range=limited:npl=100"
+            "primaries=%s:transfer=%s:matrix=%s:range=limited:npl=%d"
             % (source["primaries"], source["transfer"], target["primaries"],
-               target["transfer"], target["matrix"]))
+               target["transfer"], target["matrix"], HDR_GRAPHICS_WHITE_NITS))
